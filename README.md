@@ -2,9 +2,20 @@
 
 Web interface for using EPICS Channel Finder database. Integrates with PV Web Socket (PVWS), Archiver Appliance web viewing, and OLOG.
 
+## Required Packages
+
+- node JS
+	- Test with: 
+		- ```node -v```
+		- ```npm -v```
+
 ## Useful Scripts
 
 In the project directory, you can run:
+
+### `npm install`
+
+Installs the needed NPM modules into node_modules directory. Run this the first time you clone the repository.
 
 ### `npm start`
 
