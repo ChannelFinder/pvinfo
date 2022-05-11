@@ -7,7 +7,6 @@ import PV from '../components/pv';
 import IOC from '../components/ioc';
 import EventLog from '../components/eventlog';
 import Plot from '../components/plot';
-import IRM from '../components/irm';
 import Header from '../components/header';
 import Help from '../components/help';
 import Status from '../components/status';
@@ -25,7 +24,6 @@ function App() {
             <Route path='*' element={<Page404 />} />
             <Route path="/pv/:id" exact={true} element={<PV />} />
             <Route path="/ioc" exact={true} element={<IOC />} />
-            <Route path="/irm" exact={true} element={<IRM />} />
             <Route path="/plot" exact={true} element={<Plot />} />
             <Route path="/event-log" exact={true} element={<EventLog />} />
             <Route path="/help" exact={true} element={<Help />} />

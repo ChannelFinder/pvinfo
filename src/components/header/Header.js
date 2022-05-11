@@ -100,9 +100,6 @@ function Header () {
                         <ListItem button key="Plotting" component={NavLink} to="/plot" onClick={handleMenuToggle}>
                             <ListItemText primary="Plotting"/>
                         </ListItem>
-                        <ListItem button key="IRMs" component={NavLink} to="/irm" onClick={handleMenuToggle}>
-                            <ListItemText primary="IRMs"/>
-                        </ListItem>
                         <ListItem button key="EventLog" component={NavLink} to="/event-log" onClick={handleMenuToggle}>
                             <ListItemText primary="Event Log"/>
                         </ListItem>
@@ -125,9 +122,6 @@ function Header () {
           </NavLink>
           <NavLink to="/plot" style={{textDecoration: "none", color: 'inherit', paddingRight: 40 }}>
             <Typography variant="h5">Plotting</Typography>
-          </NavLink>
-          <NavLink to="/irm" style={{textDecoration: "none", color: 'inherit', paddingRight: 40 }}>
-            <Typography variant="h5">IRMs</Typography>
           </NavLink>
           <NavLink to="/event-log" style={{textDecoration: "none", color: 'inherit', paddingRight: 40 }}>
             <Typography variant="h5">Event Log</Typography>

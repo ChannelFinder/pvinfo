@@ -98,13 +98,6 @@ function Help() {
                     See the <Link component={RouterLink} to="/plot" underline="always">plotting page</Link> for more details.
                   </li>
                 </ul>
-                <li><strong>IRM</strong></li>
-                <ul>
-                  <li>
-                    The IRM (ILC Replacement Module) number for the PV. This only applies if the PV is connected to an IRM; otherwise the field is blank. Clicking on the number 
-                    will issue a new search for all PVs in the IRM. If you then wish to return to the original search, use the browser's Back button.
-                  </li>
-                </ul>
                 <li><strong>Alias Of</strong></li>
                 <ul>
                   <li>
@@ -152,11 +145,6 @@ function Help() {
                 Double clicking or clicking the IOC name will open the PV search for all the PVs in that IOC.
               </Typography>
 
-              <Typography variant='h6' style={{marginTop: 10, marginBottom: 10}}><strong>IRMs Page</strong></Typography>
-              <Typography variant='body1' paragraph={true}>
-                Selecting IRMs from the main menu lists all IRMs in the system. Included is the description of the IRM, Rack #, Print #, current status, and switch 
-                location. Double clicking or clicking the IRM number will open the PV search for all the PVs in that IRM.
-              </Typography>
             </Grid>
           </Grid>
         </ Fragment>

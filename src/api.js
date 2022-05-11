@@ -1,11 +1,8 @@
-const baseServer = 'yourdomainhere'
-const baseHTTP = `https://${baseServer}`
-const baseWS = `wss://${baseServer}`
-const channelFinderBaseURL = process.env.NODE_ENV === 'development' ? 'https://devdomainhere/ChannelFinder/resources/channels' : `${baseHTTP}/pvinfo/cf`;
-const ologBaseURL = `${baseHTTP}/olog`
-const aaViewerURL = `${baseHTTP}/pvinfo/aa/ui/viewer/archViewer.html`;
-const pvwsURL = process.env.NODE_ENV === 'development' ? "ws://devdomainhere/pvws/pv" : `${baseWS}/pvinfo/ws`;
-
+const channelFinderURL = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_CF_URL_DEV : process.env.REACT_APP_CF_URL;
+const ologURL = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_OLOG_URL_DEV : process.env.REACT_APP_OLOG_URL;
+const aaViewerURL = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_AA_URL_DEV : process.env.REACT_APP_AA_URL;
+const pvwsURL = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_PVWS_URL_DEV : process.env.REACT_APP_PVWS_URL;
+const serverURL = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_BASE_URL_DEV : process.env.REACT_APP_BASE_URL;
 
 async function queryChannelFinder(params) {
     let error = false;
@@ -85,7 +82,7 @@ async function queryChannelFinder(params) {
         }
     }
 
-    let requestURI = `${channelFinderBaseURL}?~name=${pvName}&hostName${hostName}&iocName${iocName}&pvStatus${pvStatus}&recordType${recordType}`;
+    let requestURI = `${channelFinderURL}?~name=${pvName}&hostName${hostName}&iocName${iocName}&pvStatus${pvStatus}&recordType${recordType}`;
     
     if ("archive" in params && params.archive !== "") {
         if(params.archive.charAt(0) === "=") {
@@ -130,17 +127,6 @@ async function queryChannelFinder(params) {
             requestURI = requestURI + `&alias=${params.alias}`;
         }
     }
-    if ("irm" in params && params.irm !== "") {
-        if(params.irm.charAt(0) === "!") {
-            const irmWithoutNot = params.irm.substring(1);
-            const threeDigitIRM = irmWithoutNot.padStart(3, '0');
-            requestURI = requestURI + `&alias!=irm:${threeDigitIRM}*`;
-        }
-        else {
-            const threeDigitIRM = params.irm.padStart(3, '0');
-            requestURI = requestURI + `&alias=irm:${threeDigitIRM}*`;
-        }
-    }
     let options = {}
     options = {method: 'GET'}
     if (process.env.NODE_ENV !== 'development') {
@@ -179,7 +165,7 @@ async function queryOLOG(pvName) {
         return;
     }
 
-    let requestURI = encodeURI(`${ologBaseURL}/rpc.php?op=retrieve&start=0&format=json&q=${pvName}`);
+    let requestURI = encodeURI(`${ologURL}/rpc.php?op=retrieve&start=0&format=json&q=${pvName}`);
     await fetch(requestURI)
     .then(response => {
         if (response.ok) {
@@ -219,12 +205,13 @@ const aaPolicies = [
 
 const api = {
     CF_QUERY: queryChannelFinder,
+    CF_URL: channelFinderURL,
     OLOG_QUERY: queryOLOG,
-    OLOG_URL: `${ologBaseURL}/olog.php`,
+    OLOG_URL: `${ologURL}/olog.php`,
     AA_VIEWER: aaViewerURL,
     AA_POLICIES: aaPolicies,
     PVWS_URL: pvwsURL,
-    SERVER_URL: baseHTTP,
+    SERVER_URL: serverURL,
 }
 
 export default api;

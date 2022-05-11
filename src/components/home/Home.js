@@ -37,7 +37,6 @@ function Home() {
     const [iocName, setIOCName] = useState(searchParams.get("iocName") || "");
     const [pvStatus, setPVStatus] = useState(searchParams.has("pvStatus") ? searchParams.get("pvStatus") : "*");
     const [recordType, setRecordType] = useState(searchParams.get("recordType") || "");
-    const [irm, setIRM] = useState(searchParams.get("irm") || "");
     const [recordTypeAutocompleteKey, setRecordTypeAutocompleteKey] = useState(-1);
     const [archiveAutocompleteKey, setArchiveAutocompleteKey] = useState(1);
     const [isLoading, setIsLoading] = useState(false);
@@ -65,11 +64,6 @@ function Home() {
     };
     const handleAliasOfChange = (e) => {
         setAliasOf(e.target.value);
-        setIRM("");
-    };
-    const handleIRMChange = (e) => {
-        setIRM(e.target.value);
-        setAliasOf("");
     };
 
     const queryPVs = (parameters) => {
@@ -98,7 +92,6 @@ function Home() {
         setPVStatus("*");
         setRecordType("");
         setAliasOf("");
-        setIRM("");
         // https://stackoverflow.com/a/59845474
         setRecordTypeAutocompleteKey(recordTypeAutocompleteKey-1);
         setArchiveAutocompleteKey(archiveAutocompleteKey+1);
@@ -107,8 +100,7 @@ function Home() {
     useEffect(() => {
         // If there are search parameters in the URL, query channel finder and show the PV data
         if(searchParams.has("pvName") || searchParams.has("recordDesc") || searchParams.has("iocName") || searchParams.has("hostName") || 
-                searchParams.has("pvStatus") || searchParams.has("archive") || searchParams.has("alias") ||
-                searchParams.has("irm")) {
+                searchParams.has("pvStatus") || searchParams.has("archive") || searchParams.has("alias")) {
             let params = {}
             searchParams.forEach((val, key) => {if(val !== "") {params[key] = val} });
             setPVName(searchParams.get("pvName") || "");
@@ -118,7 +110,6 @@ function Home() {
             setPVStatus(searchParams.has("pvStatus") ? searchParams.get("pvStatus") : "*");
             setArchive(searchParams.get("archive") || "");
             setAliasOf(searchParams.get("alias") || "");
-            setIRM(searchParams.get("irm") || "");
             setIsLoading(true);
             queryPVs(params);
         }
@@ -140,7 +131,6 @@ function Home() {
         if(e.target.recordType.value) {params[e.target.recordType.name] = e.target.recordType.value;}
         if(e.target.archive.value) {params[e.target.archive.name] = e.target.archive.value;}
         if(e.target.alias.value) {params[e.target.alias.name] = e.target.alias.value;}
-        if(e.target.irm.value) {params[e.target.irm.name] = e.target.irm.value;}
         api.CF_QUERY(params)
             .then((data) => {
                 if (data !== null) {
@@ -171,14 +161,14 @@ function Home() {
                         align="center"
                         variant="h6"
                     >
-                        This is the new version of PVInfo. The existing PVInfo2 is available here: <Link href={`${api.SERVER_URL}/pvinfo2`} underline="always">{`${api.SERVER_URL}/pvinfo2`}</Link>
+                        PV Info allows you to search and inspect PVs and their meta-data via the EPICS Channel Finder DB
                     </Typography>
                     <Typography 
                         style={{marginBottom: 20}}
                         align="center"
                         variant="subtitle1"
                     >
-                        The new site uses the updated EPICS archiver with much faster sampling rates and the EPICS Channel Finder DB. See known/outstanding issues <strong><Link component={RouterLink} to="/status" underline="always">here</Link></strong>. Please send any bugs/comments/suggestions to tford@lbl.gov
+                        There are integrations with Archiver Appliance, PV Web Socket, and OLOG API
                     </Typography>
                 </Grid>
                 <Grid item container xs={12}>
@@ -284,12 +274,12 @@ function Home() {
                             />
                         </Tooltip>
                     </Grid>
-                    <Grid item xs={12} sm={12} md={6} lg={2} xl={2} style={{display: "flex"}}>
+                    <Grid item xs={12} sm={12} md={6} lg={1} xl={1} style={{display: "flex"}}>
                     <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
                             <Autocomplete
                                 freeSolo
                                 disableClearable
-                                style={{width: "70%"}}
+                                style={{width: "100%"}}
                                 key={archiveAutocompleteKey}
                                 value={archive}
                                 options={api.AA_POLICIES.map((option) => option.policy)}
@@ -307,26 +297,11 @@ function Home() {
                                 }
                             />
                         </Tooltip>
-                        <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
-                            <TextField
-                                style={{width: "30%"}}
-                                id="irm"
-                                label="IRM"
-                                autoComplete="off"
-                                name="irm"
-                                value={irm}
-                                placeholder="IRM #"
-                                type="search"
-                                variant="outlined"
-                                onChange={handleIRMChange}
-                            />
-                        </Tooltip>
-
                     </Grid>
-                    <Grid item xs={12} sm={12} md={6} lg={2} xl={2} style={{display: "flex"}}>
+                    <Grid item xs={12} sm={12} md={6} lg={3} xl={3} style={{display: "flex"}}>
                     <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
                             <TextField
-                                style={{width: "50%"}}
+                                style={{width: "70%"}}
                                 id="alias"
                                 label="Alias Of"
                                 autoComplete="off"
@@ -344,7 +319,7 @@ function Home() {
                                 variant="contained"
 	    			color="info"
                                 type="submit"
-                                style={{width: "25%"}}>
+                                style={{width: "15%"}}>
                                 <SearchIcon style={{color: 'black'}} fontSize='large' />
                             </Button>
                         </Tooltip>
@@ -352,7 +327,7 @@ function Home() {
                             <Button aria-label="clear"
                                 variant="contained"
                                 color="secondary"
-                                style={{width: "25%"}} 
+                                style={{width: "15%"}} 
                                 onClick={handleClear} >
                                 <ClearIcon style={{color: 'black'}} fontSize='large' />
                             </Button>
