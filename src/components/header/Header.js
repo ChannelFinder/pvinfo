@@ -9,7 +9,7 @@ import { alpha } from '@mui/material/styles';
 import makeStyles from '@mui/styles/makeStyles';
 import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
-import alsBanner from "../../assets/als-banner.png";
+import logoBanner from "../../assets/mobile-menu-logo.png";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -88,7 +88,7 @@ function Header () {
             <Drawer variant="temporary" open={drawerOpen} onClose={handleMenuToggle} anchor="left">
                 <div>
                     <div className={classes.toolbar} />
-                    <img src={alsBanner} style={{ height: 60, width: 302 }} alt="ALS Banner Logo" />
+                    <img src={logoBanner} style={{ height: 60, width: 302 }} alt="Banner Logo" />
                     <Divider />
                     <List>
                         <ListItem button key="PVs" component={NavLink} to="/" onClick={handleMenuToggle}>
@@ -96,12 +96,6 @@ function Header () {
                         </ListItem>
                         <ListItem button key="IOCs" component={NavLink} to="/ioc" onClick={handleMenuToggle}>
                             <ListItemText primary="IOCs"/>
-                        </ListItem>
-                        <ListItem button key="Plotting" component={NavLink} to="/plot" onClick={handleMenuToggle}>
-                            <ListItemText primary="Plotting"/>
-                        </ListItem>
-                        <ListItem button key="EventLog" component={NavLink} to="/event-log" onClick={handleMenuToggle}>
-                            <ListItemText primary="Event Log"/>
                         </ListItem>
                         <ListItem button key="Help" component={NavLink} to="/help" onClick={handleMenuToggle}>
                             <ListItemText primary="Help"/>
@@ -119,12 +113,6 @@ function Header () {
         <Hidden mdDown>
           <NavLink to="/ioc" style={{textDecoration: "none", color: 'inherit', paddingRight: 40 }}>
             <Typography variant="h5">IOCs</Typography>
-          </NavLink>
-          <NavLink to="/plot" style={{textDecoration: "none", color: 'inherit', paddingRight: 40 }}>
-            <Typography variant="h5">Plotting</Typography>
-          </NavLink>
-          <NavLink to="/event-log" style={{textDecoration: "none", color: 'inherit', paddingRight: 40 }}>
-            <Typography variant="h5">Event Log</Typography>
           </NavLink>
           <NavLink to="/help" style={{textDecoration: "none", color: 'inherit', paddingRight: 40 }}>
             <Typography variant="h5">Help</Typography>

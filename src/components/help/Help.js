@@ -91,13 +91,6 @@ function Help() {
                     EPICS record type. For instance, ao is analog output. bi is binary input. See <Link href="https://epics.anl.gov/base/R3-15/8-docs/RecordReference.html" target="_blank">the EPICS record reference manual</Link> for more details.
                   </li>
                 </ul>
-                <li><strong>Archive Policy</strong></li>
-                <ul>
-                  <li>
-                    The ALS archiver appliance is populated via the archive INFO tag which this field represents. There are 5 main policies: VeryFast, Fast, Medium, Slow, VerySlow. 
-                    See the <Link component={RouterLink} to="/plot" underline="always">plotting page</Link> for more details.
-                  </li>
-                </ul>
                 <li><strong>Alias Of</strong></li>
                 <ul>
                   <li>

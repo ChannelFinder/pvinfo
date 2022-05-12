@@ -6,7 +6,7 @@ import { useNavigate, Link as RouterLink } from "react-router-dom";
 import TimelineIcon from '@mui/icons-material/Timeline';
 import ReadMoreIcon from '@mui/icons-material/ReadMore';
 import api from "../../../api";
-import alsBannerColor from "../../../assets/als-banner-color.png";
+import bannerLogo from "../../../assets/home-banner-logo.png";
 import PropTypes from "prop-types";
 
 const propTypes = {
@@ -189,7 +189,6 @@ function QueryResults(props) {
         { field: "iocName", headerName: 'IOC', flex: 8.5, minWidth: 125, maxWidth: 170, renderCell: renderIOCLink },
         { field: "pvStatus", headerName: 'Status', flex: 7.5, minWidth: 125, maxWidth: 170 },
         { field: "recordType", headerName: 'Type', flex: 7.5, minWidth: 125, maxWidth: 170 },
-        { field: "archive", headerName: 'Archive', flex: 7.5, minWidth: 125, maxWidth: 170 },
         { field: "alias", headerName: 'Alias Of', flex: 10.5, minWidth: 175, maxWidth: 300, renderCell: renderAliasLink },
         { field: "value", headerName: 'Value', flex: 7.5, minWidth: 120, maxWidth: 140, renderCell: renderValue },
         { field: "button", headerName: 'Actions', flex: 9.5, minWidth: 160, maxWidth: 200, disableClickEventBubbling: true, renderCell: renderButtons }
@@ -216,7 +215,7 @@ function QueryResults(props) {
             <Fragment>
                 <Typography variant="h6">Data Loading...</Typography>
                 <Grid container justifyContent="center" >
-                    <img src={alsBannerColor} style={{position: "absolute", "marginBottom": "20px", "bottom": 0, width:"25%"}} alt="ALS Banner Logo" />
+                    <img src={bannerLogo} style={{position: "absolute", "marginBottom": "20px", "bottom": 0, width:"25%"}} alt="Banner Logo" />
                 </Grid>
             </Fragment>
         );
@@ -224,7 +223,7 @@ function QueryResults(props) {
     else if (props.cfData === null) {
         return (
             <Grid container justifyContent="center" >
-                <img src={alsBannerColor} style={{position: "absolute", "marginBottom": "20px", "bottom": 0, width:"25%"}} alt="ALS Banner Logo" />
+                <img src={bannerLogo} style={{position: "absolute", "marginBottom": "20px", "bottom": 0, width:"25%"}} alt="Banner Logo" />
             </Grid>
         );
     }
@@ -233,7 +232,7 @@ function QueryResults(props) {
             <Fragment>
                 <Typography>No PVs match your query</Typography>
                 <Grid container justifyContent="center" >
-                    <img src={alsBannerColor} style={{position: "absolute", "marginBottom": "20px", "bottom": 0, width:"25%"}} alt="ALS Banner Logo" />
+                    <img src={bannerLogo} style={{position: "absolute", "marginBottom": "20px", "bottom": 0, width:"25%"}} alt="Banner Logo" />
                 </Grid>
             </Fragment>
         );

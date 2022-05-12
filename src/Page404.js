@@ -13,25 +13,6 @@ function Page404 () {
             <br />
             <Button onClick={() => navigate(-1)} variant="contained" color="secondary">Take Me Back!</Button>
             <br />
-            <br />
-            <hr />
-            <br />
-            <Grid item alignItems="center" xs={12}>
-                    <Typography 
-                        style={{marginBottom: 20}}
-                        align="center"
-                        variant="h6"
-                    >
-                        This is the new version of PVInfo. The existing PVInfo2 is available here: <Link href={`${api.SERVER_URL}/pvinfo2`} underline="always">{`${api.SERVER_URL}/pvinfo2`}</Link>
-                    </Typography>
-                    <Typography 
-                        style={{marginBottom: 20}}
-                        align="center"
-                        variant="subtitle1"
-                    >
-                        The new site uses the updated EPICS archiver with much faster sampling rates and the EPICS channel finder DB. See known/outstanding issues <Link component={RouterLink} to="/status" underline="always">here</Link>. Please send any bugs/comments/suggestions to tford@lbl.gov.
-                    </Typography>
-                </Grid>
         </Fragment>
     );  
 }

@@ -84,21 +84,6 @@ async function queryChannelFinder(params) {
 
     let requestURI = `${channelFinderURL}?~name=${pvName}&hostName${hostName}&iocName${iocName}&pvStatus${pvStatus}&recordType${recordType}`;
     
-    if ("archive" in params && params.archive !== "") {
-        if(params.archive.charAt(0) === "=") {
-            requestURI = requestURI + `&archive${params.archive}`;
-        }
-        else if(params.archive.charAt(0) === "!") {
-            requestURI = requestURI + `&archive!=${params.archive.substring(1)}`;
-        }
-        // don't assume wildcard on dropdowns
-        // else if (params.archive.charAt(0) !== "*" && params.archive.charAt(params.archive.length - 1) !== "*") {
-        //     requestURI = requestURI + `&archive=*${params.archive}*`;
-        // }
-        else {
-            requestURI = requestURI + `&archive=${params.archive}`;
-        }
-    }
     if ("recordDesc" in params && params.recordDesc !== "") {
         if(params.recordDesc.charAt(0) === "=") {
             requestURI = requestURI + `&recordDesc${params.recordDesc}`;
@@ -130,11 +115,9 @@ async function queryChannelFinder(params) {
     let options = {}
     options = {method: 'GET'}
     if (process.env.NODE_ENV !== 'development') {
-        options['credentials'] = 'include'
-        //options['credentials'] = 'same-origin'
+        //options['credentials'] = 'include'
     }
-    // credentials header is needed to use browser SSO for channel finder end point
-    // which is using cloudflare access (PVInfo uses cloudflare access too so credentials should be there)
+    // credentials header would help if CF, AA, etc are behind a SSO
     await fetch(requestURI, options)
         .then(response => {
             if (response.ok) {
@@ -165,7 +148,7 @@ async function queryOLOG(pvName) {
         return;
     }
 
-    let requestURI = encodeURI(`${ologURL}/rpc.php?op=retrieve&start=0&format=json&q=${pvName}`);
+    let requestURI = encodeURI(`${ologURL}/olog-endpoint.js?op=retrieve&start=0&format=json&q=${pvName}`);
     await fetch(requestURI)
     .then(response => {
         if (response.ok) {
@@ -195,11 +178,11 @@ const aaPolicies = [
     {"policy": "Medium",   "method": "Monitor", "period": "10",  "ltsreduce": "60 Seconds",  "control": "None"},
     {"policy": "Slow",     "method": "Scan",    "period": "60",  "ltsreduce": "180 Seconds", "control": "None"},
     {"policy": "VerySlow", "method": "Scan",    "period": "900", "ltsreduce": "None",        "control": "None"},
-    {"policy": "VeryFastControlled", "method": "Monitor", "period": "0.1", "ltsreduce": "10 Seconds",  "control": "ALS:Archiver:Enable"},
-    {"policy": "FastControlled",     "method": "Monitor", "period": "1",   "ltsreduce": "30 Seconds",  "control": "ALS:Archiver:Enable"},
-    {"policy": "MediumControlled",   "method": "Monitor", "period": "10",  "ltsreduce": "60 Seconds",  "control": "ALS:Archiver:Enable"},
-    {"policy": "SlowControlled",     "method": "Scan",    "period": "60",  "ltsreduce": "180 Seconds", "control": "ALS:Archiver:Enable"},
-    {"policy": "VerySlowControlled", "method": "Scan",    "period": "900", "ltsreduce": "None",        "control": "ALS:Archiver:Enable"},
+    {"policy": "VeryFastControlled", "method": "Monitor", "period": "0.1", "ltsreduce": "10 Seconds",  "control": "Archiver:Enable"},
+    {"policy": "FastControlled",     "method": "Monitor", "period": "1",   "ltsreduce": "30 Seconds",  "control": "Archiver:Enable"},
+    {"policy": "MediumControlled",   "method": "Monitor", "period": "10",  "ltsreduce": "60 Seconds",  "control": "Archiver:Enable"},
+    {"policy": "SlowControlled",     "method": "Scan",    "period": "60",  "ltsreduce": "180 Seconds", "control": "Archiver:Enable"},
+    {"policy": "VerySlowControlled", "method": "Scan",    "period": "900", "ltsreduce": "None",        "control": "Archiver:Enable"},
 
 ]
 
@@ -207,7 +190,7 @@ const api = {
     CF_QUERY: queryChannelFinder,
     CF_URL: channelFinderURL,
     OLOG_QUERY: queryOLOG,
-    OLOG_URL: `${ologURL}/olog.php`,
+    OLOG_URL: ologURL,
     AA_VIEWER: aaViewerURL,
     AA_POLICIES: aaPolicies,
     PVWS_URL: pvwsURL,

@@ -31,21 +31,16 @@ function Home() {
     const [cfData, setCFData] = useState(null); //array
     const [pvName, setPVName] = useState(searchParams.get("pvName") || "");
     const [recordDesc, setRecordDesc] = useState(searchParams.get("recordDesc") || "");
-    const [archive, setArchive] = useState(searchParams.get("archive") || "");
     const [aliasOf, setAliasOf] = useState(searchParams.get("alias") || "");
     const [hostName, setHostName] = useState(searchParams.get("hostName") || "");
     const [iocName, setIOCName] = useState(searchParams.get("iocName") || "");
     const [pvStatus, setPVStatus] = useState(searchParams.has("pvStatus") ? searchParams.get("pvStatus") : "*");
     const [recordType, setRecordType] = useState(searchParams.get("recordType") || "");
     const [recordTypeAutocompleteKey, setRecordTypeAutocompleteKey] = useState(-1);
-    const [archiveAutocompleteKey, setArchiveAutocompleteKey] = useState(1);
     const [isLoading, setIsLoading] = useState(false);
     
     const handlePVNameChange = (e) => {
         setPVName(e.target.value);
-    };
-    const handleArchiveChange = (e) => {
-        setArchive(e.target.value);
     };
     const handleRecordDescChange = (e) => {
         setRecordDesc(e.target.value);
@@ -86,7 +81,6 @@ function Home() {
     const clearForm = () => {
         setPVName("");
         setRecordDesc("");
-        setArchive("");
         setHostName("");
         setIOCName("");
         setPVStatus("*");
@@ -94,13 +88,12 @@ function Home() {
         setAliasOf("");
         // https://stackoverflow.com/a/59845474
         setRecordTypeAutocompleteKey(recordTypeAutocompleteKey-1);
-        setArchiveAutocompleteKey(archiveAutocompleteKey+1);
     }
 
     useEffect(() => {
         // If there are search parameters in the URL, query channel finder and show the PV data
         if(searchParams.has("pvName") || searchParams.has("recordDesc") || searchParams.has("iocName") || searchParams.has("hostName") || 
-                searchParams.has("pvStatus") || searchParams.has("archive") || searchParams.has("alias")) {
+                searchParams.has("pvStatus") || searchParams.has("alias")) {
             let params = {}
             searchParams.forEach((val, key) => {if(val !== "") {params[key] = val} });
             setPVName(searchParams.get("pvName") || "");
@@ -108,7 +101,6 @@ function Home() {
             setIOCName(searchParams.get("iocName") || "");
             setHostName(searchParams.get("hostName") || "");
             setPVStatus(searchParams.has("pvStatus") ? searchParams.get("pvStatus") : "*");
-            setArchive(searchParams.get("archive") || "");
             setAliasOf(searchParams.get("alias") || "");
             setIsLoading(true);
             queryPVs(params);
@@ -129,7 +121,6 @@ function Home() {
         if(e.target.iocName.value) {params[e.target.iocName.name] = e.target.iocName.value;}
         if(e.target.pvStatus.value !== "*") {params[e.target.pvStatus.name] = e.target.pvStatus.value;}
         if(e.target.recordType.value) {params[e.target.recordType.name] = e.target.recordType.value;}
-        if(e.target.archive.value) {params[e.target.archive.name] = e.target.archive.value;}
         if(e.target.alias.value) {params[e.target.alias.name] = e.target.alias.value;}
         api.CF_QUERY(params)
             .then((data) => {
@@ -274,31 +265,7 @@ function Home() {
                             />
                         </Tooltip>
                     </Grid>
-                    <Grid item xs={12} sm={12} md={6} lg={1} xl={1} style={{display: "flex"}}>
-                    <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
-                            <Autocomplete
-                                freeSolo
-                                disableClearable
-                                style={{width: "100%"}}
-                                key={archiveAutocompleteKey}
-                                value={archive}
-                                options={api.AA_POLICIES.map((option) => option.policy)}
-                                renderInput={(params) => 
-                                    <TextField
-                                        id="archive"
-                                        {...params}
-                                        label="Archive Policy"
-                                        name="archive"
-                                        placeholder="Archive Policy"
-                                        type="search"
-                                        variant="outlined"
-                                        onChange={handleArchiveChange}
-                                    />
-                                }
-                            />
-                        </Tooltip>
-                    </Grid>
-                    <Grid item xs={12} sm={12} md={6} lg={3} xl={3} style={{display: "flex"}}>
+                    <Grid item xs={12} sm={12} md={6} lg={4} xl={4} style={{display: "flex"}}>
                     <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
                             <TextField
                                 style={{width: "70%"}}

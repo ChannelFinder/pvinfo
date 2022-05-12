@@ -160,8 +160,8 @@ function PV() {
               <TableRow>
                 <TableCell variant="head">EPICS Record Type</TableCell>
                 <TableCell variant="body">{pvData.recordType}</TableCell>
-                <TableCell variant="head">Archiving Policy</TableCell>
-                <TableCell variant="body">{pvData.archive}</TableCell>
+                <TableCell variant="head">IOC Name</TableCell>
+                <TableCell variant="body"><Link component={RouterLink} to={`/?iocName=${pvData.iocName}`} underline="hover">{pvData.iocName}</Link></TableCell>
               </TableRow>
               <TableRow>
                 <TableCell variant="head">Host Name</TableCell>
@@ -170,8 +170,6 @@ function PV() {
                 <TableCell variant="body">{pvData.owner}</TableCell>
               </TableRow>
               <TableRow>
-                <TableCell variant="head">IOC Name</TableCell>
-                <TableCell variant="body"><Link component={RouterLink} to={`/?iocName=${pvData.iocName}`} underline="hover">{pvData.iocName}</Link></TableCell>
                 <TableCell variant="head">IOC IP Address</TableCell>
                 <TableCell variant="body">{pvData.iocid}</TableCell>
               </TableRow>
