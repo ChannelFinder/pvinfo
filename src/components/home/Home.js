@@ -116,12 +116,18 @@ function Home() {
         setIsLoading(true);
         let params = {}
         if(e.target.pvName.value) {params[e.target.pvName.name] = e.target.pvName.value;}
-        if(e.target.recordDesc.value) {params[e.target.recordDesc.name] = e.target.recordDesc.value;}
+        if(process.env.REACT_APP_CF_RECORD_DESC === "true") {
+            if(e.target.recordDesc.value) {params[e.target.recordDesc.name] = e.target.recordDesc.value;}
+        }
         if(e.target.hostName.value) {params[e.target.hostName.name] = e.target.hostName.value;}
         if(e.target.iocName.value) {params[e.target.iocName.name] = e.target.iocName.value;}
         if(e.target.pvStatus.value !== "*") {params[e.target.pvStatus.name] = e.target.pvStatus.value;}
-        if(e.target.recordType.value) {params[e.target.recordType.name] = e.target.recordType.value;}
-        if(e.target.alias.value) {params[e.target.alias.name] = e.target.alias.value;}
+        if(process.env.REACT_APP_CF_RECORD_TYPE === "true") {
+            if(e.target.recordType.value) {params[e.target.recordType.name] = e.target.recordType.value;}
+        }
+        if(process.env.REACT_APP_CF_ALIAS === "true") {
+            if(e.target.alias.value) {params[e.target.alias.name] = e.target.alias.value;}
+        }
         api.CF_QUERY(params)
             .then((data) => {
                 if (data !== null) {
@@ -141,6 +147,75 @@ function Home() {
     const handleClear = (e) => {
         e.preventDefault();
         clearForm();
+    }
+
+    const recordDescSearchRender = () => {
+        if(process.env.REACT_APP_CF_RECORD_DESC === "true") {
+            return (
+                <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
+                    <TextField
+                        style={{width: "100%"}}
+                        id="recordDsec"
+                        label="Description"
+                        autoComplete="off"
+                        name="recordDesc"
+                        value={recordDesc}
+                        placeholder="Description"
+                        type="search"
+                        variant="outlined"
+                        onChange={handleRecordDescChange}
+                    />
+                </Tooltip>
+            )
+        }
+    }
+    const recordTypeSearchRender = () => {
+        if(process.env.REACT_APP_CF_RECORD_TYPE === "true") {
+            return (
+                <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
+                    <Autocomplete
+                        freeSolo
+                        disableClearable
+                        style={{width: "50%"}}
+                        options={pvRecordTypes}
+                        key={recordTypeAutocompleteKey}
+                        value={recordType}
+                        renderInput={(params) => 
+                            <TextField 
+                                id="recordType"
+                                {...params}
+                                label="Record Type" 
+                                name="recordType"
+                                placeholder="Record Type"
+                                type="search"
+                                variant="outlined"
+                                onChange={handleRecordTypeChange}
+                            />
+                        }
+                    />
+                </Tooltip>
+            )
+        }
+    }
+    const aliasOfSearchRender = () => {
+        if(process.env.REACT_APP_CF_ALIAS === "true") {
+            return (
+                <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
+                    <TextField
+                        style={{width: "70%"}}
+                        id="alias"
+                        label="Alias Of"
+                        autoComplete="off"
+                        name="alias"
+                        value={aliasOf}
+                        placeholder="Alias Of"
+                        type="search"
+                        variant="outlined"
+                        onChange={handleAliasOfChange}
+                    />
+                </Tooltip>
+            )
+        }
     }
        
     return (
@@ -180,20 +255,7 @@ function Home() {
                         </Tooltip>
                     </Grid>
                     <Grid item xs={12} sm={12} md={6} lg={2} xl={2} style={{display: "flex"}}>
-                        <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
-                            <TextField
-                                style={{width: "100%"}}
-                                id="recordDsec"
-                                label="Description"
-                                autoComplete="off"
-                                name="recordDesc"
-                                value={recordDesc}
-                                placeholder="Description"
-                                type="search"
-                                variant="outlined"
-                                onChange={handleRecordDescChange}
-                            />
-                        </Tooltip>
+                        {recordDescSearchRender()}
                     </Grid>
                     <Grid item xs={12} sm={12} md={6} lg={2} xl={2} style={{display: "flex"}}>
                         <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
@@ -242,44 +304,11 @@ function Home() {
                                 </MenuItem>
                             ))}
                         </TextField>
-                        <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
-                            <Autocomplete
-                                freeSolo
-                                disableClearable
-                                style={{width: "50%"}}
-                                options={pvRecordTypes}
-                                key={recordTypeAutocompleteKey}
-                                value={recordType}
-                                renderInput={(params) => 
-                                    <TextField 
-                                        id="recordType"
-                                        {...params}
-                                        label="Record Type" 
-                                        name="recordType"
-                                        placeholder="Record Type"
-                                        type="search"
-                                        variant="outlined"
-                                        onChange={handleRecordTypeChange}
-                                    />
-                                }
-                            />
-                        </Tooltip>
+                        {recordTypeSearchRender()}
+
                     </Grid>
                     <Grid item xs={12} sm={12} md={6} lg={4} xl={4} style={{display: "flex"}}>
-                    <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
-                            <TextField
-                                style={{width: "70%"}}
-                                id="alias"
-                                label="Alias Of"
-                                autoComplete="off"
-                                name="alias"
-                                value={aliasOf}
-                                placeholder="Alias Of"
-                                type="search"
-                                variant="outlined"
-                                onChange={handleAliasOfChange}
-                            />
-                        </Tooltip>
+                        {aliasOfSearchRender()}
                         <Tooltip arrow title="Search">
                             <Button
                                 aria-label="search"

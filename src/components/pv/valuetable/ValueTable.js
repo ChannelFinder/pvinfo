@@ -1,5 +1,5 @@
-import React, { Fragment, useState, useEffect } from "react";
-import { Button, Typography, Table, TableCell, TableBody, TableHead, TableRow, TableContainer, Grid, Hidden, Link } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import { TableRow, Typography, TableCell, TableBody  } from "@mui/material";
 import useWebSocket, { ReadyState } from 'react-use-websocket';
 import api from "../../../api";
 import PropTypes from "prop-types";
@@ -20,7 +20,6 @@ function ValueTable(props) {
   const [pvMin, setPVMin] = useState(null);
   const [pvMax, setPVMax] = useState(null);
   const [alarmColor, setAlarmColor] = useState("");
-
 
   const socketUrl = api.PVWS_URL;
   const { sendJsonMessage, lastJsonMessage, 
