@@ -200,8 +200,9 @@ function PV() {
             </TableBody>
           </Table>
         </TableContainer>
-        <Typography style={{marginTop: 10}} variant="h4">Recent Online Log Entries</Typography>
-        <OLOGTable pvName={id} />
+        {
+          process.env.REACT_APP_USE_OLOG === "true" ? <OLOGTable pvName={id} /> : <br />
+        }
       </Fragment>
     );
   }

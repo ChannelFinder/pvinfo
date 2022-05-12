@@ -50,33 +50,36 @@ function OLOGTable(props) {
   }
   else {
     return (
-      <TableContainer>
-        <Table sx={{border: 5, borderColor: 'primary.main'}}>
-          <TableHead>
-            <TableRow>
-              <TableCell>Date Time</TableCell>
-              <TableCell>Category</TableCell>
-              <TableCell>Level</TableCell>
-              <TableCell>Entry</TableCell>
-              <TableCell>Author</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {ologData.map((row) => (
-              <TableRow
-                key={row.id}
-                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-              >
-                <TableCell><Link href={`${api.OLOG_URL}?id=${row.id}`} target="_blank" underline="always">{new Date(row.created*1000).toLocaleString()}</Link></TableCell>
-                <TableCell>{row.category}</TableCell>
-                <TableCell>{row.level}</TableCell>
-                <TableCell><strong><u>{row.subject}</u></strong> <br /> <div dangerouslySetInnerHTML={{__html: htmlDecode(row.details)}} /></TableCell>
-                <TableCell> {row.author}</TableCell>
+      <div>
+        <Typography style={{marginTop: 10}} variant="h4">Recent Online Log Entries</Typography>
+        <TableContainer>
+          <Table sx={{border: 5, borderColor: 'primary.main'}}>
+            <TableHead>
+              <TableRow>
+                <TableCell>Date Time</TableCell>
+                <TableCell>Category</TableCell>
+                <TableCell>Level</TableCell>
+                <TableCell>Entry</TableCell>
+                <TableCell>Author</TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+            </TableHead>
+            <TableBody>
+              {ologData.map((row) => (
+                <TableRow
+                  key={row.id}
+                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                >
+                  <TableCell><Link href={`${api.OLOG_URL}?id=${row.id}`} target="_blank" underline="always">{new Date(row.created*1000).toLocaleString()}</Link></TableCell>
+                  <TableCell>{row.category}</TableCell>
+                  <TableCell>{row.level}</TableCell>
+                  <TableCell><strong><u>{row.subject}</u></strong> <br /> <div dangerouslySetInnerHTML={{__html: htmlDecode(row.details)}} /></TableCell>
+                  <TableCell> {row.author}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </div>
     );
   }
 }
