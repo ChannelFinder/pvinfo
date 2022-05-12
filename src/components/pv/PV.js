@@ -72,7 +72,9 @@ function PV() {
     return (
       <Fragment>
         <Typography variant="h2">{id}</Typography>
-        <Button style={{marginTop: 10, marginBottom: 10}} target="_blank" href={pvHTMLString} variant="contained" color="secondary" endIcon={<TimelineIcon />} >Plot This PV</Button>
+        {
+          process.env.REACT_APP_USE_AA === "true" ? <Button style={{marginTop: 10, marginBottom: 10}} target="_blank" href={pvHTMLString} variant="contained" color="secondary" endIcon={<TimelineIcon />} >Plot This PV</Button> : <div></div>
+        }
         <br />
         {
           process.env.REACT_APP_USE_PVWS === "true" ? <FormControlLabel control={<Checkbox color="primary" checked={pvMonitoring} onChange={handlePVMonitoringChangle}></Checkbox>} label="Enable Live PV Monitoring" /> : <div></div>
