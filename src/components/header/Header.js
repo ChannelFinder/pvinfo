@@ -4,11 +4,9 @@ import { NavLink } from 'react-router-dom';
 import { AppBar, Toolbar, Typography, Grid, Drawer, Hidden, Divider } from '@mui/material';
 import { List, ListItem, ListItemText } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
-import InputBase from '@mui/material/InputBase';
 import { alpha } from '@mui/material/styles';
 import makeStyles from '@mui/styles/makeStyles';
 import MenuIcon from '@mui/icons-material/Menu';
-import SearchIcon from '@mui/icons-material/Search';
 import logoBanner from "../../assets/mobile-menu-logo.png";
 
 
@@ -117,19 +115,6 @@ function Header () {
           <NavLink to="/help" style={{textDecoration: "none", color: 'inherit', paddingRight: 40 }}>
             <Typography variant="h5">Help</Typography>
           </NavLink>
-          {/* <div className={classes.search}>
-            <div className={classes.searchIcon}>
-              <SearchIcon />
-            </div>
-            <InputBase
-              placeholder="Search pv…"
-              classes={{
-                root: classes.inputRoot,
-                input: classes.inputInput,
-              }}
-              inputProps={{ 'aria-label': 'search' }}
-            />
-          </div> */}
         </Hidden>
         </Toolbar>
       </AppBar>

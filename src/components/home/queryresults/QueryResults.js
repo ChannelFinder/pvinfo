@@ -1,5 +1,5 @@
-import React, { Fragment, useEffect, useState, useCallback, useRef } from 'react';
-import useWebSocket, { ReadyState } from 'react-use-websocket';
+import React, { Fragment, useEffect, useState } from 'react';
+import useWebSocket from 'react-use-websocket';
 import { Grid, Typography, Checkbox, Link, IconButton, Tooltip } from '@mui/material';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import { useNavigate, Link as RouterLink } from "react-router-dom";
@@ -23,8 +23,7 @@ function QueryResults(props) {
     const [pvUnits, setPVUnits] = useState({});
 
     const socketUrl = api.PVWS_URL;
-    const { sendJsonMessage, lastJsonMessage, 
-            readyState, getWebSocket } = useWebSocket(socketUrl, {
+    const { sendJsonMessage, lastJsonMessage } = useWebSocket(socketUrl, {
                 shouldReconnect: (closeEvent) => true,
             });
 
@@ -53,6 +52,7 @@ function QueryResults(props) {
         }
       }, [lastJsonMessage]);
     
+    /*
     const connectionStatus = {
         [ReadyState.CONNECTING]: 'Connecting',
         [ReadyState.OPEN]: 'Open',
@@ -60,6 +60,7 @@ function QueryResults(props) {
         [ReadyState.CLOSED]: 'Closed',
         [ReadyState.UNINSTANTIATED]: 'Uninstantiated',
     }[readyState];
+    */
 
     const handleRowDoubleClick = (e) => {
         navigate(`/pv/${e.row.name}`);
