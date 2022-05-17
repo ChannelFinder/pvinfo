@@ -5,12 +5,12 @@ import { AppBar, Toolbar, Typography, Grid, Drawer, Hidden, Divider } from '@mui
 import { List, ListItem, ListItemText } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import { alpha } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import MenuIcon from '@mui/icons-material/Menu';
 import logoBanner from "../../assets/mobile-menu-logo.png";
 
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   root: {
     flexGrow: 1,
     display: 'flex'
@@ -62,7 +62,7 @@ const useStyles = makeStyles((theme) => ({
 
 
 function Header () {
-  const classes = useStyles();
+  const { classes } = useStyles();
 
   const [drawerOpen, setDrawerOpen] = useState(false);
 
