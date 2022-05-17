@@ -1,6 +1,6 @@
-import React, { Fragment, useState, useEffect } from "react";
-import { Button, Typography, Table, TableCell, TableBody, TableHead, TableRow, TableContainer, Grid, Hidden, Link } from "@mui/material";
-import useWebSocket, { ReadyState } from 'react-use-websocket';
+import React, { useState, useEffect } from "react";
+import { Typography, TableCell, TableBody, TableRow } from "@mui/material";
+import useWebSocket from 'react-use-websocket';
 import api from "../../../api";
 import PropTypes from "prop-types";
 
@@ -23,8 +23,7 @@ function ValueTable(props) {
 
 
   const socketUrl = api.PVWS_URL;
-  const { sendJsonMessage, lastJsonMessage, 
-          readyState, getWebSocket } = useWebSocket(socketUrl, {
+  const { sendJsonMessage, lastJsonMessage } = useWebSocket(socketUrl, {
             onClose: () => {
               setPVValue(null);
               setPVSeverity(null);
@@ -51,7 +50,7 @@ function ValueTable(props) {
       setPVPrecision(null);
       setPVUnits(null);
     }
-  }, [props.pvMonitoring]);
+  }, [props.pvMonitoring, props.isLoading, props.pvData, props.pvName, sendJsonMessage]);
 
   useEffect(() => {
     if (lastJsonMessage !== null) {
@@ -127,4 +126,5 @@ function ValueTable(props) {
   }
 }
 
+ValueTable.propTypes = propTypes;
 export default ValueTable;

@@ -1,10 +1,10 @@
 import React, { Fragment, useEffect, useState } from 'react';
-import { Grid, Link, Button, TextField, MenuItem, Tooltip, Typography } from '@mui/material';
+import { Grid, Button, TextField, MenuItem, Tooltip, Typography } from '@mui/material';
 import QueryResults from "./queryresults";
 import api from "../../api";
 import SearchIcon from '@mui/icons-material/Search';
 import Autocomplete from '@mui/material/Autocomplete';
-import { useSearchParams, Link as RouterLink } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import ClearIcon from '@mui/icons-material/Clear';
 
 const pvStatusOptions = [
@@ -25,6 +25,8 @@ const pvStatusOptions = [
 const pvRecordTypes = ['ao', 'ai', 'bo', 'bi', 'mbbo', 'mbbi', 'longout', 'longin', 'stringout', 'stringin',
     'calc', 'calcout', 'motor', 'seq', 'waveform', 'mbbiDirect', 'mbboDirect', 'sub', 'aSub', 
     'compress', 'dfanout', 'fanout', 'subArray']
+
+
 
 function Home() {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -78,18 +80,6 @@ function Home() {
         })
     }
 
-    const clearForm = () => {
-        setPVName("");
-        setRecordDesc("");
-        setHostName("");
-        setIOCName("");
-        setPVStatus("*");
-        setRecordType("");
-        setAliasOf("");
-        // https://stackoverflow.com/a/59845474
-        setRecordTypeAutocompleteKey(recordTypeAutocompleteKey-1);
-    }
-
     useEffect(() => {
         // If there are search parameters in the URL, query channel finder and show the PV data
         if(searchParams.has("pvName") || searchParams.has("recordDesc") || searchParams.has("iocName") || searchParams.has("hostName") || 
@@ -106,9 +96,18 @@ function Home() {
             queryPVs(params);
         }
         else {
-            clearForm();
+            setPVName("");
+            setRecordDesc("");
+            setHostName("");
+            setIOCName("");
+            setPVStatus("*");
+            setRecordType("");
+            setAliasOf("");
+            // https://stackoverflow.com/a/59845474
+            setRecordTypeAutocompleteKey(recordTypeAutocompleteKey-1);
             setCFData(null);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [searchParams]);
 
     const handleSubmit = (e) => {
@@ -140,7 +139,15 @@ function Home() {
     }
     const handleClear = (e) => {
         e.preventDefault();
-        clearForm();
+        setPVName("");
+        setRecordDesc("");
+        setHostName("");
+        setIOCName("");
+        setPVStatus("*");
+        setRecordType("");
+        setAliasOf("");
+        // https://stackoverflow.com/a/59845474
+        setRecordTypeAutocompleteKey(recordTypeAutocompleteKey-1);
     }
        
     return (

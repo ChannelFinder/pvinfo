@@ -1,6 +1,5 @@
-import React, { Fragment, useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
-import { Button, Typography, Table, TableCell, TableBody, TableHead, TableRow, TableContainer, Grid, Hidden, Link } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import { Typography, Table, TableCell, TableBody, TableHead, TableRow, TableContainer, Link } from "@mui/material";
 import api from "../../../api";
 import PropTypes from "prop-types";
 
@@ -29,7 +28,7 @@ function OLOGTable(props) {
         console.log(err);
         console.log("error in fetch of experiments");
     })
-  }, []);
+  }, [props.pvName]);
 
   // https://stackoverflow.com/a/54185014
   const htmlDecode = (content) => {
@@ -84,4 +83,5 @@ function OLOGTable(props) {
   }
 }
 
+OLOGTable.propTypes = propTypes;
 export default OLOGTable;

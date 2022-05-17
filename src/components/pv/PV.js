@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useEffect, useRef } from "react";
+import React, { Fragment, useState, useEffect } from "react";
 import { useParams, Link as RouterLink } from "react-router-dom";
 import { Button, Link, Typography, Table, TableCell, TableRow, TableContainer, TableBody, Checkbox, FormControlLabel } from "@mui/material";
 import TimelineIcon from '@mui/icons-material/Timeline';
@@ -33,7 +33,7 @@ function PV() {
           console.log("error in fetch of experiments");
 	  setCFPVData(null);
       })
-    }, []);
+    }, [id]);
 
     // transform PV data from CF into JS object. This should be moved to api.js!
     useEffect(() => {
