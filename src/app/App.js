@@ -1,6 +1,6 @@
 import './App.css';
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import { Grid } from '@material-ui/core';
+import { Grid } from '@mui/material';
 
 import Home from '../components/home';
 import PV from '../components/pv';
