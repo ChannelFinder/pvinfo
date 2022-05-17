@@ -21,7 +21,6 @@ function ValueTable(props) {
   const [pvMax, setPVMax] = useState(null);
   const [alarmColor, setAlarmColor] = useState("");
 
-
   const socketUrl = api.PVWS_URL;
   const { sendJsonMessage, lastJsonMessage } = useWebSocket(socketUrl, {
             onClose: () => {

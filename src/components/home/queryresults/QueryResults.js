@@ -183,17 +183,27 @@ function QueryResults(props) {
         }
     }
 
-    const columns = [
-        { field: "name", headerName: 'PV Name', flex: 15, minWidth: 175, maxWidth: 300, renderCell: renderPVNameLink },
-        { field: "recordDesc", headerName: 'Description', flex: 18, minWidth: 175, maxWidth: 300 },
+    let columns = [
+        { field: "name", headerName: 'PV Name', flex: 15, minWidth: 175, maxWidth: 300, renderCell: renderPVNameLink }
+    ]
+    if (process.env.REACT_APP_CF_RECORD_DESC === "true") {
+        columns.push({ field: "recordDesc", headerName: 'Description', flex: 18, minWidth: 175, maxWidth: 300 })
+    }
+    columns.push(
         { field: "hostName", headerName: 'Host', flex: 8.5, minWidth: 125, maxWidth: 170 },
         { field: "iocName", headerName: 'IOC', flex: 8.5, minWidth: 125, maxWidth: 170, renderCell: renderIOCLink },
-        { field: "pvStatus", headerName: 'Status', flex: 7.5, minWidth: 125, maxWidth: 170 },
-        { field: "recordType", headerName: 'Type', flex: 7.5, minWidth: 125, maxWidth: 170 },
-        { field: "alias", headerName: 'Alias Of', flex: 10.5, minWidth: 175, maxWidth: 300, renderCell: renderAliasLink },
-        { field: "value", headerName: 'Value', flex: 7.5, minWidth: 120, maxWidth: 140, renderCell: renderValue },
-        { field: "button", headerName: 'Actions', flex: 9.5, minWidth: 160, maxWidth: 200, disableClickEventBubbling: true, renderCell: renderButtons }
-    ]
+        { field: "pvStatus", headerName: 'Status', flex: 7.5, minWidth: 125, maxWidth: 170 }
+    )
+    if (process.env.REACT_APP_CF_RECORD_TYPE === "true") {
+        columns.push({ field: "recordType", headerName: 'Type', flex: 7.5, minWidth: 125, maxWidth: 170 })
+    }
+    if (process.env.REACT_APP_CF_ALIAS === "true") {
+        columns.push({ field: "alias", headerName: 'Alias Of', flex: 10.5, minWidth: 175, maxWidth: 300, renderCell: renderAliasLink })
+    }
+    if (process.env.REACT_APP_USE_PVWS === "true") {
+        columns.push({ field: "value", headerName: 'Value', flex: 7.5, minWidth: 120, maxWidth: 140, renderCell: renderValue })
+    }
+    columns.push({ field: "button", headerName: 'Actions', flex: 9.5, minWidth: 160, maxWidth: 200, disableClickEventBubbling: true, renderCell: renderButtons })
 
     useEffect(() => {
         if ( props.cfData === null) {

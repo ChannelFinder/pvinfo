@@ -84,18 +84,20 @@ async function queryChannelFinder(params) {
 
     let requestURI = `${channelFinderURL}?~name=${pvName}&hostName${hostName}&iocName${iocName}&pvStatus${pvStatus}&recordType${recordType}`;
     
-    if ("recordDesc" in params && params.recordDesc !== "") {
-        if(params.recordDesc.charAt(0) === "=") {
-            requestURI = requestURI + `&recordDesc${params.recordDesc}`;
-        }
-        else if(params.recordDesc.charAt(0) === "!") {
-            requestURI = requestURI + `&recordDesc!=${params.recordDesc.substring(1)}`;
-        }
-        else if (params.recordDesc.charAt(0) !== "*" && params.recordDesc.charAt(params.recordDesc.length - 1) !== "*") {
-            requestURI = requestURI + `&recordDesc=*${params.recordDesc}*`;
-        }
-        else {
-            requestURI = requestURI + `&recordDesc=${params.recordDesc}`;
+    if(process.env.REACT_APP_CF_RECORD_DESC === "true") {
+        if ("recordDesc" in params && params.recordDesc !== "") {
+            if(params.recordDesc.charAt(0) === "=") {
+                requestURI = requestURI + `&recordDesc${params.recordDesc}`;
+            }
+            else if(params.recordDesc.charAt(0) === "!") {
+                requestURI = requestURI + `&recordDesc!=${params.recordDesc.substring(1)}`;
+            }
+            else if (params.recordDesc.charAt(0) !== "*" && params.recordDesc.charAt(params.recordDesc.length - 1) !== "*") {
+                requestURI = requestURI + `&recordDesc=*${params.recordDesc}*`;
+            }
+            else {
+                requestURI = requestURI + `&recordDesc=${params.recordDesc}`;
+            }
         }
     }
     if ("alias" in params && params.alias !== "") {
@@ -148,6 +150,7 @@ async function queryOLOG(pvName) {
         return;
     }
 
+    // this needs to be updated to the elastic search OLOG
     let requestURI = encodeURI(`${ologURL}/olog-endpoint.js?op=retrieve&start=0&format=json&q=${pvName}`);
     await fetch(requestURI)
     .then(response => {
