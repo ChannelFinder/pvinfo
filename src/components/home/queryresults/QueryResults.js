@@ -25,7 +25,7 @@ function QueryResults(props) {
     const socketUrl = api.PVWS_URL;
     const { sendJsonMessage, lastJsonMessage } = useWebSocket(socketUrl, {
                 shouldReconnect: (closeEvent) => true,
-            });
+    });
 
     useEffect(() => {
         if (lastJsonMessage !== null) {

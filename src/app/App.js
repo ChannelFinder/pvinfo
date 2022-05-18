@@ -7,7 +7,6 @@ import PV from '../components/pv';
 import IOC from '../components/ioc';
 import Header from '../components/header';
 import Help from '../components/help';
-import Status from '../components/status';
 import Page404 from '../Page404';
 
 function App() {
@@ -23,14 +22,10 @@ function App() {
             <Route path="/pv/:id" exact={true} element={<PV />} />
             <Route path="/ioc" exact={true} element={<IOC />} />
             <Route path="/help" exact={true} element={<Help />} />
-            <Route path="/status" exact={true} element={<Status />} />
             <Route path="/" exact={true} element={<Home />} />
           </Routes>
         </main>
       </Grid>
-      {/* <Grid container justifyContent="space-around" spacing={0} style={{flexGrow: 1, display: "flex"}}>
-        <Footer />
-      </Grid> */}
     </Router>
   );
 }

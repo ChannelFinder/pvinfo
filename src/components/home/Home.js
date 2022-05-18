@@ -83,11 +83,12 @@ function Home() {
     useEffect(() => {
         // If there are search parameters in the URL, query channel finder and show the PV data
         if(searchParams.has("pvName") || searchParams.has("recordDesc") || searchParams.has("iocName") || searchParams.has("hostName") || 
-                searchParams.has("pvStatus") || searchParams.has("alias")) {
+                searchParams.has("pvStatus") || searchParams.has("alias") || searchParams.has("recordType")) {
             let params = {}
             searchParams.forEach((val, key) => {if(val !== "") {params[key] = val} });
             setPVName(searchParams.get("pvName") || "");
             setRecordDesc(searchParams.get("recordDesc") || "");
+            setRecordDesc(searchParams.get("recordType") || "");
             setIOCName(searchParams.get("iocName") || "");
             setHostName(searchParams.get("hostName") || "");
             setPVStatus(searchParams.has("pvStatus") ? searchParams.get("pvStatus") : "*");
@@ -115,9 +116,6 @@ function Home() {
         setIsLoading(true);
         let params = {}
         if(e.target.pvName.value) {params[e.target.pvName.name] = e.target.pvName.value;}
-        if(process.env.REACT_APP_CF_RECORD_DESC === "true") {
-            if(e.target.recordDesc.value) {params[e.target.recordDesc.name] = e.target.recordDesc.value;}
-        }
         if(e.target.hostName.value) {params[e.target.hostName.name] = e.target.hostName.value;}
         if(e.target.iocName.value) {params[e.target.iocName.name] = e.target.iocName.value;}
         if(e.target.pvStatus.value !== "*") {params[e.target.pvStatus.name] = e.target.pvStatus.value;}
@@ -126,6 +124,9 @@ function Home() {
         }
         if(process.env.REACT_APP_CF_ALIAS === "true") {
             if(e.target.alias.value) {params[e.target.alias.name] = e.target.alias.value;}
+        }
+        if(process.env.REACT_APP_CF_RECORD_DESC === "true") {
+            if(e.target.recordDesc.value) {params[e.target.recordDesc.name] = e.target.recordDesc.value;}
         }
         api.CF_QUERY(params)
             .then((data) => {

@@ -1,5 +1,7 @@
 # PV Info
 
+Still WIP to get the configuration ready and have the web app look correctly for each type of config.
+
 Web interface for using EPICS Channel Finder database. Integrates with PV Web Socket (PVWS), Archiver Appliance web viewing, and OLOG.
 
 ## Required Packages
@@ -8,6 +10,12 @@ Web interface for using EPICS Channel Finder database. Integrates with PV Web So
 	- Test with: 
 		- ```node -v```
 		- ```npm -v```
+
+## Initial Setup
+
+- Update src/theme.js with the colors and fonts you want
+- Place your own logos in src/assets
+- 
 
 ## Useful Scripts
 

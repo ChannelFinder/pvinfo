@@ -65,25 +65,28 @@ async function queryChannelFinder(params) {
             pvStatus = `=${params.pvStatus}`;
         }
     }
-    let recordType = "=*";
-    if ("recordType" in params && params.recordType !== "") {
-        if(params.recordType.charAt(0) === "=") {
-            recordType = params.recordType;
-        }
-        else if(params.recordType.charAt(0) === "!") {
-            recordType = `!=*${params.recordType.substring(1)}*`;
-        }
-        // don't assume wildcard on dropdowns
-        // else if (params.recordType.charAt(0) !== "*" && params.recordType.charAt(params.recordType.length - 1) !== "*") {
-        //     recordType = `=*${params.recordType}*`;
-        // }
-        else {
-            recordType = `=${params.recordType}`;
-        }
-    }
 
-    let requestURI = `${channelFinderURL}?~name=${pvName}&hostName${hostName}&iocName${iocName}&pvStatus${pvStatus}&recordType${recordType}`;
-    
+    let requestURI = `${channelFinderURL}?~name=${pvName}&hostName${hostName}&iocName${iocName}&pvStatus${pvStatus}`;
+
+    if(process.env.REACT_APP_CF_RECORD_TYPE === "true") {
+        let recordType = "=*";
+        if ("recordType" in params && params.recordType !== "") {
+            if(params.recordType.charAt(0) === "=") {
+                recordType = params.recordType;
+            }
+            else if(params.recordType.charAt(0) === "!") {
+                recordType = `!=*${params.recordType.substring(1)}*`;
+            }
+            // don't assume wildcard on dropdowns
+            // else if (params.recordType.charAt(0) !== "*" && params.recordType.charAt(params.recordType.length - 1) !== "*") {
+            //     recordType = `=*${params.recordType}*`;
+            // }
+            else {
+                recordType = `=${params.recordType}`;
+            }
+        }
+        requestURI = requestURI + `&recordType${recordType}`;
+    }
     if(process.env.REACT_APP_CF_RECORD_DESC === "true") {
         if ("recordDesc" in params && params.recordDesc !== "") {
             if(params.recordDesc.charAt(0) === "=") {
@@ -100,18 +103,20 @@ async function queryChannelFinder(params) {
             }
         }
     }
-    if ("alias" in params && params.alias !== "") {
-        if(params.alias.charAt(0) === "=") {
-            requestURI = requestURI + `&alias${params.alias}`;
-        }
-        else if(params.alias.charAt(0) === "!") {
-            requestURI = requestURI + `&alias!=${params.alias.substring(1)}`;
-        }
-        else if (params.alias.charAt(0) !== "*" && params.alias.charAt(params.alias.length - 1) !== "*") {
-            requestURI = requestURI + `&alias=*${params.alias}*`;
-        }
-        else {
-            requestURI = requestURI + `&alias=${params.alias}`;
+    if(process.env.REACT_APP_CF_ALIAS === "true") {
+        if ("alias" in params && params.alias !== "") {
+            if(params.alias.charAt(0) === "=") {
+                requestURI = requestURI + `&alias${params.alias}`;
+            }
+            else if(params.alias.charAt(0) === "!") {
+                requestURI = requestURI + `&alias!=${params.alias.substring(1)}`;
+            }
+            else if (params.alias.charAt(0) !== "*" && params.alias.charAt(params.alias.length - 1) !== "*") {
+                requestURI = requestURI + `&alias=*${params.alias}*`;
+            }
+            else {
+                requestURI = requestURI + `&alias=${params.alias}`;
+            }
         }
     }
     let options = {}
@@ -186,7 +191,6 @@ const aaPolicies = [
     {"policy": "MediumControlled",   "method": "Monitor", "period": "10",  "ltsreduce": "60 Seconds",  "control": "Archiver:Enable"},
     {"policy": "SlowControlled",     "method": "Scan",    "period": "60",  "ltsreduce": "180 Seconds", "control": "Archiver:Enable"},
     {"policy": "VerySlowControlled", "method": "Scan",    "period": "900", "ltsreduce": "None",        "control": "Archiver:Enable"},
-
 ]
 
 const api = {
