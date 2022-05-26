@@ -104,12 +104,12 @@ function PV() {
               <TableRow>
                 <TableCell variant="head">IOC IP Address</TableCell>
                 <TableCell variant="body">{pvData.iocid}</TableCell>
+                <TableCell variant="head">Sync to Recceiver</TableCell>
+                <TableCell variant="body">{new Date(pvData.time).toLocaleString()}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell variant="head">PV Status</TableCell>
                 <TableCell variant="body">{pvData.pvStatus}</TableCell>
-                <TableCell variant="head">Sync to Recceiver</TableCell>
-                <TableCell variant="body">{new Date(pvData.time).toLocaleString()}</TableCell>
               </TableRow>
             </TableBody>
             {

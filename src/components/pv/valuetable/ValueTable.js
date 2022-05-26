@@ -19,6 +19,11 @@ function ValueTable(props) {
   const [pvPrecision, setPVPrecision] = useState(null);
   const [pvMin, setPVMin] = useState(null);
   const [pvMax, setPVMax] = useState(null);
+  const [pvAlarmLow, setPVAlarmLow] = useState(null);
+  const [pvAlarmHigh, setPVAlarmHigh] = useState(null);
+  const [pvWarnLow, setPVWarnLow] = useState(null);
+  const [pvWarnHigh, setPVWarnHigh] = useState(null);
+  const [pvTimestamp, setPVTimestamp] = useState(null);
   const [alarmColor, setAlarmColor] = useState("");
 
   const socketUrl = api.PVWS_URL;
@@ -28,7 +33,12 @@ function ValueTable(props) {
               setPVSeverity(null);
               setPVMin(null);
               setPVMax(null);
+              setPVAlarmLow(null);
+              setPVAlarmHigh(null);
+              setPVWarnLow(null);
+              setPVWarnHigh(null);
               setPVPrecision(null);
+              setPVTimestamp(null);
               setPVUnits(null);
             },
             shouldReconnect: (closeEvent) => true,
@@ -46,7 +56,12 @@ function ValueTable(props) {
       setPVSeverity(null);
       setPVMin(null);
       setPVMax(null);
+      setPVAlarmLow(null);
+      setPVAlarmHigh(null);
+      setPVWarnLow(null);
+      setPVWarnHigh(null);
       setPVPrecision(null);
+      setPVTimestamp(null);
       setPVUnits(null);
     }
   }, [props.pvMonitoring, props.isLoading, props.pvData, props.pvName, sendJsonMessage]);
@@ -66,15 +81,46 @@ function ValueTable(props) {
             if ("max" in message) {
               setPVMax(message.max);
             }
+            if ("alarm_low" in message) {
+              setPVAlarmLow(message.alarm_low);
+            }
+            if ("alarm_high" in message) {
+              setPVAlarmHigh(message.alarm_high);
+            }
+            if ("warn_low" in message) {
+              setPVWarnLow(message.warn_low);
+            }
+            if ("warn_high" in message) {
+              setPVWarnHigh(message.warn_high);
+            }
             if ("precision" in message) {
               setPVPrecision(message.precision);
+            }
+            if ("seconds" in message) {
+              let timestamp = "";
+              if ("nanos" in message) {
+                timestamp = new Date(message.seconds*1000 + (message.nanos*1e-6)).toISOString();
+              }
+              else {
+                timestamp = new Date(message.seconds*1000).toISOString();
+              }
+              setPVTimestamp(timestamp);
+            }
+            else {
+              setPVTimestamp(null);
             }
             if ("severity" in message) {
               if (message.severity === "NONE") {
                 setAlarmColor("green");
               }
-              else if (message.severity === "INVALID" || message.severity === "UNDEFINED" || message.severity === "MAJOR") {
-                setAlarmColor("red");
+              else if (message.severity === "INVALID") {
+                setAlarmColor("#FF00FF");
+              }
+              else if (message.severity === "UNDEFINED") {
+                setAlarmColor("#C800C8");
+              }
+              else if (message.severity === "MAJOR") {
+                setAlarmColor("#FF9900");
               }
               else if (message.severity === "MINOR") {
                 setAlarmColor("#FF9900");
@@ -105,20 +151,36 @@ function ValueTable(props) {
         <TableRow>
           <TableCell variant="head">Value</TableCell>
           <TableCell style={{color: alarmColor}} variant="body">{pvValue}</TableCell>
-          <TableCell variant="head">Units</TableCell>
-          <TableCell variant="body">{pvUnits}</TableCell>
+          <TableCell variant="head">PV Timestamp</TableCell>
+          <TableCell style={{color: alarmColor}} variant="body">{pvTimestamp}</TableCell>
         </TableRow>
         <TableRow>
           <TableCell variant="head">Alarm State</TableCell>
           <TableCell style={{color: alarmColor}} variant="body">{pvSeverity}</TableCell>
-          <TableCell variant="head">Precision</TableCell>
-          <TableCell variant="body">{pvPrecision}</TableCell>
+          <TableCell variant="head">Units</TableCell>
+          <TableCell variant="body">{pvUnits}</TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell variant="head">Alarm Low Value</TableCell>
+          <TableCell variant="body">{pvAlarmLow}</TableCell>
+          <TableCell variant="head">Alarm High Value</TableCell>
+          <TableCell variant="body">{pvAlarmHigh}</TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell variant="head">Warn Low Value</TableCell>
+          <TableCell variant="body">{pvWarnLow}</TableCell>
+          <TableCell variant="head">Warn High Value</TableCell>
+          <TableCell variant="body">{pvWarnHigh}</TableCell>
         </TableRow>
         <TableRow>
           <TableCell variant="head">Lower Limit</TableCell>
           <TableCell variant="body">{pvMin}</TableCell>
           <TableCell variant="head">Upper Limit</TableCell>
           <TableCell variant="body">{pvMax}</TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell variant="head">Precision</TableCell>
+          <TableCell variant="body">{pvPrecision}</TableCell>
         </TableRow>
       </TableBody>
     );

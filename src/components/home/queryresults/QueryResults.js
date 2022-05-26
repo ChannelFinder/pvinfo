@@ -155,16 +155,20 @@ function QueryResults(props) {
     const renderValue = (params) => {
         let textColor = "black";
         if (params.row.name in pvSeverities) {
-            if (pvSeverities[params.row.name] === "INVALID" || pvSeverities[params.row.name] === "UNDEFINED") {
+            if (pvSeverities[params.row.name] === "INVALID") {
                 return (
-                    <div style={{color: "red"}}>{pvSeverities[params.row.name]}</div>
+                    <div style={{color: "#FF00FF"}}>{pvValues[params.row.name]} ({pvSeverities[params.row.name]})</div>
+                );
+            }
+            else if (pvSeverities[params.row.name] === "UNDEFINED") {
+                return (
+                    <div style={{color: "#C800C8"}}>{pvSeverities[params.row.name]}</div>
                 );
             }
             else if (pvSeverities[params.row.name] === "NONE") {
                 textColor = "green";
             }
             else if (pvSeverities[params.row.name] === "MINOR") {
-                //textColor = "#D6CA1A";
                 textColor = "#FF9900";
             }
             else if (pvSeverities[params.row.name] === "MAJOR") {
@@ -206,7 +210,7 @@ function QueryResults(props) {
     columns.push({ field: "button", headerName: 'Actions', flex: 9.5, minWidth: 160, maxWidth: 200, disableClickEventBubbling: true, renderCell: renderButtons })
 
     useEffect(() => {
-        if ( props.cfData === null) {
+        if ( props.cfData === null || props.cfData === {} || Object.keys(props.cfData).length === 0) {
             return;
         }
         setPVs(props.cfData.map((pv, index) => {
