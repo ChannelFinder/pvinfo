@@ -17,10 +17,12 @@
     "react-dom": "^18.1.0",
     "react-router": "^6.3.0",
     "react-router-dom": "^6.3.0",
-    "react-scripts": "^5.0.0",
     "react-use-websocket": "^4.0.0",
     "tss-react": "^3.6.2",
     "web-vitals": "^2.1.4"
+  },
+  "devDependencies": {
+    "react-scripts": "^5.0.0"
   },
   "scripts": {
     "start": "react-scripts start",
