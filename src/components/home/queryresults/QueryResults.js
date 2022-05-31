@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect, useState } from 'react';
 import useWebSocket from 'react-use-websocket';
-import { Grid, Typography, Checkbox, Link, IconButton, Tooltip } from '@mui/material';
+import { Grid, Typography, Checkbox, Link, IconButton, Tooltip, Hidden } from '@mui/material';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import { useNavigate, Link as RouterLink } from "react-router-dom";
 import TimelineIcon from '@mui/icons-material/Timeline';
@@ -229,26 +229,32 @@ function QueryResults(props) {
         return (
             <Fragment>
                 <Typography variant="h6">Data Loading...</Typography>
-                <Grid container justifyContent="center" >
-                    <img src={bannerLogo} style={{position: "absolute", "marginBottom": "20px", "bottom": 0, width:"25%"}} alt="Banner Logo" />
-                </Grid>
+                <Hidden mdDown >
+                    <Grid container justifyContent="center" >
+                        <img src={bannerLogo} style={{position: "absolute", "marginBottom": "20px", "bottom": 0, width:"25%"}} alt="Banner Logo" />
+                    </Grid>
+                </Hidden>
             </Fragment>
         );
     }
     else if (props.cfData === null) {
         return (
-            <Grid container justifyContent="center" >
-                <img src={bannerLogo} style={{position: "absolute", "marginBottom": "20px", "bottom": 0, width:"25%"}} alt="Banner Logo" />
-            </Grid>
+            <Hidden mdDown >
+                <Grid container justifyContent="center" >
+                    <img src={bannerLogo} style={{position: "absolute", "marginBottom": "20px", "bottom": 0, width:"25%"}} alt="Banner Logo" />
+                </Grid>
+            </Hidden>
         );
     }
     else if (props.cfData.length === 0) {
         return (
             <Fragment>
                 <Typography>No PVs match your query</Typography>
-                <Grid container justifyContent="center" >
-                    <img src={bannerLogo} style={{position: "absolute", "marginBottom": "20px", "bottom": 0, width:"25%"}} alt="Banner Logo" />
-                </Grid>
+                <Hidden mdDown >
+                    <Grid container justifyContent="center" >
+                        <img src={bannerLogo} style={{position: "absolute", "marginBottom": "20px", "bottom": 0, width:"25%"}} alt="Banner Logo" />
+                    </Grid>
+                </Hidden>
             </Fragment>
         );
     }

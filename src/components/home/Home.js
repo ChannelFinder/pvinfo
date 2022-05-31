@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState } from 'react';
-import { Grid, Button, TextField, MenuItem, Tooltip, Typography } from '@mui/material';
+import { Grid, Box, Button, TextField, MenuItem, Tooltip, Typography } from '@mui/material';
 import QueryResults from "./queryresults";
 import api from "../../api";
 import SearchIcon from '@mui/icons-material/Search';
@@ -32,20 +32,21 @@ function Home() {
     const [searchParams, setSearchParams] = useSearchParams();
     const [cfData, setCFData] = useState(null); //array
     const [pvName, setPVName] = useState(searchParams.get("pvName") || "");
-    const [recordDesc, setRecordDesc] = useState(searchParams.get("recordDesc") || "");
-    const [aliasOf, setAliasOf] = useState(searchParams.get("alias") || "");
     const [hostName, setHostName] = useState(searchParams.get("hostName") || "");
     const [iocName, setIOCName] = useState(searchParams.get("iocName") || "");
     const [pvStatus, setPVStatus] = useState(searchParams.has("pvStatus") ? searchParams.get("pvStatus") : "*");
+    const [aliasOf, setAliasOf] = useState(searchParams.get("alias") || "");
     const [recordType, setRecordType] = useState(searchParams.get("recordType") || "");
     const [recordTypeAutocompleteKey, setRecordTypeAutocompleteKey] = useState(-1);
+    const [recordDesc, setRecordDesc] = useState(searchParams.get("recordDesc") || "");
+    const [extraPropAName, setExtraPropAName] = useState(process.env.REACT_APP_EXTRA_PROP === "" ? null : process.env.REACT_APP_EXTRA_PROP);
+    const [extraPropAValue, setExtraPropAValue] = useState(searchParams.get(extraPropAName) || "");
+    const [extraPropBName, setExtraPropBName] = useState(process.env.REACT_APP_SECOND_EXTRA_PROP === "" ? null : process.env.REACT_APP_SECOND_EXTRA_PROP);
+    const [extraPropBValue, setExtraPropBValue] = useState(searchParams.get(extraPropBName) || "");
     const [isLoading, setIsLoading] = useState(false);
     
     const handlePVNameChange = (e) => {
         setPVName(e.target.value);
-    };
-    const handleRecordDescChange = (e) => {
-        setRecordDesc(e.target.value);
     };
     const handleHostNameChange = (e) => {
         setHostName(e.target.value);
@@ -56,13 +57,21 @@ function Home() {
     const handlePVStatusChange = (e) => {
         setPVStatus(e.target.value);
     };
-    const handleRecordTypeChange = (e) => {
-        setRecordType(e.target.value);
-    };
     const handleAliasOfChange = (e) => {
         setAliasOf(e.target.value);
     };
-
+    const handleRecordTypeChange = (e) => {
+        setRecordType(e.target.value);
+    };
+    const handleRecordDescChange = (e) => {
+        setRecordDesc(e.target.value);
+    };
+    const handleExtraPropAChange = (e) => {
+        setExtraPropAValue(e.target.value);
+    };
+    const handleExtraPropBChange = (e) => {
+        setExtraPropBValue(e.target.value);
+    };
     const queryPVs = (parameters) => {
         api.CF_QUERY(parameters)
         .then((data) => {
@@ -79,11 +88,11 @@ function Home() {
             console.log("error in fetch of experiments");
         })
     }
-
     useEffect(() => {
         // If there are search parameters in the URL, query channel finder and show the PV data
-        if(searchParams.has("pvName") || searchParams.has("recordDesc") || searchParams.has("iocName") || searchParams.has("hostName") || 
-                searchParams.has("pvStatus") || searchParams.has("alias") || searchParams.has("recordType")) {
+        if(searchParams.has("pvName") || searchParams.has("recordDesc") || searchParams.has("iocName") ||
+           searchParams.has("hostName") || searchParams.has("pvStatus") || searchParams.has("alias") ||
+           searchParams.has("recordType") || searchParams.has(extraPropAName) || searchParams.has(extraPropBName)) {
             let params = {}
             searchParams.forEach((val, key) => {if(val !== "") {params[key] = val} });
             setPVName(searchParams.get("pvName") || "");
@@ -93,17 +102,21 @@ function Home() {
             setHostName(searchParams.get("hostName") || "");
             setPVStatus(searchParams.has("pvStatus") ? searchParams.get("pvStatus") : "*");
             setAliasOf(searchParams.get("alias") || "");
+            setExtraPropAValue(searchParams.get(extraPropAName) || "");
+            setExtraPropBValue(searchParams.get(extraPropBName) || "");
             setIsLoading(true);
             queryPVs(params);
         }
         else {
             setPVName("");
-            setRecordDesc("");
             setHostName("");
             setIOCName("");
             setPVStatus("*");
-            setRecordType("");
             setAliasOf("");
+            setRecordType("");
+            setRecordDesc("");
+            setExtraPropAValue("");
+            setExtraPropBValue("");
             // https://stackoverflow.com/a/59845474
             setRecordTypeAutocompleteKey(recordTypeAutocompleteKey-1);
             setCFData(null);
@@ -128,6 +141,12 @@ function Home() {
         if(process.env.REACT_APP_CF_RECORD_DESC === "true") {
             if(e.target.recordDesc.value) {params[e.target.recordDesc.name] = e.target.recordDesc.value;}
         }
+        if(extraPropAName !== null) {
+            if(e.target.extraPropA.value) {params[e.target.extraPropA.name] = e.target.extraPropA.value;}
+        }
+        if(extraPropBName !== null) {
+            if(e.target.extraPropB.value) {params[e.target.extraPropB.name] = e.target.extraPropB.value;}
+        }
         api.CF_QUERY(params)
             .then((data) => {
                 if (data !== null) {
@@ -147,22 +166,23 @@ function Home() {
     const handleClear = (e) => {
         e.preventDefault();
         setPVName("");
-        setRecordDesc("");
         setHostName("");
         setIOCName("");
         setPVStatus("*");
-        setRecordType("");
         setAliasOf("");
+        setRecordType("");
+        setRecordDesc("");
+        setExtraPropAValue("");
+        setExtraPropBValue("");
         // https://stackoverflow.com/a/59845474
         setRecordTypeAutocompleteKey(recordTypeAutocompleteKey-1);
     }
-
     const recordDescSearchRender = () => {
         if(process.env.REACT_APP_CF_RECORD_DESC === "true") {
             return (
                 <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
                     <TextField
-                        style={{width: "100%"}}
+                        sx={{display: "flex", flexGrow: 1, minWidth: 100, maxWidth: 350}}
                         id="recordDsec"
                         label="Description"
                         autoComplete="off"
@@ -180,28 +200,30 @@ function Home() {
     const recordTypeSearchRender = () => {
         if(process.env.REACT_APP_CF_RECORD_TYPE === "true") {
             return (
-                <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
-                    <Autocomplete
-                        freeSolo
-                        disableClearable
-                        style={{width: "50%"}}
-                        options={pvRecordTypes}
-                        key={recordTypeAutocompleteKey}
-                        value={recordType}
-                        renderInput={(params) => 
-                            <TextField 
-                                id="recordType"
-                                {...params}
-                                label="Record Type" 
-                                name="recordType"
-                                placeholder="Record Type"
-                                type="search"
-                                variant="outlined"
-                                onChange={handleRecordTypeChange}
-                            />
-                        }
-                    />
-                </Tooltip>
+                <Box sx={{display: "flex", minWidth: 120, maxWidth: 218}}>
+                    <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
+                        <Autocomplete
+                            freeSolo
+                            sx={{display: "flex", flexGrow: 1}}
+                            disableClearable
+                            options={pvRecordTypes}
+                            key={recordTypeAutocompleteKey}
+                            value={recordType}
+                            renderInput={(params) => 
+                                <TextField 
+                                    id="recordType"
+                                    {...params}
+                                    label="Record Type" 
+                                    name="recordType"
+                                    placeholder="Record Type"
+                                    type="search"
+                                    variant="outlined"
+                                    onChange={handleRecordTypeChange}
+                                />
+                            }
+                        />
+                    </Tooltip>
+                </Box>
             )
         }
     }
@@ -210,7 +232,7 @@ function Home() {
             return (
                 <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
                     <TextField
-                        style={{width: "70%"}}
+                        sx={{display: "flex", flexGrow: 1, minWidth: 70, maxWidth: 218}}
                         id="alias"
                         label="Alias Of"
                         autoComplete="off"
@@ -225,7 +247,47 @@ function Home() {
             )
         }
     }
-       
+    const extraPropARender = () => {
+        if(extraPropAName !== null) {
+            return (
+                <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
+                    <TextField
+                        sx={{display: "flex", flexGrow: 1, minWidth: 40, maxWidth: 150}}
+                        id="extraPropA"
+                        label={process.env.REACT_APP_EXTRA_PROP_LABEL}
+                        autoComplete="off"
+                        name="extraPropA"
+                        value={extraPropAValue}
+                        placeholder={process.env.REACT_APP_EXTRA_PROP_LABEL}
+                        type="search"
+                        variant="outlined"
+                        onChange={handleExtraPropAChange}
+                    />
+                </Tooltip>
+            )
+        }
+    }
+    const extraPropBRender = () => {
+        if(extraPropBName !== null) {
+            return (
+                <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
+                    <TextField
+                        sx={{display: "flex", flexGrow: 1, minWidth: 40, maxWidth: 150}}
+                        id="extraPropB"
+                        label={process.env.REACT_APP_SECOND_EXTRA_PROP_LABEL}
+                        autoComplete="off"
+                        name="extraPropB"
+                        value={extraPropBValue}
+                        placeholder={process.env.REACT_APP_SECOND_EXTRA_PROP_LABEL}
+                        type="search"
+                        variant="outlined"
+                        onChange={handleExtraPropBChange}
+                    />
+                </Tooltip>
+            )
+        }
+    }
+    
     return (
         <Fragment>
             <form onSubmit={handleSubmit}>
@@ -246,10 +308,10 @@ function Home() {
                     </Typography>
                 </Grid>
                 <Grid item container xs={12}>
-                    <Grid item xs={12} sm={12} md={6} lg={2} xl={2} style={{display: "flex"}}>
+                    <Box sx={{display: "flex", flexWrap: "wrap"}}>
                         <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />= at beginning for exactly equal</div>}>
                             <TextField
-                                style={{width: "100%"}}
+                                sx={{display: "flex", flexGrow: 1, minWidth: 100, maxWidth: 450}}
                                 id="pvName"
                                 label="PV Name"
                                 name="pvName"
@@ -261,14 +323,10 @@ function Home() {
                                 onChange={handlePVNameChange}
                             />
                         </Tooltip>
-                    </Grid>
-                    <Grid item xs={12} sm={12} md={6} lg={2} xl={2} style={{display: "flex"}}>
                         {recordDescSearchRender()}
-                    </Grid>
-                    <Grid item xs={12} sm={12} md={6} lg={2} xl={2} style={{display: "flex"}}>
                         <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
                             <TextField
-                                style={{width: "50%"}}
+                                sx={{display: "flex", flexGrow: 1, minWidth: 70, maxWidth: 100}}
                                 id="hostName"
                                 label="Host Name"
                                 autoComplete="off"
@@ -282,7 +340,7 @@ function Home() {
                         </Tooltip>
                         <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
                             <TextField
-                                style={{width: "50%"}}
+                                sx={{display: "flex", flexGrow: 1, minWidth: 70, maxWidth: 100}}
                                 id="iocName"
                                 label="IOC Name"
                                 autoComplete="off"
@@ -294,49 +352,50 @@ function Home() {
                                 onChange={handleIOCNameChange}
                             />
                         </Tooltip>
-                    </Grid>
-                    <Grid item xs={12} sm={12} md={6} lg={2} xl={2} style={{display: "flex"}}>
-                        <TextField
-                            style={{width: "50%"}}
-                            id="pvStatus"
-                            name="pvStatus"
-                            select
-                            value={pvStatus}
-                            onChange={handlePVStatusChange}
-                            label="Status"
-                            variant="outlined"
-                        >
-                            {pvStatusOptions.map((option) => (
-                                <MenuItem key={option.value} value={option.value}>
-                                    {option.label}
-                                </MenuItem>
-                            ))}
-                        </TextField>
+                        <Box sx={{display: "flex", flexGrow: 1, minWidth: 100, maxWidth: 250}}>
+                            <TextField
+                                sx={{display: "flex", flexGrow: 1}}
+                                id="pvStatus"
+                                name="pvStatus"
+                                select
+                                value={pvStatus}
+                                onChange={handlePVStatusChange}
+                                label="Status"
+                                variant="outlined"
+                            >
+                                {pvStatusOptions.map((option) => (
+                                    <MenuItem key={option.value} value={option.value} >
+                                        {option.label}
+                                    </MenuItem>
+                                ))}
+                            </TextField>
+                        </Box>
                         {recordTypeSearchRender()}
-
-                    </Grid>
-                    <Grid item xs={12} sm={12} md={6} lg={4} xl={4} style={{display: "flex"}}>
+                        {extraPropARender()}
+                        {extraPropBRender()}
                         {aliasOfSearchRender()}
                         <Tooltip arrow title="Search">
                             <Button
+                                sx={{display: "flex", flexGrow: 1, minWidth: 50, maxWidth: 80}}
                                 aria-label="search"
                                 variant="contained"
-	    			color="info"
+                                color="info"
                                 type="submit"
-                                style={{width: "15%"}}>
+                            >
                                 <SearchIcon style={{color: 'black'}} fontSize='large' />
                             </Button>
                         </Tooltip>
                         <Tooltip arrow title="Clear">
                             <Button aria-label="clear"
+                                sx={{display: "flex", flexGrow: 1, minWidth: 50, maxWidth: 80}}
                                 variant="contained"
                                 color="secondary"
-                                style={{width: "15%"}} 
-                                onClick={handleClear} >
+                                onClick={handleClear} 
+                            >
                                 <ClearIcon style={{color: 'black'}} fontSize='large' />
                             </Button>
                         </Tooltip>
-                    </Grid>
+                    </Box>
                 </Grid>
                 <Grid container item xs={12} style={{display: "flex"}}>
                     <QueryResults isLoading={isLoading} cfData={cfData} />
