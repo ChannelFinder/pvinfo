@@ -1,0 +1,12 @@
+/* for all screens, use 14px font size */
+.main-query-box {  
+    display: flex;
+    flex-wrap: nowrap;
+}
+/* responsive, form small screens, use 13px font size */
+@media (max-width: 1280px) {
+    .main-query-box {
+        display: flex;
+        flex-wrap: wrap;
+    }
+}

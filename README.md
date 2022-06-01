@@ -1,6 +1,6 @@
-# PV Info
+# WIP - PV Info
 
-Still WIP to get the configuration ready and have the web app look correctly for each type of config.
+*Still a work in progress*
 
 Web interface for using EPICS Channel Finder database. Integrates with PV Web Socket (PVWS), Archiver Appliance web viewing, and OLOG.
 
