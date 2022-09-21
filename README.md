@@ -1,6 +1,8 @@
-# WIP - PV Info
+# PV Info
 
-*Still a work in progress* Please report all bugs and give feedback!
+*Still a work in progress*
+
+Please report all bugs and give feedback!
 
 Web interface for using EPICS Channel Finder database. Integrates with PV Web Socket (PVWS), Archiver Appliance web viewing, and OLOG.
 
@@ -11,17 +13,11 @@ Web interface for using EPICS Channel Finder database. Integrates with PV Web So
 		- ```node -v```
 		- ```npm -v```
 
-## Initial Setup
+## Initial Setup and Running Locally
 
 ### `npm install`
 
 Installs the needed NPM modules into node_modules directory. Run this the first time you clone the repository.
-
-### Site specific settings
-
-- Update src/theme.js with the colors and fonts you want
-- Place your own logos in src/assets
-- Edit .env or create .env.local with your site specific settings
 
 ### `npm start`
 
@@ -30,6 +26,13 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
 The page will reload if you make edits.\
 You will also see any lint errors in the console.
+
+## Site specific settings
+
+- Update src/theme.js with the colors and fonts you want
+- Place your own logos in src/assets
+- Edit .env or create .env.local with your site specific settings
+
 
 ## Building Production Bundle
 
