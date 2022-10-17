@@ -153,14 +153,13 @@ async function queryChannelFinder(params) {
         }
     }
 
-
     let options = {}
     options = {method: 'GET'}
     if (process.env.NODE_ENV !== 'development') {
-        //options['credentials'] = 'include'
+        // credentials header would help if CF, AA, etc are behind a SSO
+        options['credentials'] = 'include';
     }
-    // credentials header would help if CF, AA, etc are behind a SSO
-    console.log(requestURI);
+
     await fetch(requestURI, options)
         .then(response => {
             if (response.ok) {

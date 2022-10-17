@@ -201,6 +201,12 @@ function QueryResults(props) {
     if (process.env.REACT_APP_CF_RECORD_TYPE === "true") {
         columns.push({ field: "recordType", headerName: 'Type', flex: 7.5, minWidth: 125, maxWidth: 170 })
     }
+    if (process.env.REACT_APP_EXTRA_PROP_SHOW_IN_RESULTS.toLowerCase() === "true" && process.env.REACT_APP_EXTRA_PROP !== "") {
+        columns.push({ field: process.env.REACT_APP_EXTRA_PROP, headerName: process.env.REACT_APP_EXTRA_PROP_LABEL, flex: 7.5, minWidth: 125, maxWidth: 170 })
+    }
+    if (process.env.REACT_APP_SECOND_EXTRA_PROP_SHOW_IN_RESULTS.toLowerCase() === "true" && process.env.REACT_APP_SECOND_EXTRA_PROP !== "") {
+        columns.push({ field: process.env.REACT_APP_SECOND_EXTRA_PROP, headerName: process.env.REACT_APP_SECOND_EXTRA_PROP_LABEL, flex: 7.5, minWidth: 125, maxWidth: 170 })
+    }
     if (process.env.REACT_APP_CF_ALIAS === "true") {
         columns.push({ field: "alias", headerName: 'Alias Of', flex: 10.5, minWidth: 175, maxWidth: 300, renderCell: renderAliasLink })
     }
