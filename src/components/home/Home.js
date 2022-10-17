@@ -300,14 +300,14 @@ function Home() {
                         align="center"
                         variant="h6"
                     >
-                        PV Info allows you to search and inspect PVs and their meta-data via the EPICS Channel Finder DB
+                        {process.env.REACT_APP_HOMEPAGE_HEADER}
                     </Typography>
                     <Typography 
                         style={{marginBottom: 20}}
                         align="center"
                         variant="subtitle1"
                     >
-                        There are integrations with Archiver Appliance, PV Web Socket, and OLOG API
+                        {process.env.REACT_APP_HOMEPAGE_SUBHEADER}
                     </Typography>
                 </Grid>
                 <Grid item container xs={12}>

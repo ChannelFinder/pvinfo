@@ -18,12 +18,10 @@ function Help() {
               <Typography variant='body1' paragraph={true}>
                 Process Variable (PV) is the name applied to the Real-Time Database Records that contain control system information. 
                 Like most Database records it has a set of fields. Unlike conventional database records, Process Variables are 'connected' to the 'real world', 
-                so they reflect or control values in the control system. For example, <Link component={RouterLink} to={"/pv/cmm:beam_current"} underline="always">cmm:beam_current </Link> 
-                reflects the present value of the beam current in the ALS 
-                Storage Ring.
+                so they reflect or control values in the control system. For example, here is a PV at our facility:  <Link component={RouterLink} to={"/pv/" + process.env.REACT_APP_HELP_EXAMPLE_PV} underline="always">{process.env.REACT_APP_HELP_EXAMPLE_PV}</Link> 
               </Typography>
               <Typography variant='body1' paragraph={true}>
-                The ALS Accelerator Control System is based on the Experimental Physics and Industrial Control System 
+                The Control System is based on the Experimental Physics and Industrial Control System 
                 (<Link href="https://epics-controls.org/">EPICS</Link>).
               </Typography>
 
@@ -68,8 +66,8 @@ function Help() {
                 </ul>
                 <li><strong>Host Name</strong></li>
                 <ul>
-                  <li>For most PVs, this is the hostname of the linux server where the IOC runs. Many IOCs can run on one linux server. ALS has a few hard IOCs, such as the fast feedback 
-                    crates or superbend IOCs. These often run VXWorks or RTEMS and this field will reflect the hostname of the hardware, often the same as the IOC name.
+                  <li>For most PVs, this is the hostname of the linux server where the IOC runs. Many IOCs can run on one linux server. For hard IOCs, the field will often reflect the hostname of the hardware, 
+                    often the same as the IOC name.
                   </li>
                 </ul>
                 <li><strong>IOC Name</strong></li>
@@ -82,7 +80,7 @@ function Help() {
                 <ul>
                   <li>
                     Current status of this PV. Either Active or Inactive. Inactive means the PV is not up and indicates a problem with the IOC. If the PV is inactive then the PV value monitor 
-                    checkbox will be disabled. Note, the ALS VXWorks IOCs cannot have the reccaster module compiled into their IOCs. So, the status field is always Active.
+                    checkbox will be disabled.
                   </li>
                 </ul>
                 <li><strong>Record Type</strong></li>
@@ -97,6 +95,26 @@ function Help() {
                     PVs can have alias names. You can click on the alias name to open the details page for the alias (will have the same information as the real PV name).
                   </li>
                 </ul>
+                {process.env.REACT_APP_EXTRA_PROP.length > 0 &&
+                  <div>
+                    <li><strong>{process.env.REACT_APP_EXTRA_PROP_LABEL}</strong></li>
+                    <ul>
+                      <li>
+                        {process.env.REACT_APP_EXTRA_PROP_HELP_TEXT}
+                      </li>
+                    </ul>
+                  </div>
+                }
+                {process.env.REACT_APP_SECOND_EXTRA_PROP.length > 0 &&
+                  <div>
+                    <li><strong>{process.env.REACT_APP_SECOND_EXTRA_PROP_LABEL}</strong></li>
+                    <ul>
+                      <li>
+                        {process.env.REACT_APP_SECOND_EXTRA_PROP_HELP_TEXT}
+                      </li>
+                    </ul>
+                  </div>
+                }
                 <li><strong>Value</strong></li>
                 <ul>
                   <li>
@@ -133,8 +151,8 @@ function Help() {
               
               <Typography variant='h6' style={{marginTop: 10, marginBottom: 10}}><strong>IOCs Page</strong></Typography>
               <Typography variant='body1' paragraph={true}>
-                The IOCs page lists all the ALS IOCs in alphabetical order. The host where the IOC runs, the engineer in charge of the IOC, 
-                the IOC IP address, and the date when the IOC was last rebooted are shown (reboot time is not correct for VXWorks IOCs). 
+                The IOCs page lists all the IOCs in alphabetical order. The host where the IOC runs, the engineer in charge of the IOC, 
+                the IOC IP address, and the date when the IOC was last connected to recsync (often the IOC reboot time). 
                 Double clicking or clicking the IOC name will open the PV search for all the PVs in that IOC.
               </Typography>
 
