@@ -54,6 +54,11 @@ function Header () {
                         <ListItem button key="IOCs" component={NavLink} to="/ioc" onClick={handleMenuToggle}>
                             <ListItemText primary="IOCs"/>
                         </ListItem>
+                        {process.env.REACT_APP_USE_AA.toLowerCase() === "true" &&
+                          <ListItem button key="Plotting" component={NavLink} to="/plot" onClick={handleMenuToggle}>
+                              <ListItemText primary="Plotting"/>
+                          </ListItem>
+                        }
                         <ListItem button key="Help" component={NavLink} to="/help" onClick={handleMenuToggle}>
                             <ListItemText primary="Help"/>
                         </ListItem>
@@ -71,6 +76,11 @@ function Header () {
           <NavLink to="/ioc" style={{textDecoration: "none", color: 'inherit', paddingRight: 40 }}>
             <Typography variant="h5">IOCs</Typography>
           </NavLink>
+          {process.env.REACT_APP_USE_AA.toLowerCase() === "true" &&
+            <NavLink to="/plot" style={{textDecoration: "none", color: 'inherit', paddingRight: 40 }}>
+              <Typography variant="h5">Plotting</Typography>
+            </NavLink>
+          }
           <NavLink to="/help" style={{textDecoration: "none", color: 'inherit', paddingRight: 40 }}>
             <Typography variant="h5">Help</Typography>
           </NavLink>

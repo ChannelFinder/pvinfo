@@ -5,6 +5,7 @@ import { Grid } from '@mui/material';
 import Home from '../components/home';
 import PV from '../components/pv';
 import IOC from '../components/ioc';
+import Plot from '../components/plot';
 import Header from '../components/header';
 import Help from '../components/help';
 import Page404 from '../Page404';
@@ -21,6 +22,7 @@ function App() {
             <Route path='*' element={<Page404 />} />
             <Route path="/pv/:id" exact={true} element={<PV />} />
             <Route path="/ioc" exact={true} element={<IOC />} />
+            <Route path="/plot" exact={true} element={<Plot />} />
             <Route path="/help" exact={true} element={<Help />} />
             <Route path="/" exact={true} element={<Home />} />
           </Routes>
