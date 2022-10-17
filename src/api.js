@@ -66,6 +66,7 @@ async function queryChannelFinder(params) {
         }
     }
 
+
     let requestURI = `${channelFinderURL}?~name=${pvName}&hostName${hostName}&iocName${iocName}&pvStatus${pvStatus}`;
 
     if(process.env.REACT_APP_CF_RECORD_TYPE === "true") {
@@ -119,12 +120,47 @@ async function queryChannelFinder(params) {
             }
         }
     }
+    if(process.env.REACT_APP_EXTRA_PROP !== "") {
+        if (process.env.REACT_APP_EXTRA_PROP in params && params[process.env.REACT_APP_EXTRA_PROP] !== "") {
+            if(params[process.env.REACT_APP_EXTRA_PROP].charAt(0) === "=") {
+                requestURI = requestURI + `&${process.env.REACT_APP_EXTRA_PROP}${params[process.env.REACT_APP_EXTRA_PROP]}`;
+            }
+            else if(params[process.env.REACT_APP_EXTRA_PROP].charAt(0) === "!") {
+                requestURI = requestURI + `&${process.env.REACT_APP_EXTRA_PROP}!=${params[process.env.REACT_APP_EXTRA_PROP].substring(1)}`;
+            }
+            else if (params[process.env.REACT_APP_EXTRA_PROP].charAt(0) !== "*" && params[process.env.REACT_APP_EXTRA_PROP].charAt(params[process.env.REACT_APP_EXTRA_PROP].length - 1) !== "*") {
+                requestURI = requestURI + `&${process.env.REACT_APP_EXTRA_PROP}=*${params[process.env.REACT_APP_EXTRA_PROP]}*`;
+            }
+            else {
+                requestURI = requestURI + `&${process.env.REACT_APP_EXTRA_PROP}=${params[process.env.REACT_APP_EXTRA_PROP]}`;
+            }
+        }
+    }
+    if(process.env.REACT_APP_SECOND_EXTRA_PROP !== "") {
+        if (process.env.REACT_APP_SECOND_EXTRA_PROP in params && params[process.env.REACT_APP_SECOND_EXTRA_PROP] !== "") {
+            if(params[process.env.REACT_APP_SECOND_EXTRA_PROP].charAt(0) === "=") {
+                requestURI = requestURI + `&${process.env.REACT_APP_SECOND_EXTRA_PROP}${params[process.env.REACT_APP_SECOND_EXTRA_PROP]}`;
+            }
+            else if(params[process.env.REACT_APP_SECOND_EXTRA_PROP].charAt(0) === "!") {
+                requestURI = requestURI + `&${process.env.REACT_APP_SECOND_EXTRA_PROP}!=${params[process.env.REACT_APP_SECOND_EXTRA_PROP].substring(1)}`;
+            }
+            else if (params[process.env.REACT_APP_SECOND_EXTRA_PROP].charAt(0) !== "*" && params[process.env.REACT_APP_SECOND_EXTRA_PROP].charAt(params[process.env.REACT_APP_SECOND_EXTRA_PROP].length - 1) !== "*") {
+                requestURI = requestURI + `&${process.env.REACT_APP_SECOND_EXTRA_PROP}=*${params[process.env.REACT_APP_SECOND_EXTRA_PROP]}*`;
+            }
+            else {
+                requestURI = requestURI + `&${process.env.REACT_APP_SECOND_EXTRA_PROP}=${params[process.env.REACT_APP_SECOND_EXTRA_PROP]}`;
+            }
+        }
+    }
+
+
     let options = {}
     options = {method: 'GET'}
     if (process.env.NODE_ENV !== 'development') {
         //options['credentials'] = 'include'
     }
     // credentials header would help if CF, AA, etc are behind a SSO
+    console.log(requestURI);
     await fetch(requestURI, options)
         .then(response => {
             if (response.ok) {
@@ -180,26 +216,12 @@ async function queryOLOG(pvName) {
     })
 }
 
-const aaPolicies = [
-    {"policy": "VeryFast", "method": "Monitor", "period": "0.1", "ltsreduce": "10 Seconds",  "control": "None"},
-    {"policy": "Fast",     "method": "Monitor", "period": "1",   "ltsreduce": "30 Seconds",  "control": "None"},
-    {"policy": "Medium",   "method": "Monitor", "period": "10",  "ltsreduce": "60 Seconds",  "control": "None"},
-    {"policy": "Slow",     "method": "Scan",    "period": "60",  "ltsreduce": "180 Seconds", "control": "None"},
-    {"policy": "VerySlow", "method": "Scan",    "period": "900", "ltsreduce": "None",        "control": "None"},
-    {"policy": "VeryFastControlled", "method": "Monitor", "period": "0.1", "ltsreduce": "10 Seconds",  "control": "Archiver:Enable"},
-    {"policy": "FastControlled",     "method": "Monitor", "period": "1",   "ltsreduce": "30 Seconds",  "control": "Archiver:Enable"},
-    {"policy": "MediumControlled",   "method": "Monitor", "period": "10",  "ltsreduce": "60 Seconds",  "control": "Archiver:Enable"},
-    {"policy": "SlowControlled",     "method": "Scan",    "period": "60",  "ltsreduce": "180 Seconds", "control": "Archiver:Enable"},
-    {"policy": "VerySlowControlled", "method": "Scan",    "period": "900", "ltsreduce": "None",        "control": "Archiver:Enable"},
-]
-
 const api = {
     CF_QUERY: queryChannelFinder,
     CF_URL: channelFinderURL,
     OLOG_QUERY: queryOLOG,
     OLOG_URL: ologURL,
     AA_VIEWER: aaViewerURL,
-    AA_POLICIES: aaPolicies,
     PVWS_URL: pvwsURL,
     SERVER_URL: serverURL,
 }

@@ -145,10 +145,10 @@ function Home() {
             if(e.target.recordDesc.value) {params[e.target.recordDesc.name] = e.target.recordDesc.value;}
         }
         if(extraPropAName !== null) {
-            if(e.target.extraPropA.value) {params[e.target.extraPropA.name] = e.target.extraPropA.value;}
+            if(e.target.extraPropA.value) {params[process.env.REACT_APP_EXTRA_PROP] = e.target.extraPropA.value;}
         }
         if(extraPropBName !== null) {
-            if(e.target.extraPropB.value) {params[e.target.extraPropB.name] = e.target.extraPropB.value;}
+            if(e.target.extraPropB.value) {params[process.env.REACT_APP_SECOND_EXTRA_PROP] = e.target.extraPropB.value;}
         }
         api.CF_QUERY(params)
             .then((data) => {
@@ -252,22 +252,52 @@ function Home() {
     }
     const extraPropARender = () => {
         if(extraPropAName !== null) {
-            return (
-                <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
-                    <TextField
-                        sx={{display: "flex", flexGrow: 2, minWidth: 80}}
-                        id="extraPropA"
-                        label={process.env.REACT_APP_EXTRA_PROP_LABEL}
-                        autoComplete="off"
-                        name="extraPropA"
-                        value={extraPropAValue}
-                        placeholder={process.env.REACT_APP_EXTRA_PROP_LABEL}
-                        type="search"
-                        variant="outlined"
-                        onChange={handleExtraPropAChange}
-                    />
-                </Tooltip>
-            )
+            if(process.env.REACT_APP_EXTRA_PROP_DROPDOWN_LABELS !== ""){
+                return (
+                    <Box sx={{display: "flex"}}>
+                        <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
+                            <Autocomplete
+                                sx={{display: "flex", flexGrow: 2, minWidth: 120}}
+                                freeSolo
+                                disableClearable
+                                options={process.env.REACT_APP_EXTRA_PROP_DROPDOWN_LABELS.split(",")}
+                                key={recordTypeAutocompleteKey}
+                                value={extraPropAValue}
+                                renderInput={(params) => 
+                                    <TextField 
+                                        id="extraPropA"
+                                        {...params}
+                                        label={process.env.REACT_APP_EXTRA_PROP_LABEL} 
+                                        name="extraPropA"
+                                        placeholder={process.env.REACT_APP_EXTRA_PROP_LABEL}
+                                        type="search"
+                                        variant="outlined"
+                                        onChange={handleExtraPropAChange}
+                                    />
+                                }
+                            />
+                        </Tooltip>
+                    </Box>                    
+                )
+            }
+            else {
+                return (
+                    <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
+                        <TextField
+                            sx={{display: "flex", flexGrow: 2, minWidth: 80}}
+                            id="extraPropA"
+                            label={process.env.REACT_APP_EXTRA_PROP_LABEL}
+                            autoComplete="off"
+                            name="extraPropA"
+                            value={extraPropAValue}
+                            placeholder={process.env.REACT_APP_EXTRA_PROP_LABEL}
+                            type="search"
+                            variant="outlined"
+                            onChange={handleExtraPropAChange}
+                        />
+                    </Tooltip>
+                )                
+            }
         }
     }
     const extraPropBRender = () => {
