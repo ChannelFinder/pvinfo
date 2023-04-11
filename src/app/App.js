@@ -16,8 +16,8 @@ function App() {
       <Grid container>
         <Header />
       </Grid>
-      <Grid container spacing={0} direction="column" alignItems="center" style={{marginTop: 30}}>
-        <main style={{width: "90%"}}>
+      <Grid container spacing={0} direction="column" alignItems="center" style={{ marginTop: 30 }}>
+        <main style={{ width: "90%" }}>
           <Routes>
             <Route path='*' element={<Page404 />} />
             <Route path="/pv/:id" exact={true} element={<PV />} />
