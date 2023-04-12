@@ -82,16 +82,36 @@ function ValueTable(props) {
               setPVMax(message.max);
             }
             if ("alarm_low" in message) {
-              setPVAlarmLow(message.alarm_low);
+              if(message.alarm_low === "Infinity" || message.alarm_low === "-Infinity") {
+                setPVAlarmLow("");
+              }
+              else {
+                setPVAlarmLow(message.alarm_low);
+              }
             }
             if ("alarm_high" in message) {
-              setPVAlarmHigh(message.alarm_high);
+              if(message.alarm_high === "Infinity" || message.alarm_high === "-Infinity") {
+                setPVAlarmHigh("");
+              }
+              else {
+                setPVAlarmHigh(message.alarm_high);
+              }
             }
             if ("warn_low" in message) {
-              setPVWarnLow(message.warn_low);
+              if(message.warn_low === "Infinity" || message.warn_low === "-Infinity") {
+                setPVWarnLow("");
+              }
+              else {
+                setPVWarnLow(message.warn_low);
+              }
             }
             if ("warn_high" in message) {
-              setPVWarnHigh(message.warn_high);
+              if(message.warn_high === "Infinity" || message.warn_high === "-Infinity") {
+                setPVWarnHigh("");
+              }
+              else {
+                setPVWarnHigh(message.warn_high);
+              }
             }
             if ("precision" in message) {
               setPVPrecision(message.precision);
@@ -99,10 +119,10 @@ function ValueTable(props) {
             if ("seconds" in message) {
               let timestamp = "";
               if ("nanos" in message) {
-                timestamp = new Date(message.seconds*1000 + (message.nanos*1e-6)).toISOString();
+                timestamp = new Date(message.seconds*1000 + (message.nanos*1e-6)).toLocaleString();
               }
               else {
-                timestamp = new Date(message.seconds*1000).toISOString();
+                timestamp = new Date(message.seconds*1000).toLocaleString();
               }
               setPVTimestamp(timestamp);
             }
@@ -120,7 +140,7 @@ function ValueTable(props) {
                 setAlarmColor("#C800C8");
               }
               else if (message.severity === "MAJOR") {
-                setAlarmColor("#FF9900");
+                setAlarmColor("red");
               }
               else if (message.severity === "MINOR") {
                 setAlarmColor("#FF9900");
