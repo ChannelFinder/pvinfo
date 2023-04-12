@@ -46,18 +46,20 @@ function ValueTable(props) {
             shouldReconnect: (closeEvent) => true,
           });
 
+  let { handleErrorMessage, handleOpenErrorAlert } = props;
+
   useEffect(() => {
     if(props.pvMonitoring) { 
       if (props.pvData === null || props.isLoading) {
         return;
       }
       else if (props.pvData.pvStatus === "Inactive") {
-        props.handleErrorMessage("Can't show live PV values - PV is in Inactive state!");
-        props.handleOpenErrorAlert(true);
+        handleErrorMessage("Can't show live PV values - PV is in Inactive state!");
+        handleOpenErrorAlert(true);
       }
       else if (props.pvData.recordType === "waveform") {
-        props.handleErrorMessage("Can't show live PV values - Waveform record type not supported");
-        props.handleOpenErrorAlert(true);
+        handleErrorMessage("Can't show live PV values - Waveform record type not supported");
+        handleOpenErrorAlert(true);
       }
       else if(props.pvData.pvStatus === "Active") {
         sendJsonMessage({ "type": "subscribe", "pvs": [ props.pvName ] });
@@ -77,7 +79,7 @@ function ValueTable(props) {
       setPVTimestamp(null);
       setPVUnits(null);
     }
-  }, [props.pvMonitoring, props.isLoading, props.pvData, props.pvName, props.handleErrorMessage, props.handleOpenErrorAlert, sendJsonMessage]);
+  }, [props.pvMonitoring, props.isLoading, props.pvData, props.pvName, handleErrorMessage, handleOpenErrorAlert, sendJsonMessage]);
 
   useEffect(() => {
     if (lastJsonMessage !== null) {

@@ -21,6 +21,8 @@ function PV(props) {
     const [isLoading, setIsLoading] = useState(true);
     const pvHTMLString = encodeURI(`${api.AA_VIEWER}?pv=${id}`);
 
+    let { handleErrorMessage, handleOpenErrorAlert } = props;
+
     // Get channel finder data for this PV
     useEffect(() => {
       // equal sign is important since CF_QUERY adds asterisks by default to start/end of string
@@ -42,12 +44,12 @@ function PV(props) {
       })
       .catch((err) => {
           console.log(err);
-          props.handleErrorMessage("Error in EPICS Channel Finder query");
-          props.handleOpenErrorAlert(true);
+          handleErrorMessage("Error in EPICS Channel Finder query");
+          handleOpenErrorAlert(true);
 	        setCFPVData(null);
           setIsLoading(false);
       })
-    }, [id, props.handleErrorMessage, props.handleOpenErrorAlert]);
+    }, [id, handleErrorMessage, handleOpenErrorAlert]);
 
     // transform PV data from CF into JS object. This should be moved to api.js!
     useEffect(() => {
