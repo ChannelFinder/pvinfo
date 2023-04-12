@@ -13,7 +13,7 @@ function Page404 () {
             <Button onClick={() => navigate(-1)} variant="contained" color="secondary">Take Me Back!</Button>
             <br />
         </Fragment>
-    );  
+    );
 }
 
 export default Page404;

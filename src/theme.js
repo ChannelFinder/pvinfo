@@ -7,7 +7,7 @@ const theme = createTheme(adaptV4Theme({
       main: '#00334d',
       dark: '#002335',
       contrastText: '#fff',
-    },  
+    },
     secondary: {
       light: '#33c9eb',
       main: '#00bce7',

@@ -32,7 +32,7 @@ const pvStatusOptions = [
 ]
 
 const pvRecordTypes = ['ao', 'ai', 'bo', 'bi', 'mbbo', 'mbbi', 'longout', 'longin', 'stringout', 'stringin',
-    'calc', 'calcout', 'motor', 'seq', 'waveform', 'mbbiDirect', 'mbboDirect', 'sub', 'aSub', 
+    'calc', 'calcout', 'motor', 'seq', 'waveform', 'mbbiDirect', 'mbboDirect', 'sub', 'aSub',
     'compress', 'dfanout', 'fanout', 'subArray']
 
 
@@ -55,7 +55,7 @@ function Home(props) {
     const [extraPropBValue, setExtraPropBValue] = useState(searchParams.get(extraPropBName) || "");
     const [isLoading, setIsLoading] = useState(false);
 
-    
+
     const handlePVNameChange = (e) => {
         setPVName(e.target.value);
     };
@@ -233,11 +233,11 @@ function Home(props) {
                             options={pvRecordTypes}
                             key={recordTypeAutocompleteKey}
                             value={recordType}
-                            renderInput={(params) => 
-                                <TextField 
+                            renderInput={(params) =>
+                                <TextField
                                     id="recordType"
                                     {...params}
-                                    label="Record Type" 
+                                    label="Record Type"
                                     name="recordType"
                                     placeholder="Record Type"
                                     type="search"
@@ -284,11 +284,11 @@ function Home(props) {
                                 options={process.env.REACT_APP_EXTRA_PROP_DROPDOWN_LABELS.split(",")}
                                 key={recordTypeAutocompleteKey}
                                 value={extraPropAValue}
-                                renderInput={(params) => 
-                                    <TextField 
+                                renderInput={(params) =>
+                                    <TextField
                                         id="extraPropA"
                                         {...params}
-                                        label={process.env.REACT_APP_EXTRA_PROP_LABEL} 
+                                        label={process.env.REACT_APP_EXTRA_PROP_LABEL}
                                         name="extraPropA"
                                         placeholder={process.env.REACT_APP_EXTRA_PROP_LABEL}
                                         type="search"
@@ -298,7 +298,7 @@ function Home(props) {
                                 }
                             />
                         </Tooltip>
-                    </Box>                    
+                    </Box>
                 )
             }
             else {
@@ -317,7 +317,7 @@ function Home(props) {
                             onChange={handleExtraPropAChange}
                         />
                     </Tooltip>
-                )                
+                )
             }
         }
     }
@@ -334,11 +334,11 @@ function Home(props) {
                                 options={process.env.REACT_APP_SECOND_EXTRA_PROP_DROPDOWN_LABELS.split(",")}
                                 key={recordTypeAutocompleteKey}
                                 value={extraPropBValue}
-                                renderInput={(params) => 
-                                    <TextField 
+                                renderInput={(params) =>
+                                    <TextField
                                         id="extraPropB"
                                         {...params}
-                                        label={process.env.REACT_APP_SECOND_EXTRA_PROP_LABEL} 
+                                        label={process.env.REACT_APP_SECOND_EXTRA_PROP_LABEL}
                                         name="extraPropB"
                                         placeholder={process.env.REACT_APP_SECOND_EXTRA_PROP_LABEL}
                                         type="search"
@@ -348,7 +348,7 @@ function Home(props) {
                                 }
                             />
                         </Tooltip>
-                    </Box>                    
+                    </Box>
                 )
             }
             else {
@@ -367,23 +367,23 @@ function Home(props) {
                             onChange={handleExtraPropBChange}
                         />
                     </Tooltip>
-                )                
+                )
             }
         }
     }
-    
+
     return (
         <Fragment>
             <form onSubmit={handleSubmit}>
                 <Grid item alignItems="center" sx={{ backgroundColor: '#d7e3f5' }} xs={12}>
-                    <Typography 
+                    <Typography
                         style={{marginBottom: 20}}
                         align="center"
                         variant="h6"
                     >
                         {process.env.REACT_APP_HOMEPAGE_HEADER}
                     </Typography>
-                    <Typography 
+                    <Typography
                         style={{marginBottom: 20}}
                         align="center"
                         variant="subtitle1"
@@ -474,7 +474,7 @@ function Home(props) {
                                 sx={{display: "flex", flexGrow: 1, minWidth: 60, maxWidth: 80}}
                                 variant="contained"
                                 color="secondary"
-                                onClick={handleClear} 
+                                onClick={handleClear}
                             >
                                 <ClearIcon style={{color: 'black'}} fontSize='large' />
                             </Button>

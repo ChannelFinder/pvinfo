@@ -1,5 +1,5 @@
 /* for all screens, use 14px font size */
-.main-query-box {  
+.main-query-box {
     display: flex;
     flex-wrap: nowrap;
 }

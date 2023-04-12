@@ -66,7 +66,7 @@ function PV(props) {
     }, [cfPVData]);
 
     const handlePVMonitoringChangle = (e) => {
-      if(e.target.checked) { 
+      if(e.target.checked) {
         setPVMonitoring(true);
       }
       else {
@@ -100,7 +100,7 @@ function PV(props) {
         {
           process.env.REACT_APP_USE_PVWS === "true" ? <FormControlLabel control={<Checkbox color="primary" checked={pvMonitoring} onChange={handlePVMonitoringChangle}></Checkbox>} label="Enable Live PV Monitoring" /> : <div></div>
         }
-        
+
         <TableContainer>
           <Table sx={{border: 5, borderColor: 'primary.main'}}>
             <TableBody>
@@ -140,10 +140,10 @@ function PV(props) {
               </TableRow>
             </TableBody>
               {
-                process.env.REACT_APP_USE_PVWS === "true" ? 
-                    <ValueTable pvData={pvData} pvMonitoring={pvMonitoring} 
-                                isLoading={isLoading} pvName={id} 
-                                handleOpenErrorAlert={props.handleOpenErrorAlert} handleErrorMessage={props.handleErrorMessage} /> 
+                process.env.REACT_APP_USE_PVWS === "true" ?
+                    <ValueTable pvData={pvData} pvMonitoring={pvMonitoring}
+                                isLoading={isLoading} pvName={id}
+                                handleOpenErrorAlert={props.handleOpenErrorAlert} handleErrorMessage={props.handleErrorMessage} />
                                 : null
               }
           </Table>

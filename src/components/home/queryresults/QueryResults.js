@@ -51,7 +51,7 @@ function QueryResults(props) {
             }
         }
       }, [lastJsonMessage]);
-    
+
     /*
     const connectionStatus = {
         [ReadyState.CONNECTING]: 'Connecting',
@@ -268,7 +268,7 @@ function QueryResults(props) {
     }
     return (
         <Fragment>
-            <DataGrid  
+            <DataGrid
                 rows={pvs}
                 columns={columns}
                 autoHeight={true}

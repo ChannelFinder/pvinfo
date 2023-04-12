@@ -108,7 +108,7 @@ function IOC() {
       iocs.sort((a, b) => a.id > b.id ? 1 : -1);
       return (
         <Fragment>
-            <DataGrid  
+            <DataGrid
                 rows={iocs}
                 columns={columns}
                 autoHeight={true}

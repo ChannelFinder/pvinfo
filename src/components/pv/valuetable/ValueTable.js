@@ -49,7 +49,7 @@ function ValueTable(props) {
   let { handleErrorMessage, handleOpenErrorAlert } = props;
 
   useEffect(() => {
-    if(props.pvMonitoring) { 
+    if(props.pvMonitoring) {
       if (props.pvData === null || props.isLoading) {
         return;
       }
