@@ -5,9 +5,15 @@ import TimelineIcon from '@mui/icons-material/Timeline';
 import api from "../../api";
 import OLOGTable from "./ologtable";
 import ValueTable from "./valuetable";
+import PropTypes from "prop-types";
 
 
-function PV() {
+const propTypes = {
+  handleOpenErrorAlert: PropTypes.func,
+  handleErrorMessage: PropTypes.func,
+}
+
+function PV(props) {
     let { id } = useParams();
     const [cfPVData, setCFPVData] = useState(null); //object
     const [pvData, setPVData] = useState({});
@@ -20,24 +26,32 @@ function PV() {
       // equal sign is important since CF_QUERY adds asterisks by default to start/end of string
       api.CF_QUERY({"pvName": `=${id}`})
       .then((data) => {
-          if (data !== null) {
-            setIsLoading(false);
-            setCFPVData(data[0]);
-          }
-          else {
-            console.log("data is NULL!")
-          }
+        if (data === null) {
+          console.log("Null data from channel finder");
+          setCFPVData(null);
+          setIsLoading(false);
+        }
+        else if (data.length === 0) {
+          setCFPVData({});
+          setIsLoading(false);
+        }
+        else {
+          setCFPVData(data[0]);
+          setIsLoading(false);
+        }
       })
       .catch((err) => {
           console.log(err);
-          console.log("error in fetch of experiments");
-	  setCFPVData(null);
+          props.handleErrorMessage("Error in EPICS Channel Finder query");
+          props.handleOpenErrorAlert(true);
+	        setCFPVData(null);
+          setIsLoading(false);
       })
-    }, [id]);
+    }, [id, props.handleErrorMessage, props.handleOpenErrorAlert]);
 
     // transform PV data from CF into JS object. This should be moved to api.js!
     useEffect(() => {
-      if ( cfPVData === null) {
+      if ( cfPVData === null || cfPVData === {} || Object.keys(cfPVData).length === 0) {
         return;
       }
       let pvObject = {};
@@ -68,6 +82,11 @@ function PV() {
       <Typography variant="h6">Channel Finder Data is NULL!</Typography>
     );
   }
+  else if(cfPVData === {} || Object.keys(cfPVData).length === 0) {
+    return (
+      <Typography variant="h6">PV {id} does not exist</Typography>
+    );
+  }
   else {
     return (
       <Fragment>
@@ -84,10 +103,16 @@ function PV() {
           <Table sx={{border: 5, borderColor: 'primary.main'}}>
             <TableBody>
               <TableRow>
-                <TableCell variant="head">Description</TableCell>
-                <TableCell variant="body">{pvData.recordDesc}</TableCell>
+              <TableCell variant="head">PV Name</TableCell>
+                <TableCell variant="body">{pvData.name}</TableCell>
                 <TableCell variant="head">Alias Of</TableCell>
                 <TableCell variant="body"><Link component={RouterLink} to={`/?alias=${pvData.alias}`} underline="hover">{pvData.alias}</Link></TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell variant="head">Description</TableCell>
+                <TableCell variant="body">{pvData.recordDesc}</TableCell>
+                <TableCell variant="head">Engineer</TableCell>
+                <TableCell variant="body">{pvData.Engineer}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell variant="head">EPICS Record Type</TableCell>
@@ -98,8 +123,8 @@ function PV() {
               <TableRow>
                 <TableCell variant="head">Host Name</TableCell>
                 <TableCell variant="body">{pvData.hostName}</TableCell>
-                <TableCell variant="head">Engineer</TableCell>
-                <TableCell variant="body">{pvData.owner}</TableCell>
+                <TableCell variant="head">Location</TableCell>
+                <TableCell variant="body">{pvData.Location}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell variant="head">IOC IP Address</TableCell>
@@ -112,9 +137,13 @@ function PV() {
                 <TableCell variant="body">{pvData.pvStatus}</TableCell>
               </TableRow>
             </TableBody>
-            {
-              process.env.REACT_APP_USE_PVWS === "true" ? <ValueTable pvData={pvData} pvMonitoring={pvMonitoring} isLoading={isLoading} pvName={id} /> : null
-            }
+              {
+                process.env.REACT_APP_USE_PVWS === "true" ? 
+                    <ValueTable pvData={pvData} pvMonitoring={pvMonitoring} 
+                                isLoading={isLoading} pvName={id} 
+                                handleOpenErrorAlert={props.handleOpenErrorAlert} handleErrorMessage={props.handleErrorMessage} /> 
+                                : null
+              }
           </Table>
         </TableContainer>
         {
@@ -125,4 +154,5 @@ function PV() {
   }
 }
 
+PV.propTypes = propTypes;
 export default PV;

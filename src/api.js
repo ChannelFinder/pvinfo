@@ -5,7 +5,6 @@ const pvwsURL = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_P
 const serverURL = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_BASE_URL_DEV : process.env.REACT_APP_BASE_URL;
 
 async function queryChannelFinder(params) {
-    let error = false;
     let data = {};
 
     let pvName = "*";
@@ -153,7 +152,9 @@ async function queryChannelFinder(params) {
         }
     }
 
-    let options = {}
+    let options = {};
+    let errorFlag = false;
+    let error = "";
     options = {method: 'GET'}
     if (process.env.NODE_ENV !== 'development') {
         // credentials header would help if CF, AA, etc are behind a SSO
@@ -171,12 +172,13 @@ async function queryChannelFinder(params) {
         .then(responseJson => {
             data = responseJson;
         })
-        .catch((error) => {
-            error = true;
+        .catch((err) => {
+            error = err;
+            errorFlag = true;
         })
         return new Promise((resolve, reject) => {
-            if ( error === true) {
-                reject();
+            if ( errorFlag === true) {
+                reject(error);
             } else {
                 resolve(data);
             }
