@@ -235,7 +235,7 @@ function QueryResults(props) {
         return (
             <Fragment>
                 <Typography variant="h6">Data Loading...</Typography>
-                <Hidden mdDown >
+                <Hidden lgDown>
                     <Grid container justifyContent="center" >
                         <img src={bannerLogo} style={{position: "absolute", "marginBottom": "20px", "bottom": 0, width:"25%"}} alt="Banner Logo" />
                     </Grid>
@@ -245,18 +245,20 @@ function QueryResults(props) {
     }
     else if (props.cfData === null) {
         return (
-            <Hidden mdDown >
-                <Grid container justifyContent="center" >
-                    <img src={bannerLogo} style={{position: "absolute", "marginBottom": "20px", "bottom": 0, width:"25%"}} alt="Banner Logo" />
-                </Grid>
-            </Hidden>
+            <Fragment>
+                <Hidden lgDown>
+                    <Grid container justifyContent="center" >
+                        <img src={bannerLogo} style={{position: "absolute", "marginBottom": "20px", "bottom": 0, width:"25%"}} alt="Banner Logo" />
+                    </Grid>
+                </Hidden>
+            </Fragment>
         );
     }
     else if (props.cfData.length === 0) {
         return (
             <Fragment>
                 <Typography>No PVs match your query</Typography>
-                <Hidden mdDown >
+                <Hidden lgDown>
                     <Grid container justifyContent="center" >
                         <img src={bannerLogo} style={{position: "absolute", "marginBottom": "20px", "bottom": 0, width:"25%"}} alt="Banner Logo" />
                     </Grid>

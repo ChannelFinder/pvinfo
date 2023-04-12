@@ -6,7 +6,15 @@ import SearchIcon from '@mui/icons-material/Search';
 import Autocomplete from '@mui/material/Autocomplete';
 import { useSearchParams } from "react-router-dom";
 import ClearIcon from '@mui/icons-material/Clear';
+import PropTypes from "prop-types";
+// is this needed?
 import './Home.css';
+
+const propTypes = {
+  handleOpenErrorAlert: PropTypes.func,
+  handleErrorMessage: PropTypes.func,
+}
+
 
 const pvStatusOptions = [
     {
@@ -29,7 +37,7 @@ const pvRecordTypes = ['ao', 'ai', 'bo', 'bi', 'mbbo', 'mbbi', 'longout', 'longi
 
 
 
-function Home() {
+function Home(props) {
     const [searchParams, setSearchParams] = useSearchParams();
     const [cfData, setCFData] = useState(null); //array
     const [pvName, setPVName] = useState(searchParams.get("pvName") || "");
@@ -78,17 +86,23 @@ function Home() {
     const queryPVs = (parameters) => {
         api.CF_QUERY(parameters)
         .then((data) => {
-            if (data !== null) {
-                setCFData(data);
+            if (data === null) {
+                console.log("Null data from channel finder");
+                setCFData(null);
                 setIsLoading(false);
             }
             else {
-                console.log("data is NULL!")
+                setCFData(data);
+                setIsLoading(false);
             }
         })
         .catch((err) => {
+            console.log("Error in fetch of channel finder data");
             console.log(err);
-            console.log("error in fetch of experiments");
+            props.handleErrorMessage("Error in EPICS Channel Finder query");
+            props.handleOpenErrorAlert(true);
+            setIsLoading(false);
+            setCFData(null);
         })
     }
     useEffect(() => {
@@ -152,17 +166,24 @@ function Home() {
         }
         api.CF_QUERY(params)
             .then((data) => {
-                if (data !== null) {
-                    setCFData(data);
+                if (data === null) {
+                    console.log("Null data from channel finder");
+                    setCFData(null);
                     setIsLoading(false);
                 }
                 else {
-                    console.log("data is NULL!")
+                    setCFData(data);
+                    setIsLoading(false);
                 }
             })
             .catch((err) => {
+                console.log("Error in fetch of channel finder data");
                 console.log(err);
-                console.log("error in fetch of experiments");
+                props.handleErrorMessage("Error in EPICS Channel Finder query");
+                props.handleOpenErrorAlert(true);
+                setIsLoading(false);
+                setCFData(null);
+
             })
         setSearchParams(params);
     }
@@ -468,4 +489,5 @@ function Home() {
     );
 }
 
+Home.propTypes = propTypes;
 export default Home;

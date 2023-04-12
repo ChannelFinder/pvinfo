@@ -10,6 +10,8 @@ const propTypes = {
   pvData: PropTypes.object,
   isLoading: PropTypes.bool,
   pvName: PropTypes.string,
+  handleOpenErrorAlert: PropTypes.func,
+  handleErrorMessage: PropTypes.func,
 }
 
 function ValueTable(props) {
@@ -44,9 +46,22 @@ function ValueTable(props) {
             shouldReconnect: (closeEvent) => true,
           });
 
+  let { handleErrorMessage, handleOpenErrorAlert } = props;
+
   useEffect(() => {
     if(props.pvMonitoring) { 
-      if(props.pvData !== null && !props.isLoading && props.pvData.pvStatus === "Active" && props.pvData.recordType !== "waveform") {
+      if (props.pvData === null || props.isLoading) {
+        return;
+      }
+      else if (props.pvData.pvStatus === "Inactive") {
+        handleErrorMessage("Can't show live PV values - PV is in Inactive state!");
+        handleOpenErrorAlert(true);
+      }
+      else if (props.pvData.recordType === "waveform") {
+        handleErrorMessage("Can't show live PV values - Waveform record type not supported");
+        handleOpenErrorAlert(true);
+      }
+      else if(props.pvData.pvStatus === "Active") {
         sendJsonMessage({ "type": "subscribe", "pvs": [ props.pvName ] });
       }
     }
@@ -64,7 +79,7 @@ function ValueTable(props) {
       setPVTimestamp(null);
       setPVUnits(null);
     }
-  }, [props.pvMonitoring, props.isLoading, props.pvData, props.pvName, sendJsonMessage]);
+  }, [props.pvMonitoring, props.isLoading, props.pvData, props.pvName, handleErrorMessage, handleOpenErrorAlert, sendJsonMessage]);
 
   useEffect(() => {
     if (lastJsonMessage !== null) {
@@ -82,16 +97,36 @@ function ValueTable(props) {
               setPVMax(message.max);
             }
             if ("alarm_low" in message) {
-              setPVAlarmLow(message.alarm_low);
+              if(message.alarm_low === "Infinity" || message.alarm_low === "-Infinity") {
+                setPVAlarmLow("");
+              }
+              else {
+                setPVAlarmLow(message.alarm_low);
+              }
             }
             if ("alarm_high" in message) {
-              setPVAlarmHigh(message.alarm_high);
+              if(message.alarm_high === "Infinity" || message.alarm_high === "-Infinity") {
+                setPVAlarmHigh("");
+              }
+              else {
+                setPVAlarmHigh(message.alarm_high);
+              }
             }
             if ("warn_low" in message) {
-              setPVWarnLow(message.warn_low);
+              if(message.warn_low === "Infinity" || message.warn_low === "-Infinity") {
+                setPVWarnLow("");
+              }
+              else {
+                setPVWarnLow(message.warn_low);
+              }
             }
             if ("warn_high" in message) {
-              setPVWarnHigh(message.warn_high);
+              if(message.warn_high === "Infinity" || message.warn_high === "-Infinity") {
+                setPVWarnHigh("");
+              }
+              else {
+                setPVWarnHigh(message.warn_high);
+              }
             }
             if ("precision" in message) {
               setPVPrecision(message.precision);
@@ -99,10 +134,10 @@ function ValueTable(props) {
             if ("seconds" in message) {
               let timestamp = "";
               if ("nanos" in message) {
-                timestamp = new Date(message.seconds*1000 + (message.nanos*1e-6)).toISOString();
+                timestamp = new Date(message.seconds*1000 + (message.nanos*1e-6)).toLocaleString();
               }
               else {
-                timestamp = new Date(message.seconds*1000).toISOString();
+                timestamp = new Date(message.seconds*1000).toLocaleString();
               }
               setPVTimestamp(timestamp);
             }
@@ -120,7 +155,7 @@ function ValueTable(props) {
                 setAlarmColor("#C800C8");
               }
               else if (message.severity === "MAJOR") {
-                setAlarmColor("#FF9900");
+                setAlarmColor("red");
               }
               else if (message.severity === "MINOR") {
                 setAlarmColor("#FF9900");

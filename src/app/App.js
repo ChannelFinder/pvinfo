@@ -1,6 +1,7 @@
 import './App.css';
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import { Grid } from '@mui/material';
+import { Grid, Snackbar, Alert } from '@mui/material';
+import React, { useState } from "react";
 
 import Home from '../components/home';
 import PV from '../components/pv';
@@ -11,6 +12,16 @@ import Help from '../components/help';
 import Page404 from '../Page404';
 
 function App() {
+  const [openErrorAlert, setOpenErrorAlert] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpenErrorAlert(false);
+  };
+
   return (
     <Router basename={process.env.PUBLIC_URL}>
       <Grid container>
@@ -20,14 +31,21 @@ function App() {
         <main style={{ width: "90%" }}>
           <Routes>
             <Route path='*' element={<Page404 />} />
-            <Route path="/pv/:id" exact={true} element={<PV />} />
+            <Route path="/pv/:id" exact={true} element={<PV handleOpenErrorAlert={setOpenErrorAlert} handleErrorMessage={setErrorMessage} />} />
             <Route path="/ioc" exact={true} element={<IOC />} />
             <Route path="/plot" exact={true} element={<Plot />} />
             <Route path="/help" exact={true} element={<Help />} />
-            <Route path="/" exact={true} element={<Home />} />
+            <Route path="/" exact={true} element={<Home handleOpenErrorAlert={setOpenErrorAlert} handleErrorMessage={setErrorMessage} />} />
           </Routes>
         </main>
       </Grid>
+      <div>
+        <Snackbar open={openErrorAlert} autoHideDuration={6000} onClose={handleClose}>
+          <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
+            {errorMessage}
+          </Alert>
+        </Snackbar>
+      </div>
     </Router>
   );
 }
