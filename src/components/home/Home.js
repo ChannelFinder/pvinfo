@@ -7,14 +7,13 @@ import Autocomplete from '@mui/material/Autocomplete';
 import { useSearchParams } from "react-router-dom";
 import ClearIcon from '@mui/icons-material/Clear';
 import PropTypes from "prop-types";
+// is this needed?
+import './Home.css';
 
 const propTypes = {
   handleOpenErrorAlert: PropTypes.func,
   handleErrorMessage: PropTypes.func,
 }
-
-// is this needed?
-import './Home.css';
 
 
 const pvStatusOptions = [
