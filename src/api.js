@@ -156,10 +156,11 @@ async function queryChannelFinder(params) {
     let errorFlag = false;
     let error = "";
     options = {method: 'GET'}
-    if (process.env.NODE_ENV !== 'development') {
+// TODO - Make this optional
+//    if (process.env.NODE_ENV !== 'development') {
         // credentials header would help if CF, AA, etc are behind a SSO
-        options['credentials'] = 'include';
-    }
+//        options['credentials'] = 'include';
+//    }
 
     await fetch(requestURI, options)
         .then(response => {
