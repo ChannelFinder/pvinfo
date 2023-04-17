@@ -97,7 +97,7 @@ function ValueTable(props) {
               setPVMax(message.max);
             }
             if ("alarm_low" in message) {
-              if(message.alarm_low === "Infinity" || message.alarm_low === "-Infinity") {
+              if(message.alarm_low ===  "NaN" || message.alarm_low === "Infinity" || message.alarm_low === "-Infinity") {
                 setPVAlarmLow("");
               }
               else {
@@ -105,7 +105,7 @@ function ValueTable(props) {
               }
             }
             if ("alarm_high" in message) {
-              if(message.alarm_high === "Infinity" || message.alarm_high === "-Infinity") {
+              if(message.alarm_high ===  "NaN" || message.alarm_high === "Infinity" || message.alarm_high === "-Infinity") {
                 setPVAlarmHigh("");
               }
               else {
@@ -113,7 +113,7 @@ function ValueTable(props) {
               }
             }
             if ("warn_low" in message) {
-              if(message.warn_low === "Infinity" || message.warn_low === "-Infinity") {
+              if(message.warn_low ===  "NaN" || message.warn_low === "Infinity" || message.warn_low === "-Infinity") {
                 setPVWarnLow("");
               }
               else {
@@ -121,7 +121,7 @@ function ValueTable(props) {
               }
             }
             if ("warn_high" in message) {
-              if(message.warn_high === "Infinity" || message.warn_high === "-Infinity") {
+              if(message.warn_high ===  "NaN" || message.warn_high === "Infinity" || message.warn_high === "-Infinity") {
                 setPVWarnHigh("");
               }
               else {
