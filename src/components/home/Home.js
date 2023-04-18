@@ -455,35 +455,34 @@ function Home(props) {
                         </TextField>
                     </Box>
                     {recordTypeSearchRender()}
-                    {extraPropARender()}
-                    {extraPropBRender()}
-                    <Box sx={{ display: 'flex', flexDirection: 'row', flexGrow: 1 }}>
-
-                        {aliasOfSearchRender()}
-                        {/* <Box sx={{ display: 'flex', flexDirection: 'row' }}> */}
-                        <Tooltip arrow title="Search">
-                            <Button
-                                sx={{ display: "flex", flexGrow: 1, minWidth: 60, maxWidth: 80 }}
-                                aria-label="search"
-                                variant="contained"
-                                color="info"
-                                type="submit"
-                            >
-                                <SearchIcon style={{ color: 'black' }} fontSize='large' />
-                            </Button>
-                        </Tooltip>
-                        <Tooltip arrow title="Clear">
-                            <Button aria-label="clear"
-                                sx={{ display: "flex", flexGrow: 1, minWidth: 60, maxWidth: 80 }}
-                                variant="contained"
-                                color="secondary"
-                                onClick={handleClear}
-                            >
-                                <ClearIcon style={{ color: 'black' }} fontSize='large' />
-                            </Button>
-                        </Tooltip>
+                    <Box sx={{ display: 'flex', flexDirection: 'row', flexGrow: 1, flexWrap: { xs: 'wrap', md: 'nowrap' } }}>
+                        {extraPropARender()}
+                        {extraPropBRender()}
+                        <Box sx={{ display: 'flex', flexDirection: 'row', flexGrow: 1, flexWrap: { xs: 'wrap', md: 'nowrap' } }}>
+                            {aliasOfSearchRender()}
+                            <Tooltip arrow title="Search">
+                                <Button
+                                    sx={{ display: "flex", flexGrow: 1, minWidth: 60, maxWidth: 80 }}
+                                    aria-label="search"
+                                    variant="contained"
+                                    color="info"
+                                    type="submit"
+                                >
+                                    <SearchIcon style={{ color: 'black' }} fontSize='large' />
+                                </Button>
+                            </Tooltip>
+                            <Tooltip arrow title="Clear">
+                                <Button aria-label="clear"
+                                    sx={{ display: "flex", flexGrow: 1, minWidth: 60, maxWidth: 80 }}
+                                    variant="contained"
+                                    color="secondary"
+                                    onClick={handleClear}
+                                >
+                                    <ClearIcon style={{ color: 'black' }} fontSize='large' />
+                                </Button>
+                            </Tooltip>
+                        </Box>
                     </Box>
-                    {/* </Box> */}
                 </Grid>
                 <Grid container item xs={12} style={{ display: "flex" }}>
                     <QueryResults isLoading={isLoading} cfData={cfData} />
