@@ -11,8 +11,8 @@ import PropTypes from "prop-types";
 import './Home.css';
 
 const propTypes = {
-  handleOpenErrorAlert: PropTypes.func,
-  handleErrorMessage: PropTypes.func,
+    handleOpenErrorAlert: PropTypes.func,
+    handleErrorMessage: PropTypes.func,
 }
 
 
@@ -85,33 +85,33 @@ function Home(props) {
     };
     const queryPVs = (parameters) => {
         api.CF_QUERY(parameters)
-        .then((data) => {
-            if (data === null) {
-                console.log("Null data from channel finder");
+            .then((data) => {
+                if (data === null) {
+                    console.log("Null data from channel finder");
+                    setCFData(null);
+                    setIsLoading(false);
+                }
+                else {
+                    setCFData(data);
+                    setIsLoading(false);
+                }
+            })
+            .catch((err) => {
+                console.log("Error in fetch of channel finder data");
+                console.log(err);
+                props.handleErrorMessage("Error in EPICS Channel Finder query");
+                props.handleOpenErrorAlert(true);
+                setIsLoading(false);
                 setCFData(null);
-                setIsLoading(false);
-            }
-            else {
-                setCFData(data);
-                setIsLoading(false);
-            }
-        })
-        .catch((err) => {
-            console.log("Error in fetch of channel finder data");
-            console.log(err);
-            props.handleErrorMessage("Error in EPICS Channel Finder query");
-            props.handleOpenErrorAlert(true);
-            setIsLoading(false);
-            setCFData(null);
-        })
+            })
     }
     useEffect(() => {
         // If there are search parameters in the URL, query channel finder and show the PV data
-        if(searchParams.has("pvName") || searchParams.has("recordDesc") || searchParams.has("iocName") ||
-           searchParams.has("hostName") || searchParams.has("pvStatus") || searchParams.has("alias") ||
-           searchParams.has("recordType") || searchParams.has(extraPropAName) || searchParams.has(extraPropBName)) {
+        if (searchParams.has("pvName") || searchParams.has("recordDesc") || searchParams.has("iocName") ||
+            searchParams.has("hostName") || searchParams.has("pvStatus") || searchParams.has("alias") ||
+            searchParams.has("recordType") || searchParams.has(extraPropAName) || searchParams.has(extraPropBName)) {
             let params = {}
-            searchParams.forEach((val, key) => {if(val !== "") {params[key] = val} });
+            searchParams.forEach((val, key) => { if (val !== "") { params[key] = val } });
             setPVName(searchParams.get("pvName") || "");
             setRecordDesc(searchParams.get("recordDesc") || "");
             setRecordDesc(searchParams.get("recordType") || "");
@@ -135,7 +135,7 @@ function Home(props) {
             setExtraPropAValue("");
             setExtraPropBValue("");
             // https://stackoverflow.com/a/59845474
-            setRecordTypeAutocompleteKey(recordTypeAutocompleteKey-1);
+            setRecordTypeAutocompleteKey(recordTypeAutocompleteKey - 1);
             setCFData(null);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -145,24 +145,24 @@ function Home(props) {
         e.preventDefault();
         setIsLoading(true);
         let params = {}
-        if(e.target.pvName.value) {params[e.target.pvName.name] = e.target.pvName.value;}
-        if(e.target.hostName.value) {params[e.target.hostName.name] = e.target.hostName.value;}
-        if(e.target.iocName.value) {params[e.target.iocName.name] = e.target.iocName.value;}
-        if(e.target.pvStatus.value !== "*") {params[e.target.pvStatus.name] = e.target.pvStatus.value;}
-        if(process.env.REACT_APP_CF_RECORD_TYPE === "true") {
-            if(e.target.recordType.value) {params[e.target.recordType.name] = e.target.recordType.value;}
+        if (e.target.pvName.value) { params[e.target.pvName.name] = e.target.pvName.value; }
+        if (e.target.hostName.value) { params[e.target.hostName.name] = e.target.hostName.value; }
+        if (e.target.iocName.value) { params[e.target.iocName.name] = e.target.iocName.value; }
+        if (e.target.pvStatus.value !== "*") { params[e.target.pvStatus.name] = e.target.pvStatus.value; }
+        if (process.env.REACT_APP_CF_RECORD_TYPE === "true") {
+            if (e.target.recordType.value) { params[e.target.recordType.name] = e.target.recordType.value; }
         }
-        if(process.env.REACT_APP_CF_ALIAS === "true") {
-            if(e.target.alias.value) {params[e.target.alias.name] = e.target.alias.value;}
+        if (process.env.REACT_APP_CF_ALIAS === "true") {
+            if (e.target.alias.value) { params[e.target.alias.name] = e.target.alias.value; }
         }
-        if(process.env.REACT_APP_CF_RECORD_DESC === "true") {
-            if(e.target.recordDesc.value) {params[e.target.recordDesc.name] = e.target.recordDesc.value;}
+        if (process.env.REACT_APP_CF_RECORD_DESC === "true") {
+            if (e.target.recordDesc.value) { params[e.target.recordDesc.name] = e.target.recordDesc.value; }
         }
-        if(extraPropAName !== null) {
-            if(e.target.extraPropA.value) {params[process.env.REACT_APP_EXTRA_PROP] = e.target.extraPropA.value;}
+        if (extraPropAName !== null) {
+            if (e.target.extraPropA.value) { params[process.env.REACT_APP_EXTRA_PROP] = e.target.extraPropA.value; }
         }
-        if(extraPropBName !== null) {
-            if(e.target.extraPropB.value) {params[process.env.REACT_APP_SECOND_EXTRA_PROP] = e.target.extraPropB.value;}
+        if (extraPropBName !== null) {
+            if (e.target.extraPropB.value) { params[process.env.REACT_APP_SECOND_EXTRA_PROP] = e.target.extraPropB.value; }
         }
         api.CF_QUERY(params)
             .then((data) => {
@@ -199,14 +199,14 @@ function Home(props) {
         setExtraPropAValue("");
         setExtraPropBValue("");
         // https://stackoverflow.com/a/59845474
-        setRecordTypeAutocompleteKey(recordTypeAutocompleteKey-1);
+        setRecordTypeAutocompleteKey(recordTypeAutocompleteKey - 1);
     }
     const recordDescSearchRender = () => {
-        if(process.env.REACT_APP_CF_RECORD_DESC === "true") {
+        if (process.env.REACT_APP_CF_RECORD_DESC === "true") {
             return (
                 <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
                     <TextField
-                        sx={{display: "flex", flexGrow: 4, minWidth: 300}}
+                        sx={{ display: "flex", flexGrow: 4, minWidth: 300 }}
                         id="recordDsec"
                         label="Description"
                         autoComplete="off"
@@ -222,41 +222,41 @@ function Home(props) {
         }
     }
     const recordTypeSearchRender = () => {
-        if(process.env.REACT_APP_CF_RECORD_TYPE === "true") {
+        if (process.env.REACT_APP_CF_RECORD_TYPE === "true") {
             return (
-                <Box sx={{display: "flex"}}>
-                    <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
-                        <Autocomplete
-                            sx={{display: "flex", flexGrow: 2, minWidth: 120}}
-                            freeSolo
-                            disableClearable
-                            options={pvRecordTypes}
-                            key={recordTypeAutocompleteKey}
-                            value={recordType}
-                            renderInput={(params) =>
-                                <TextField
-                                    id="recordType"
-                                    {...params}
-                                    label="Record Type"
-                                    name="recordType"
-                                    placeholder="Record Type"
-                                    type="search"
-                                    variant="outlined"
-                                    onChange={handleRecordTypeChange}
-                                />
-                            }
-                        />
-                    </Tooltip>
-                </Box>
+                // <Box sx={{ display: "flex" }}>
+                <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
+                    <Autocomplete
+                        sx={{ display: "flex", flexGrow: 2, minWidth: 120 }}
+                        freeSolo
+                        disableClearable
+                        options={pvRecordTypes}
+                        key={recordTypeAutocompleteKey}
+                        value={recordType}
+                        renderInput={(params) =>
+                            <TextField
+                                id="recordType"
+                                {...params}
+                                label="Record Type"
+                                name="recordType"
+                                placeholder="Record Type"
+                                type="search"
+                                variant="outlined"
+                                onChange={handleRecordTypeChange}
+                            />
+                        }
+                    />
+                </Tooltip>
+                // </Box>
             )
         }
     }
     const aliasOfSearchRender = () => {
-        if(process.env.REACT_APP_CF_ALIAS === "true") {
+        if (process.env.REACT_APP_CF_ALIAS === "true") {
             return (
                 <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
                     <TextField
-                        sx={{display: "flex", flexGrow: 3, minWidth: 175}}
+                        sx={{ display: "flex", flexGrow: 3, minWidth: 175 }}
                         id="alias"
                         label="Alias Of"
                         autoComplete="off"
@@ -272,40 +272,40 @@ function Home(props) {
         }
     }
     const extraPropARender = () => {
-        if(extraPropAName !== null) {
-            if(process.env.REACT_APP_EXTRA_PROP_DROPDOWN_LABELS !== ""){
+        if (extraPropAName !== null) {
+            if (process.env.REACT_APP_EXTRA_PROP_DROPDOWN_LABELS !== "") {
                 return (
-                    <Box sx={{display: "flex"}}>
-                        <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
-                            <Autocomplete
-                                sx={{display: "flex", flexGrow: 2, minWidth: 120}}
-                                freeSolo
-                                disableClearable
-                                options={process.env.REACT_APP_EXTRA_PROP_DROPDOWN_LABELS.split(",")}
-                                key={recordTypeAutocompleteKey}
-                                value={extraPropAValue}
-                                renderInput={(params) =>
-                                    <TextField
-                                        id="extraPropA"
-                                        {...params}
-                                        label={process.env.REACT_APP_EXTRA_PROP_LABEL}
-                                        name="extraPropA"
-                                        placeholder={process.env.REACT_APP_EXTRA_PROP_LABEL}
-                                        type="search"
-                                        variant="outlined"
-                                        onChange={handleExtraPropAChange}
-                                    />
-                                }
-                            />
-                        </Tooltip>
-                    </Box>
+                    // <Box sx={{ display: "flex" }}>
+                    <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
+                        <Autocomplete
+                            sx={{ display: "flex", flexGrow: 2, minWidth: 120 }}
+                            freeSolo
+                            disableClearable
+                            options={process.env.REACT_APP_EXTRA_PROP_DROPDOWN_LABELS.split(",")}
+                            key={recordTypeAutocompleteKey}
+                            value={extraPropAValue}
+                            renderInput={(params) =>
+                                <TextField
+                                    id="extraPropA"
+                                    {...params}
+                                    label={process.env.REACT_APP_EXTRA_PROP_LABEL}
+                                    name="extraPropA"
+                                    placeholder={process.env.REACT_APP_EXTRA_PROP_LABEL}
+                                    type="search"
+                                    variant="outlined"
+                                    onChange={handleExtraPropAChange}
+                                />
+                            }
+                        />
+                    </Tooltip>
+                    // </Box>
                 )
             }
             else {
                 return (
                     <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
                         <TextField
-                            sx={{display: "flex", flexGrow: 2, minWidth: 80}}
+                            sx={{ display: "flex", flexGrow: 2, minWidth: 80 }}
                             id="extraPropA"
                             label={process.env.REACT_APP_EXTRA_PROP_LABEL}
                             autoComplete="off"
@@ -322,40 +322,40 @@ function Home(props) {
         }
     }
     const extraPropBRender = () => {
-        if(extraPropBName !== null) {
-            if(process.env.REACT_APP_SECOND_EXTRA_PROP_DROPDOWN_LABELS !== ""){
+        if (extraPropBName !== null) {
+            if (process.env.REACT_APP_SECOND_EXTRA_PROP_DROPDOWN_LABELS !== "") {
                 return (
-                    <Box sx={{display: "flex"}}>
-                        <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
-                            <Autocomplete
-                                sx={{display: "flex", flexGrow: 2, minWidth: 120}}
-                                freeSolo
-                                disableClearable
-                                options={process.env.REACT_APP_SECOND_EXTRA_PROP_DROPDOWN_LABELS.split(",")}
-                                key={recordTypeAutocompleteKey}
-                                value={extraPropBValue}
-                                renderInput={(params) =>
-                                    <TextField
-                                        id="extraPropB"
-                                        {...params}
-                                        label={process.env.REACT_APP_SECOND_EXTRA_PROP_LABEL}
-                                        name="extraPropB"
-                                        placeholder={process.env.REACT_APP_SECOND_EXTRA_PROP_LABEL}
-                                        type="search"
-                                        variant="outlined"
-                                        onChange={handleExtraPropBChange}
-                                    />
-                                }
-                            />
-                        </Tooltip>
-                    </Box>
+                    // <Box sx={{ display: "flex" }}>
+                    <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
+                        <Autocomplete
+                            sx={{ display: "flex", flexGrow: 2, minWidth: 120 }}
+                            freeSolo
+                            disableClearable
+                            options={process.env.REACT_APP_SECOND_EXTRA_PROP_DROPDOWN_LABELS.split(",")}
+                            key={recordTypeAutocompleteKey}
+                            value={extraPropBValue}
+                            renderInput={(params) =>
+                                <TextField
+                                    id="extraPropB"
+                                    {...params}
+                                    label={process.env.REACT_APP_SECOND_EXTRA_PROP_LABEL}
+                                    name="extraPropB"
+                                    placeholder={process.env.REACT_APP_SECOND_EXTRA_PROP_LABEL}
+                                    type="search"
+                                    variant="outlined"
+                                    onChange={handleExtraPropBChange}
+                                />
+                            }
+                        />
+                    </Tooltip>
+                    // </Box>
                 )
             }
             else {
                 return (
                     <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
                         <TextField
-                            sx={{display: "flex", flexGrow: 2, minWidth: 80}}
+                            sx={{ display: "flex", flexGrow: 2, minWidth: 80 }}
                             id="extraPropB"
                             label={process.env.REACT_APP_SECOND_EXTRA_PROP_LABEL}
                             autoComplete="off"
@@ -377,115 +377,119 @@ function Home(props) {
             <form onSubmit={handleSubmit}>
                 <Grid item alignItems="center" sx={{ backgroundColor: '#d7e3f5' }} xs={12}>
                     <Typography
-                        style={{marginBottom: 20}}
+                        style={{ marginBottom: 20 }}
                         align="center"
                         variant="h6"
                     >
                         {process.env.REACT_APP_HOMEPAGE_HEADER}
                     </Typography>
                     <Typography
-                        style={{marginBottom: 20}}
+                        style={{ marginBottom: 20 }}
                         align="center"
                         variant="subtitle1"
                     >
                         {process.env.REACT_APP_HOMEPAGE_SUBHEADER}
                     </Typography>
                 </Grid>
-                <Grid item container xs={12}>
-                    <Box className="main-query-box">
-                        <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />= at beginning for exactly equal</div>}>
-                            <TextField
-                                sx={{display: "flex", flexGrow: 4, minWidth: 300}}
-                                id="pvName"
-                                label="PV Name"
-                                name="pvName"
-                                autoComplete="off"
-                                value={pvName}
-                                placeholder="PV Name"
-                                type="search"
-                                variant="outlined"
-                                onChange={handlePVNameChange}
-                            />
-                        </Tooltip>
-                        {recordDescSearchRender()}
-                        <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
-                            <TextField
-                                sx={{display: "flex", flexGrow: 3, minWidth: 75}}
-                                id="hostName"
-                                label="Host Name"
-                                autoComplete="off"
-                                name="hostName"
-                                value={hostName}
-                                placeholder="Host Name"
-                                type="search"
-                                variant="outlined"
-                                onChange={handleHostNameChange}
-                            />
-                        </Tooltip>
-                        <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
-                            <TextField
-                                sx={{display: "flex", flexGrow: 3, minWidth: 75}}
-                                id="iocName"
-                                label="IOC Name"
-                                autoComplete="off"
-                                name="iocName"
-                                value={iocName}
-                                placeholder="IOC Name"
-                                type="search"
-                                variant="outlined"
-                                onChange={handleIOCNameChange}
-                            />
-                        </Tooltip>
-                        <Box sx={{display: "flex", flexGrow: 1, minWidth: 100}}>
-                            <TextField
-                                sx={{display: "flex", flexGrow: 2}}
-                                id="pvStatus"
-                                name="pvStatus"
-                                select
-                                value={pvStatus}
-                                onChange={handlePVStatusChange}
-                                label="Status"
-                                variant="outlined"
-                            >
-                                {pvStatusOptions.map((option) => (
-                                    <MenuItem key={option.value} value={option.value} >
-                                        {option.label}
-                                    </MenuItem>
-                                ))}
-                            </TextField>
-                        </Box>
-                        {recordTypeSearchRender()}
-                        {extraPropARender()}
-                        {extraPropBRender()}
+                <Grid item container xs={12} sx={{ display: 'flex', flexWrap: 'wrap' }}>
+                    {/* <Box className="main-query-box" sx={{ flex: 1 }}> */}
+                    <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />= at beginning for exactly equal</div>}>
+                        <TextField
+                            sx={{ display: "flex", flexGrow: 4, minWidth: 250 }}
+                            id="pvName"
+                            label="PV Name"
+                            name="pvName"
+                            autoComplete="off"
+                            value={pvName}
+                            placeholder="PV Name"
+                            type="search"
+                            variant="outlined"
+                            onChange={handlePVNameChange}
+                        />
+                    </Tooltip>
+                    {recordDescSearchRender()}
+                    <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
+                        <TextField
+                            sx={{ display: "flex", flexGrow: 3, minWidth: 75 }}
+                            id="hostName"
+                            label="Host Name"
+                            autoComplete="off"
+                            name="hostName"
+                            value={hostName}
+                            placeholder="Host Name"
+                            type="search"
+                            variant="outlined"
+                            onChange={handleHostNameChange}
+                        />
+                    </Tooltip>
+                    <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
+                        <TextField
+                            sx={{ display: "flex", flexGrow: 3, minWidth: 75 }}
+                            id="iocName"
+                            label="IOC Name"
+                            autoComplete="off"
+                            name="iocName"
+                            value={iocName}
+                            placeholder="IOC Name"
+                            type="search"
+                            variant="outlined"
+                            onChange={handleIOCNameChange}
+                        />
+                    </Tooltip>
+                    <Box sx={{ display: "flex", flexGrow: 1, minWidth: 100 }}>
+                        <TextField
+                            sx={{ display: "flex", flexGrow: 2 }}
+                            id="pvStatus"
+                            name="pvStatus"
+                            select
+                            value={pvStatus}
+                            onChange={handlePVStatusChange}
+                            label="Status"
+                            variant="outlined"
+                        >
+                            {pvStatusOptions.map((option) => (
+                                <MenuItem key={option.value} value={option.value} >
+                                    {option.label}
+                                </MenuItem>
+                            ))}
+                        </TextField>
+                    </Box>
+                    {recordTypeSearchRender()}
+                    {extraPropARender()}
+                    {extraPropBRender()}
+                    <Box sx={{ display: 'flex', flexDirection: 'row', flexGrow: 1 }}>
+
                         {aliasOfSearchRender()}
+                        {/* <Box sx={{ display: 'flex', flexDirection: 'row' }}> */}
                         <Tooltip arrow title="Search">
                             <Button
-                                sx={{display: "flex", flexGrow: 1, minWidth: 60, maxWidth: 80}}
+                                sx={{ display: "flex", flexGrow: 1, minWidth: 60, maxWidth: 80 }}
                                 aria-label="search"
                                 variant="contained"
                                 color="info"
                                 type="submit"
                             >
-                                <SearchIcon style={{color: 'black'}} fontSize='large' />
+                                <SearchIcon style={{ color: 'black' }} fontSize='large' />
                             </Button>
                         </Tooltip>
                         <Tooltip arrow title="Clear">
                             <Button aria-label="clear"
-                                sx={{display: "flex", flexGrow: 1, minWidth: 60, maxWidth: 80}}
+                                sx={{ display: "flex", flexGrow: 1, minWidth: 60, maxWidth: 80 }}
                                 variant="contained"
                                 color="secondary"
                                 onClick={handleClear}
                             >
-                                <ClearIcon style={{color: 'black'}} fontSize='large' />
+                                <ClearIcon style={{ color: 'black' }} fontSize='large' />
                             </Button>
                         </Tooltip>
                     </Box>
+                    {/* </Box> */}
                 </Grid>
-                <Grid container item xs={12} style={{display: "flex"}}>
+                <Grid container item xs={12} style={{ display: "flex" }}>
                     <QueryResults isLoading={isLoading} cfData={cfData} />
                 </Grid>
             </form>
-        </ Fragment>
+        </ Fragment >
     );
 }
 
