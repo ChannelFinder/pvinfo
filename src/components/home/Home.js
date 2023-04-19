@@ -206,7 +206,7 @@ function Home(props) {
             return (
                 <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
                     <TextField
-                        sx={{ display: "flex", flexGrow: 4, minWidth: 300 }}
+                        sx={{ display: "flex", flexGrow: 4, minWidth: { xs: '100%', md: '50%', lg: '16%' } }}
                         id="recordDsec"
                         label="Description"
                         autoComplete="off"
@@ -227,7 +227,7 @@ function Home(props) {
                 // <Box sx={{ display: "flex" }}>
                 <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
                     <Autocomplete
-                        sx={{ display: "flex", flexGrow: 2, minWidth: 120 }}
+                        sx={{ display: "flex", flexGrow: 2, minWidth: { xs: '50%', md: '25%', lg: '8%' } }}
                         freeSolo
                         disableClearable
                         options={pvRecordTypes}
@@ -256,7 +256,7 @@ function Home(props) {
             return (
                 <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
                     <TextField
-                        sx={{ display: "flex", flexGrow: 3, minWidth: 175 }}
+                        sx={{ display: "flex", flexGrow: 3, minWidth: { xs: '50%', md: '25%', lg: '8%' } }}
                         id="alias"
                         label="Alias Of"
                         autoComplete="off"
@@ -278,7 +278,7 @@ function Home(props) {
                     // <Box sx={{ display: "flex" }}>
                     <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
                         <Autocomplete
-                            sx={{ display: "flex", flexGrow: 2, minWidth: 120 }}
+                            sx={{ display: "flex", flexGrow: 2, minWidth: { xs: '70%', md: '35%', lg: '8%' } }}
                             freeSolo
                             disableClearable
                             options={process.env.REACT_APP_EXTRA_PROP_DROPDOWN_LABELS.split(",")}
@@ -328,7 +328,7 @@ function Home(props) {
                     // <Box sx={{ display: "flex" }}>
                     <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
                         <Autocomplete
-                            sx={{ display: "flex", flexGrow: 2, minWidth: 120 }}
+                            sx={{ display: "flex", flexGrow: 2, minWidth: { xs: '30%', md: '15%', lg: '8%' } }}
                             freeSolo
                             disableClearable
                             options={process.env.REACT_APP_SECOND_EXTRA_PROP_DROPDOWN_LABELS.split(",")}
@@ -391,11 +391,11 @@ function Home(props) {
                         {process.env.REACT_APP_HOMEPAGE_SUBHEADER}
                     </Typography>
                 </Grid>
-                <Grid item container xs={12} sx={{ display: 'flex', flexWrap: 'wrap' }}>
+                <Grid item container xs={12} sx={{ display: 'flex', flexWrap: { xs: 'wrap', lg: 'nowrap' } }}>
                     {/* <Box className="main-query-box" sx={{ flex: 1 }}> */}
                     <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />= at beginning for exactly equal</div>}>
                         <TextField
-                            sx={{ display: "flex", flexGrow: 4, minWidth: 250 }}
+                            sx={{ display: "flex", flexGrow: 4, minWidth: { xs: '100%', md: '50%', lg: '16%' } }}
                             id="pvName"
                             label="PV Name"
                             name="pvName"
@@ -410,7 +410,7 @@ function Home(props) {
                     {recordDescSearchRender()}
                     <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
                         <TextField
-                            sx={{ display: "flex", flexGrow: 3, minWidth: 75 }}
+                            sx={{ display: "flex", flexGrow: 3, minWidth: { xs: '50%', md: '25%', lg: '8%' } }}
                             id="hostName"
                             label="Host Name"
                             autoComplete="off"
@@ -424,7 +424,7 @@ function Home(props) {
                     </Tooltip>
                     <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
                         <TextField
-                            sx={{ display: "flex", flexGrow: 3, minWidth: 75 }}
+                            sx={{ display: "flex", flexGrow: 3, minWidth: { xs: '50%', md: '25%', lg: '8%' } }}
                             id="iocName"
                             label="IOC Name"
                             autoComplete="off"
@@ -436,53 +436,53 @@ function Home(props) {
                             onChange={handleIOCNameChange}
                         />
                     </Tooltip>
-                    <Box sx={{ display: "flex", flexGrow: 1, minWidth: 100 }}>
-                        <TextField
-                            sx={{ display: "flex", flexGrow: 2 }}
-                            id="pvStatus"
-                            name="pvStatus"
-                            select
-                            value={pvStatus}
-                            onChange={handlePVStatusChange}
-                            label="Status"
-                            variant="outlined"
-                        >
-                            {pvStatusOptions.map((option) => (
-                                <MenuItem key={option.value} value={option.value} >
-                                    {option.label}
-                                </MenuItem>
-                            ))}
-                        </TextField>
-                    </Box>
+                    {/* <Box sx={{ display: "flex", flexGrow: 1, minWidth: 100 }}> */}
+                    <TextField
+                        sx={{ display: "flex", flexGrow: 1, minWidth: { xs: '50%', md: '25%', lg: '8%' } }}
+                        id="pvStatus"
+                        name="pvStatus"
+                        select
+                        value={pvStatus}
+                        onChange={handlePVStatusChange}
+                        label="Status"
+                        variant="outlined"
+                    >
+                        {pvStatusOptions.map((option) => (
+                            <MenuItem key={option.value} value={option.value} >
+                                {option.label}
+                            </MenuItem>
+                        ))}
+                    </TextField>
+                    {/* </Box> */}
                     {recordTypeSearchRender()}
-                    <Box sx={{ display: 'flex', flexDirection: 'row', flexGrow: 1, flexWrap: { xs: 'wrap', md: 'nowrap' } }}>
-                        {extraPropARender()}
-                        {extraPropBRender()}
-                        <Box sx={{ display: 'flex', flexDirection: 'row', flexGrow: 1, flexWrap: { xs: 'wrap', md: 'nowrap' } }}>
-                            {aliasOfSearchRender()}
-                            <Tooltip arrow title="Search">
-                                <Button
-                                    sx={{ display: "flex", flexGrow: 1, minWidth: 60, maxWidth: 80 }}
-                                    aria-label="search"
-                                    variant="contained"
-                                    color="info"
-                                    type="submit"
-                                >
-                                    <SearchIcon style={{ color: 'black' }} fontSize='large' />
-                                </Button>
-                            </Tooltip>
-                            <Tooltip arrow title="Clear">
-                                <Button aria-label="clear"
-                                    sx={{ display: "flex", flexGrow: 1, minWidth: 60, maxWidth: 80 }}
-                                    variant="contained"
-                                    color="secondary"
-                                    onClick={handleClear}
-                                >
-                                    <ClearIcon style={{ color: 'black' }} fontSize='large' />
-                                </Button>
-                            </Tooltip>
-                        </Box>
-                    </Box>
+                    {/* <Box sx={{ display: 'flex', flexDirection: 'row', flexGrow: 1, flexWrap: { xs: 'wrap', md: 'nowrap' } }}> */}
+                    {extraPropARender()}
+                    {extraPropBRender()}
+                    {/* <Box sx={{ display: 'flex', flexDirection: 'row', flexGrow: 1, flexWrap: { xs: 'wrap', md: 'nowrap' } }}> */}
+                    {aliasOfSearchRender()}
+                    <Tooltip arrow title="Search">
+                        <Button
+                            sx={{ display: "flex", flexGrow: 1, minWidth: { xs: '25%', md: '12.5%', lg: '4%' } }}
+                            aria-label="search"
+                            variant="contained"
+                            color="info"
+                            type="submit"
+                        >
+                            <SearchIcon style={{ color: 'black' }} fontSize='large' />
+                        </Button>
+                    </Tooltip>
+                    <Tooltip arrow title="Clear">
+                        <Button aria-label="clear"
+                            sx={{ display: "flex", flexGrow: 1, minWidth: { xs: '25%', md: '12.5%', lg: '4%' } }}
+                            variant="contained"
+                            color="secondary"
+                            onClick={handleClear}
+                        >
+                            <ClearIcon style={{ color: 'black' }} fontSize='large' />
+                        </Button>
+                    </Tooltip>
+                    {/* </Box> */}
+                    {/* </Box> */}
                 </Grid>
                 <Grid container item xs={12} style={{ display: "flex" }}>
                     <QueryResults isLoading={isLoading} cfData={cfData} />
