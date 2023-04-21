@@ -1,5 +1,6 @@
 const channelFinderURL = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_CF_URL_DEV : process.env.REACT_APP_CF_URL;
 const ologURL = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_OLOG_URL_DEV : process.env.REACT_APP_OLOG_URL;
+const ologWebURL = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_OLOG_WEB_CLIENT_URL_DEV : process.env.REACT_APP_OLOG_WEB_CLIENT_URL;
 const aaViewerURL = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_AA_URL_DEV : process.env.REACT_APP_AA_URL;
 const pvwsURL = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_PVWS_URL_DEV : process.env.REACT_APP_PVWS_URL;
 const serverURL = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_BASE_URL_DEV : process.env.REACT_APP_BASE_URL;
@@ -193,8 +194,7 @@ async function queryOLOG(pvName) {
         return;
     }
 
-    // this needs to be updated to the elastic search OLOG
-    let requestURI = encodeURI(`${ologURL}/olog-endpoint.js?op=retrieve&start=0&format=json&q=${pvName}`);
+    let requestURI = encodeURI(`${ologURL}/logs/search?text=${pvName}`);
     await fetch(requestURI)
     .then(response => {
         if (response.ok) {
@@ -223,6 +223,7 @@ const api = {
     CF_URL: channelFinderURL,
     OLOG_QUERY: queryOLOG,
     OLOG_URL: ologURL,
+    OLOG_WEB_URL: ologWebURL,
     AA_VIEWER: aaViewerURL,
     PVWS_URL: pvwsURL,
     SERVER_URL: serverURL,
