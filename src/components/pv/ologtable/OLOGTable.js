@@ -16,33 +16,27 @@ function OLOGTable(props) {
   useEffect(() => {
     api.OLOG_QUERY(props.pvName)
     .then((data) => {
-        if (data !== null) {
+        if (data !== null && data.hitCount !== 0) {
           setOLOGData(data);
           setIsLoading(false);
         }
         else {
-          console.log("data is NULL!")
+          setIsLoading(false);
+          console.log("Null data from OLOG api");
         }
     })
     .catch((err) => {
         console.log(err);
-        console.log("error in fetch of experiments");
+        console.log("error in fetch of olog entries");
     })
   }, [props.pvName]);
-
-  // https://stackoverflow.com/a/54185014
-  const htmlDecode = (content) => {
-    let e = document.createElement('div');
-    e.innerHTML = content;
-    return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
-  }
 
   if (isLoading) {
     return (
       <Typography variant="h6">OLOG Data Loading...</Typography>
     );
   }
-  else if (ologData === null || ologData === {} || Object.keys(ologData).length === 0) {
+  else if (ologData === null || ologData === {} || Object.keys(ologData).length === 0 || ologData.hitCount === 0) {
     return (
       <Typography variant="h6">No OLOG Entries for this PV</Typography>
     );
@@ -63,16 +57,27 @@ function OLOGTable(props) {
               </TableRow>
             </TableHead>
             <TableBody>
-              {ologData.map((row) => (
+              {ologData.logs.map((row) => (
                 <TableRow
                   key={row.id}
                   sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                 >
-                  <TableCell><Link href={`${api.OLOG_URL}?id=${row.id}`} target="_blank" underline="always">{new Date(row.created*1000).toLocaleString()}</Link></TableCell>
-                  <TableCell>{row.category}</TableCell>
+                  <TableCell><Link href={`${api.OLOG_WEB_URL}/logs/${row.id}`} target="_blank" underline="always">{new Date(row.createdDate).toLocaleString()}</Link></TableCell>
+                  <TableCell>
+                    {
+                      row.tags.map(function(tag, index) {
+                        if (index === row.tags.length - 1) {
+                          return `${tag.name}`;
+                        }
+                        else {
+                          return `${tag.name}, `;
+                        }
+                      })
+                    }
+                  </TableCell>
                   <TableCell>{row.level}</TableCell>
-                  <TableCell><strong><u>{row.subject}</u></strong> <br /> <div dangerouslySetInnerHTML={{__html: htmlDecode(row.details)}} /></TableCell>
-                  <TableCell> {row.author}</TableCell>
+                  <TableCell><strong><u>{row.title}</u></strong> <br /> {row.description}</TableCell>
+                  <TableCell> {row.owner}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
