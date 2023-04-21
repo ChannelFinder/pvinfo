@@ -22,7 +22,7 @@ function QueryResults(props) {
     const [pvSeverities, setPVSeverities] = useState({});
     const [pvUnits, setPVUnits] = useState({});
 
-    const socketUrl = api.PVWS_URL;
+    const socketUrl = `${api.PVWS_URL}/ws`;
     const { sendJsonMessage, lastJsonMessage } = useWebSocket(socketUrl, {
                 shouldReconnect: (closeEvent) => true,
     });

@@ -67,7 +67,7 @@ async function queryChannelFinder(params) {
     }
 
 
-    let requestURI = `${channelFinderURL}?~name=${pvName}&hostName${hostName}&iocName${iocName}&pvStatus${pvStatus}`;
+    let requestURI = `${channelFinderURL}/resources/channels?~name=${pvName}&hostName${hostName}&iocName${iocName}&pvStatus${pvStatus}`;
 
     if(process.env.REACT_APP_CF_RECORD_TYPE === "true") {
         let recordType = "=*";
