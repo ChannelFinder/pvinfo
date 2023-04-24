@@ -28,6 +28,9 @@ function QueryResults(props) {
         shouldReconnect: (closeEvent) => true,
     });
 
+    // const omitSmall = JSON.parse(process.env.REACT_APP_OMIT_IN_TABLE_SMALL);
+    const omitSmall = process.env.REACT_APP_OMIT_IN_TABLE_SMALL.split(',').map(item => item.trim());
+
     useEffect(() => {
         if (lastJsonMessage !== null) {
             const message = lastJsonMessage;
@@ -245,13 +248,13 @@ function QueryResults(props) {
         const handleWindowResize = () => {
             const windowWidth = window.innerWidth;
             if (windowWidth < 600) {
-                toggleColumnVisibility('alias', false);
-                toggleColumnVisibility(process.env.REACT_APP_EXTRA_PROP, false);
-                toggleColumnVisibility('recordType', false);
+                for (let i = 0; i < omitSmall.length; ++i) {
+                    toggleColumnVisibility(omitSmall[i], false)
+                }
             } else {
-                toggleColumnVisibility('alias', true);
-                toggleColumnVisibility(process.env.REACT_APP_EXTRA_PROP, true);
-                toggleColumnVisibility('recordType', true);
+                for (let i = 0; i < omitSmall.length; ++i) {
+                    toggleColumnVisibility(omitSmall[i], true)
+                }
             }
         };
         handleWindowResize(); // Call the function initially
@@ -259,7 +262,7 @@ function QueryResults(props) {
         return () => {
             window.removeEventListener('resize', handleWindowResize);
         };
-    }, []);
+    }, [omitSmall]);
 
     if (props.isLoading) {
         return (
