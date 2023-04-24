@@ -3,18 +3,17 @@
 [![Node Builds](https://github.com/ChannelFinder/pvinfo/workflows/Node.js%20CI/badge.svg)](https://github.com/ChannelFinder/pvinfo/actions/workflows/node.js.yml)
 [![Docker Build](https://github.com/ChannelFinder/pvinfo/workflows/Docker%20Image%20CI/badge.svg)](https://github.com/ChannelFinder/pvinfo/actions/workflows/docker-image.yml)
 
-Web interface for using EPICS Channel Finder database. Integrates with PV Web Socket (PVWS), Archiver Appliance web viewing, and OLOG.
+Web interface to the EPICS [Channel Finder](https://github.com/ChannelFinder/ChannelFinderService) database. This interface allows users to query for PVs by wildcard name searches as well as querying by PV meta-data such as IOC name, record type, etc. 
+
+PV Info also integrates with several other EPICS services. The [PV Web Socket](https://github.com/ornl-epics/pvws) service is used to show live PV data. There are buttons for each PV in PV Info which link to an external archive web viewer to allow users to quickly view past PV history. Currently this is configured to work with the [Archiver Appliance Web Viewer](https://github.com/slacmshankar/epicsarchiverap) but other archive web viewers can easily be used since this is simply an external link to another web page. Lastly, there is an integration with the [Phoebus OLOG service](https://github.com/Olog/phoebus-olog) to display any log entries that contain the specific PV name on the PV "details" page. Only the Channel Finder integration is required to use PV Info.
 
 ![PV Info Arch](docs/arch.png?raw=true "PV Info Arch")
 
-Please report bugs and give feedback!
+This repository is under active development and is currently in production at the Advanced Light Source (ALS). Effort has been made to make PV Info non-ALS specific and configurable for any site using Channel Finder but things might have been missed. So please report any bugs you might find, any new features which could be useful, and any feedback on configuring/installing/using PV Info.
 
 ## Required Packages
 
-- node JS
-	- Test with:
-		- ```node -v```
-		- ```npm -v```
+- Node.js - https://nodejs.org/en
 
 ## Configuration
 
