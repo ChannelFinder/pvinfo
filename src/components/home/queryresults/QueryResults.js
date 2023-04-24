@@ -21,10 +21,11 @@ function QueryResults(props) {
     const [pvValues, setPVValues] = useState({});
     const [pvSeverities, setPVSeverities] = useState({});
     const [pvUnits, setPVUnits] = useState({});
+    const [columnVisibilityModel, setColumnVisibilityModel] = useState();
 
     const socketUrl = api.PVWS_URL;
     const { sendJsonMessage, lastJsonMessage } = useWebSocket(socketUrl, {
-                shouldReconnect: (closeEvent) => true,
+        shouldReconnect: (closeEvent) => true,
     });
 
     useEffect(() => {
@@ -32,17 +33,17 @@ function QueryResults(props) {
             const message = lastJsonMessage;
             if (message.type === "update") {
                 if ("severity" in message) {
-                    setPVSeverities(prevState => ({...prevState, [message.pv]: message.severity}));
+                    setPVSeverities(prevState => ({ ...prevState, [message.pv]: message.severity }));
                 }
                 if ("units" in message) {
-                    setPVUnits(prevState => ({...prevState, [message.pv]: message.units}));
+                    setPVUnits(prevState => ({ ...prevState, [message.pv]: message.units }));
                 }
                 if ("text" in message) {
-                    setPVValues(prevState => ({...prevState, [message.pv]: message.text}));
+                    setPVValues(prevState => ({ ...prevState, [message.pv]: message.text }));
                     return;
                 }
                 else if ("value" in message) {
-                    setPVValues(prevState => ({...prevState, [message.pv]: Number(message.value.toFixed(2))}));
+                    setPVValues(prevState => ({ ...prevState, [message.pv]: Number(message.value.toFixed(2)) }));
                     return;
                 }
             }
@@ -50,7 +51,7 @@ function QueryResults(props) {
                 console.log("Unexpected message type: ", message);
             }
         }
-      }, [lastJsonMessage]);
+    }, [lastJsonMessage]);
 
     /*
     const connectionStatus = {
@@ -67,38 +68,47 @@ function QueryResults(props) {
     }
 
     const handleMonitorPVChange = (pvName) => (event) => {
-        if(event.target.checked) {
+        if (event.target.checked) {
             // maybe reopen here if closed
             // if (ws.current.readyState === WebSocket.CLOSED) {
             //     // Do your stuff...
             //  }
-            sendJsonMessage({ "type": "subscribe", "pvs": [ pvName ] });
-            setPVValues(prevState => ({...prevState, [pvName]: 'obtaining...'}));
+            sendJsonMessage({ "type": "subscribe", "pvs": [pvName] });
+            setPVValues(prevState => ({ ...prevState, [pvName]: 'obtaining...' }));
         }
         else {
-            sendJsonMessage({ "type": "clear", "pvs": [ pvName ] });
+            sendJsonMessage({ "type": "clear", "pvs": [pvName] });
             setPVValues((prevData) => {
-                const newData = {...prevData};
+                const newData = { ...prevData };
                 delete newData[pvName];
                 return newData;
             });
             setPVUnits((prevData) => {
-                const newData = {...prevData};
+                const newData = { ...prevData };
                 delete newData[pvName];
                 return newData;
             });
             setPVSeverities((prevData) => {
-                const newData = {...prevData};
+                const newData = { ...prevData };
                 delete newData[pvName];
                 return newData;
             });
         }
     }
 
+    const toggleColumnVisibility = (field, state) => {
+        setColumnVisibilityModel((prevColumnVisibilityModel) => {
+            return {
+                ...prevColumnVisibilityModel,
+                [field]: state,
+            };
+        });
+    };
+
     const renderButtons = (params) => {
         return (
             <div>
-                <Tooltip arrow title= {<div>Details<br />{params.row.name}</div>}>
+                <Tooltip arrow title={<div>Details<br />{params.row.name}</div>}>
                     <IconButton
                         aria-label="details"
                         color="primary"
@@ -110,19 +120,19 @@ function QueryResults(props) {
                         <ReadMoreIcon />
                     </IconButton>
                 </Tooltip>
-                <Tooltip arrow title= {<div>Plot<br />{params.row.name}</div>}>
+                <Tooltip arrow title={<div>Plot<br />{params.row.name}</div>}>
                     <IconButton
                         aria-label="details"
                         color="primary"
                         target="_blank"
                         variant="contained"
-                        href= {encodeURI(`${api.AA_VIEWER}?pv=${params.row.name}`)}
+                        href={encodeURI(`${api.AA_VIEWER}?pv=${params.row.name}`)}
                         size="large">
                         <TimelineIcon />
                     </IconButton>
                 </Tooltip>
                 <Tooltip arrow title={<div>Monitor PV<br />{params.row.name}</div>}>
-                    <Checkbox disabled={params.row.pvStatus === "Inactive" || params.row.recordType === "waveform" } color="primary" onChange={handleMonitorPVChange(params.row.name)} ></Checkbox>
+                    <Checkbox disabled={params.row.pvStatus === "Inactive" || params.row.recordType === "waveform"} color="primary" onChange={handleMonitorPVChange(params.row.name)} ></Checkbox>
                 </Tooltip>
             </div>
         );
@@ -157,12 +167,12 @@ function QueryResults(props) {
         if (params.row.name in pvSeverities) {
             if (pvSeverities[params.row.name] === "INVALID") {
                 return (
-                    <div style={{color: "#FF00FF"}}>{pvValues[params.row.name]} ({pvSeverities[params.row.name]})</div>
+                    <div style={{ color: "#FF00FF" }}>{pvValues[params.row.name]} ({pvSeverities[params.row.name]})</div>
                 );
             }
             else if (pvSeverities[params.row.name] === "UNDEFINED") {
                 return (
-                    <div style={{color: "#C800C8"}}>{pvSeverities[params.row.name]}</div>
+                    <div style={{ color: "#C800C8" }}>{pvSeverities[params.row.name]}</div>
                 );
             }
             else if (pvSeverities[params.row.name] === "NONE") {
@@ -177,12 +187,12 @@ function QueryResults(props) {
         }
         if (params.row.name in pvUnits) {
             return (
-                <div style={{color: textColor}}>{`${pvValues[params.row.name]} ${pvUnits[params.row.name]}`}</div>
+                <div style={{ color: textColor }}>{`${pvValues[params.row.name]} ${pvUnits[params.row.name]}`}</div>
             );
         }
         else {
             return (
-                <div style={{color: textColor}}>{pvValues[params.row.name]}</div>
+                <div style={{ color: textColor }}>{pvValues[params.row.name]}</div>
             );
         }
     }
@@ -216,7 +226,7 @@ function QueryResults(props) {
     columns.push({ field: "button", headerName: 'Actions', flex: 9.5, minWidth: 160, maxWidth: 200, disableClickEventBubbling: true, renderCell: renderButtons })
 
     useEffect(() => {
-        if ( props.cfData === null || props.cfData === {} || Object.keys(props.cfData).length === 0) {
+        if (props.cfData === null || props.cfData === {} || Object.keys(props.cfData).length === 0) {
             return;
         }
         setPVs(props.cfData.map((pv, index) => {
@@ -231,13 +241,33 @@ function QueryResults(props) {
         }));
     }, [props.cfData]);
 
+    useEffect(() => {
+        const handleWindowResize = () => {
+            const windowWidth = window.innerWidth;
+            if (windowWidth < 600) {
+                toggleColumnVisibility('alias', false);
+                toggleColumnVisibility(process.env.REACT_APP_EXTRA_PROP, false);
+                toggleColumnVisibility('recordType', false);
+            } else {
+                toggleColumnVisibility('alias', true);
+                toggleColumnVisibility(process.env.REACT_APP_EXTRA_PROP, true);
+                toggleColumnVisibility('recordType', true);
+            }
+        };
+        handleWindowResize(); // Call the function initially
+        window.addEventListener('resize', handleWindowResize);
+        return () => {
+            window.removeEventListener('resize', handleWindowResize);
+        };
+    }, []);
+
     if (props.isLoading) {
         return (
             <Fragment>
                 <Typography variant="h6">Data Loading...</Typography>
                 <Hidden lgDown>
                     <Grid container justifyContent="center" >
-                        <img src={bannerLogo} style={{position: "absolute", "marginBottom": "20px", "bottom": 0, width:"25%"}} alt="Banner Logo" />
+                        <img src={bannerLogo} style={{ position: "absolute", "marginBottom": "20px", "bottom": 0, width: "25%" }} alt="Banner Logo" />
                     </Grid>
                 </Hidden>
             </Fragment>
@@ -248,7 +278,7 @@ function QueryResults(props) {
             <Fragment>
                 <Hidden lgDown>
                     <Grid container justifyContent="center" >
-                        <img src={bannerLogo} style={{position: "absolute", "marginBottom": "20px", "bottom": 0, width:"25%"}} alt="Banner Logo" />
+                        <img src={bannerLogo} style={{ position: "absolute", "marginBottom": "20px", "bottom": 0, width: "25%" }} alt="Banner Logo" />
                     </Grid>
                 </Hidden>
             </Fragment>
@@ -260,7 +290,7 @@ function QueryResults(props) {
                 <Typography>No PVs match your query</Typography>
                 <Hidden lgDown>
                     <Grid container justifyContent="center" >
-                        <img src={bannerLogo} style={{position: "absolute", "marginBottom": "20px", "bottom": 0, width:"25%"}} alt="Banner Logo" />
+                        <img src={bannerLogo} style={{ position: "absolute", "marginBottom": "20px", "bottom": 0, width: "25%" }} alt="Banner Logo" />
                     </Grid>
                 </Hidden>
             </Fragment>
@@ -278,7 +308,12 @@ function QueryResults(props) {
                 onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
                 rowsPerPageOptions={[5, 10, 20, 50, 100]}
                 pagination
+                columnVisibilityModel={columnVisibilityModel}
+                onColumnVisibilityModelChange={(newModel) =>
+                    setColumnVisibilityModel(newModel)
+                }
             />
+            {/* <button onClick={() => toggleColumnVisibility('name', false)}>hide name</button> */}
         </ Fragment>
     );
 }
