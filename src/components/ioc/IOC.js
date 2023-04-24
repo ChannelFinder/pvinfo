@@ -26,7 +26,7 @@ const columns = [
   { field: "host", headerName: 'Host', flex: 8.25, minWidth: 150, maxWidth: 275 },
   { field: "owner", headerName: 'Engineer', flex: 8.25, minWidth: 150, maxWidth: 275 },
   { field: "iocid", headerName: 'IP Address', flex: 8.25, minWidth: 150, maxWidth: 275 },
-  { field: "time", headerName: 'IOC Reboot Time (Except hard IOCs)', flex: 8.25, minWidth: 150, maxWidth: 275, renderCell: renderDate },
+  { field: "time", headerName: 'IOC Reboot Time', flex: 8.25, minWidth: 150, maxWidth: 275, renderCell: renderDate },
 ]
 
 function IOC() {

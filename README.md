@@ -16,6 +16,45 @@ Please report bugs and give feedback!
 		- ```node -v```
 		- ```npm -v```
 
+## Configuration
+
+### React Environment Variables
+
+There are many React environment variables avaiable to configure PV Info for your site. Several variables will most definately need to be updated for PV Info to work. These variables are containted in [.env file](.env):
+
+- `REACT_APP_ENDPOINT`
+- `REACT_APP_DOMAIN`
+- `REACT_APP_HTTP_PROTOCOL`
+- `REACT_APP_CF_URL`
+- `REACT_APP_PVWS_URL`
+- `REACT_APP_AA_URL`
+- `REACT_APP_OLOG_URL`
+
+The only required service is Channel Finder. To turn off PV Web Socket, Archiver Web Viewer, or OLOG:
+- `REACT_APP_USE_PVWS=false`
+- `REACT_APP_USE_AA=false`
+- `REACT_APP_USE_OLOG=false`
+
+Other interesting variables are the channel finder properties that you can configure to show as searchable on the homepage:
+- `REACT_APP_CF_RECORD_TYPE`
+- `REACT_APP_CF_RECORD_DESC`
+- `REACT_APP_CF_ALIAS`
+- `REACT_APP_EXTRA_PROP`
+- `REACT_APP_SECOND_EXTRA_PROP`
+
+### package.json
+
+Update the "homepage" variable in [package.json](package.json).
+
+https://github.com/ChannelFinder/pvinfo/blob/master/package.json#L3
+
+
+### Logos and Colors
+
+- Update [src/theme.js](src/theme.js) with the colors and fonts you want
+- Place your own logos in src/assets
+
+
 ## Initial Setup and Running Locally
 
 ### `npm install`
@@ -29,12 +68,6 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
 The page will reload if you make edits.\
 You will also see any lint errors in the console.
-
-## Site specific settings
-
-- Update src/theme.js with the colors and fonts you want
-- Place your own logos in src/assets
-- Edit .env or create .env.local with your site specific settings
 
 
 ## Building Production Bundle
