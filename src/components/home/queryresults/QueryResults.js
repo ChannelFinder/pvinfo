@@ -28,9 +28,10 @@ function QueryResults(props) {
         shouldReconnect: (closeEvent) => true,
     });
 
+    const omitExtraSmall = process.env.REACT_APP_OMIT_IN_TABLE_X_SMALL.split(',').map(item => item.trim());
     const omitSmall = process.env.REACT_APP_OMIT_IN_TABLE_SMALL.split(',').map(item => item.trim());
     const omitMedium = process.env.REACT_APP_OMIT_IN_TABLE_MEDIUM.split(',').map(item => item.trim());
-    const includeMedium = omitSmall.filter(item => !omitMedium.includes(item));
+    // const includeMedium = omitSmall.filter(item => !omitMedium.includes(item));
 
     useEffect(() => {
         if (lastJsonMessage !== null) {
@@ -248,20 +249,38 @@ function QueryResults(props) {
     useEffect(() => {
         const handleWindowResize = () => {
             const windowWidth = window.innerWidth;
-            if (windowWidth < 600) {
-                for (let i = 0; i < omitSmall.length; ++i) {
-                    toggleColumnVisibility(omitSmall[i], false);
-                }
-            } else if (windowWidth > 600 && windowWidth < 900) {
-                for (let i = 0; i < omitMedium.length; ++i) {
-                    toggleColumnVisibility(omitMedium[i], false);
-                }
-                for (let i = 0; i < includeMedium.length; ++i) {
-                    toggleColumnVisibility(includeMedium[i], true);
-                }
-            } else {
-                for (let i = 0; i < omitSmall.length; ++i) {
-                    toggleColumnVisibility(omitSmall[i], true);
+            if (!props.isLoading && !(props.cfData == null)) {
+                if (windowWidth < 600) {
+                    for (let i = 0; i < omitExtraSmall.length; ++i) {
+                        toggleColumnVisibility(omitExtraSmall[i], false)
+                    }
+                    for (let i = 0; i < omitSmall.length; ++i) {
+                        toggleColumnVisibility(omitSmall[i], false);
+                    }
+                    for (let i = 0; i < omitMedium.length; ++i) {
+                        toggleColumnVisibility(omitMedium[i], false);
+                    }
+                } else if (windowWidth > 600 && windowWidth < 900) {
+                    for (let i = 0; i < omitSmall.length; ++i) {
+                        toggleColumnVisibility(omitSmall[i], false);
+                    }
+                    for (let i = 0; i < omitExtraSmall.length; ++i) {
+                        toggleColumnVisibility(omitExtraSmall[i], true);
+                    }
+                    for (let i = 0; i < omitMedium.length; ++i) {
+                        toggleColumnVisibility(omitMedium[i], false);
+                    }
+                } else if (windowWidth > 900 && windowWidth < 1600) {
+                    for (let i = 0; i < omitMedium.length; ++i) {
+                        toggleColumnVisibility(omitMedium[i], false);
+                    }
+                    for (let i = 0; i < omitSmall.length; ++i) {
+                        toggleColumnVisibility(omitSmall[i], true);
+                    }
+                } else {
+                    for (let i = 0; i < omitMedium.length; ++i) {
+                        toggleColumnVisibility(omitMedium[i], true);
+                    }
                 }
             }
         };
@@ -270,7 +289,7 @@ function QueryResults(props) {
         return () => {
             window.removeEventListener('resize', handleWindowResize);
         };
-    }, [omitSmall, omitMedium, includeMedium, columnVisibilityModel]);
+    }, [props.isLoading, props.cfData, omitExtraSmall, omitSmall, omitMedium, columnVisibilityModel]);
 
     if (props.isLoading) {
         return (
