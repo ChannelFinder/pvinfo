@@ -16,11 +16,21 @@ const propTypes = {
 
 function QueryResults(props) {
     const navigate = useNavigate();
-    const [pageSize, setPageSize] = useState(20);
+    const pageSizeEnvValue = process.env.REACT_APP_RESULTS_TABLE_SIZE ? parseInt(process.env.REACT_APP_RESULTS_TABLE_SIZE.trim()) : 50;
+    const [pageSize, setPageSize] = useState(pageSizeEnvValue);
     const [pvs, setPVs] = useState([]);
     const [pvValues, setPVValues] = useState({});
     const [pvSeverities, setPVSeverities] = useState({});
     const [pvUnits, setPVUnits] = useState({});
+    const defaultTableDensity = process.env.REACT_APP_RESULTS_TABLE_DENSITY ? process.env.REACT_APP_RESULTS_TABLE_DENSITY : "standard";
+    let tablePageSizeOptions = [5, 10, 20, 50, 100];
+    if(process.env.REACT_APP_RESULTS_TABLE_SIZE_OPTIONS) {
+        tablePageSizeOptions = process.env.REACT_APP_RESULTS_TABLE_SIZE_OPTIONS.split(',').filter(item => item.trim().length && !isNaN(item)).map(Number);
+        if(!tablePageSizeOptions.includes(pageSizeEnvValue)) {
+            tablePageSizeOptions.push(pageSizeEnvValue);
+        }
+        tablePageSizeOptions.sort();
+    }
     const [columnVisibilityModel, setColumnVisibilityModel] = useState();
     const [currentBreakpoint, setCurrentBreakpoint] = useState();
     const [prevBreakpoint, setPrevBreakpoint] = useState();
@@ -351,11 +361,12 @@ function QueryResults(props) {
                 rows={pvs}
                 columns={columns}
                 autoHeight={true}
+                density={defaultTableDensity}
                 onRowDoubleClick={handleRowDoubleClick}
                 components={{ Toolbar: GridToolbar }}
                 pageSize={pageSize}
                 onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
-                rowsPerPageOptions={[5, 10, 20, 50, 100]}
+                rowsPerPageOptions={tablePageSizeOptions}
                 pagination
                 columnVisibilityModel={columnVisibilityModel}
                 onColumnVisibilityModelChange={(newModel) =>
