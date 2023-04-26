@@ -16,11 +16,27 @@ const propTypes = {
 
 function QueryResults(props) {
     const navigate = useNavigate();
-    const [pageSize, setPageSize] = useState(20);
+    let pageSizeEnvValue = 50;
+    if(process.env.REACT_APP_RESULTS_TABLE_SIZE){
+        pageSizeEnvValue = Number(process.env.REACT_APP_RESULTS_TABLE_SIZE);
+    }
+    const [pageSize, setPageSize] = useState(pageSizeEnvValue);
     const [pvs, setPVs] = useState([]);
     const [pvValues, setPVValues] = useState({});
     const [pvSeverities, setPVSeverities] = useState({});
     const [pvUnits, setPVUnits] = useState({});
+    let defaultTableDensity = "standard";
+    if(process.env.REACT_APP_RESULTS_TABLE_DENSITY) {
+        defaultTableDensity = process.env.REACT_APP_RESULTS_TABLE_DENSITY;
+    }
+    let tablePageSizeOptions = [5, 10, 20, 50, 100];
+    if(process.env.REACT_APP_RESULTS_TABLE_SIZE_OPTIONS) {
+        tablePageSizeOptions = process.env.REACT_APP_RESULTS_TABLE_SIZE_OPTIONS.split(',').filter(item => item.trim().length && !isNaN(item)).map(Number);
+        if(!tablePageSizeOptions.includes(pageSizeEnvValue)) {
+            tablePageSizeOptions.push(pageSizeEnvValue);
+        }
+        tablePageSizeOptions.sort();
+    }
 
     const socketUrl = api.PVWS_URL;
     const { sendJsonMessage, lastJsonMessage } = useWebSocket(socketUrl, {
@@ -272,11 +288,12 @@ function QueryResults(props) {
                 rows={pvs}
                 columns={columns}
                 autoHeight={true}
+                density={defaultTableDensity}
                 onRowDoubleClick={handleRowDoubleClick}
                 components={{ Toolbar: GridToolbar }}
                 pageSize={pageSize}
                 onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
-                rowsPerPageOptions={[5, 10, 20, 50, 100]}
+                rowsPerPageOptions={tablePageSizeOptions}
                 pagination
             />
         </ Fragment>
