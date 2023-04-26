@@ -256,18 +256,19 @@ function QueryResults(props) {
     useEffect(() => {
         const handleWindowResize = () => {
             const windowWidth = window.innerWidth;
-            const sm = 600 ? !process.env.REACT_APP_SM_BREAKPOINT : parseInt(process.env.REACT_APP_SM_BREAKPOINT);
-            const md = 900 ? !process.env.REACT_APP_MD_BREAKPOINT : parseInt(process.env.REACT_APP_MD_BREAKPOINT);
-            const lg = 1536 ? !process.env.REACT_APP_LG_BREAKPOINT : parseInt(process.env.REACT_APP_LG_BREAKPOINT);
+            const sm = process.env.REACT_APP_SM_BREAKPOINT ? parseInt(process.env.REACT_APP_SM_BREAKPOINT) : 600;
+            const md = process.env.REACT_APP_MD_BREAKPOINT ? parseInt(process.env.REACT_APP_MD_BREAKPOINT) : 900;
+            const lg = process.env.REACT_APP_LG_BREAKPOINT ? parseInt(process.env.REACT_APP_LG_BREAKPOINT) : 1536;
 
             setCurrentBreakpoint(roundToBreakpoint(windowWidth, [0, sm, md, lg]))
 
             if (currentBreakpoint !== prevBreakpoint) {
                 setPrevBreakpoint(currentBreakpoint);
 
-                const omitExtraSmall = [] ? !process.env.REACT_APP_OMIT_IN_TABLE_X_SMALL : process.env.REACT_APP_OMIT_IN_TABLE_X_SMALL.split(',').map(item => item.trim());
-                const omitSmall = [] ? !process.env.REACT_APP_OMIT_IN_TABLE_SMALL : process.env.REACT_APP_OMIT_IN_TABLE_SMALL.split(',').map(item => item.trim());
-                const omitMedium = [] ? !process.env.REACT_APP_OMIT_IN_TABLE_MEDIUM : process.env.REACT_APP_OMIT_IN_TABLE_MEDIUM.split(',').map(item => item.trim());
+                // const omitExtraSmall = !process.env.REACT_APP_OMIT_IN_TABLE_X_SMALL ? [] : process.env.REACT_APP_OMIT_IN_TABLE_X_SMALL.split(',').map(item => item.trim());
+                const omitExtraSmall = process.env.REACT_APP_OMIT_IN_TABLE_X_SMALL ? process.env.REACT_APP_OMIT_IN_TABLE_X_SMALL.split(',').map(item => item.trim()) : [];
+                const omitSmall = process.env.REACT_APP_OMIT_IN_TABLE_SMALL ? process.env.REACT_APP_OMIT_IN_TABLE_SMALL.split(',').map(item => item.trim()) : [];
+                const omitMedium = !process.env.REACT_APP_OMIT_IN_TABLE_MEDIUM ? process.env.REACT_APP_OMIT_IN_TABLE_MEDIUM.split(',').map(item => item.trim()) : [];
                 if (windowWidth <= sm) {
                     for (let i = 0; i < omitExtraSmall.length; ++i) {
                         toggleColumnVisibility(omitExtraSmall[i], false)
