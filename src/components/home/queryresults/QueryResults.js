@@ -22,14 +22,13 @@ function QueryResults(props) {
     const [pvSeverities, setPVSeverities] = useState({});
     const [pvUnits, setPVUnits] = useState({});
     const [columnVisibilityModel, setColumnVisibilityModel] = useState();
+    const [currentBreakpoint, setCurrentBreakpoint] = useState();
+    const [prevBreakpoint, setPrevBreakpoint] = useState();
 
     const socketUrl = api.PVWS_URL;
     const { sendJsonMessage, lastJsonMessage } = useWebSocket(socketUrl, {
         shouldReconnect: (closeEvent) => true,
     });
-
-
-    // const includeMedium = omitSmall.filter(item => !omitMedium.includes(item));
 
     useEffect(() => {
         if (lastJsonMessage !== null) {
@@ -244,42 +243,62 @@ function QueryResults(props) {
         }));
     }, [props.cfData]);
 
+    function roundToBreakpoint(width, breakpoints) {
+        const smallerBreakpoints = breakpoints.filter((item) => item <= width);
+        return smallerBreakpoints[smallerBreakpoints.length - 1]
+    }
+
+    useEffect(() => {
+        setCurrentBreakpoint(parseInt(process.env.REACT_APP_LG_BREAKPOINT));
+        setPrevBreakpoint(parseInt(process.env.REACT_APP_LG_BREAKPOINT));
+    }, []);
+
     useEffect(() => {
         const handleWindowResize = () => {
             const windowWidth = window.innerWidth;
-            const omitExtraSmall = process.env.REACT_APP_OMIT_IN_TABLE_X_SMALL.split(',').map(item => item.trim());
-            const omitSmall = process.env.REACT_APP_OMIT_IN_TABLE_SMALL.split(',').map(item => item.trim());
-            const omitMedium = process.env.REACT_APP_OMIT_IN_TABLE_MEDIUM.split(',').map(item => item.trim());
-            if (windowWidth < 600) {
-                for (let i = 0; i < omitExtraSmall.length; ++i) {
-                    toggleColumnVisibility(omitExtraSmall[i], false)
-                }
-                for (let i = 0; i < omitSmall.length; ++i) {
-                    toggleColumnVisibility(omitSmall[i], false);
-                }
-                for (let i = 0; i < omitMedium.length; ++i) {
-                    toggleColumnVisibility(omitMedium[i], false);
-                }
-            } else if (windowWidth > 600 && windowWidth < 900) {
-                for (let i = 0; i < omitSmall.length; ++i) {
-                    toggleColumnVisibility(omitSmall[i], false);
-                }
-                for (let i = 0; i < omitExtraSmall.length; ++i) {
-                    toggleColumnVisibility(omitExtraSmall[i], true);
-                }
-                for (let i = 0; i < omitMedium.length; ++i) {
-                    toggleColumnVisibility(omitMedium[i], false);
-                }
-            } else if (windowWidth > 900 && windowWidth < 1600) {
-                for (let i = 0; i < omitMedium.length; ++i) {
-                    toggleColumnVisibility(omitMedium[i], false);
-                }
-                for (let i = 0; i < omitSmall.length; ++i) {
-                    toggleColumnVisibility(omitSmall[i], true);
-                }
-            } else {
-                for (let i = 0; i < omitMedium.length; ++i) {
-                    toggleColumnVisibility(omitMedium[i], true);
+            const sm = parseInt(process.env.REACT_APP_SM_BREAKPOINT);
+            const md = parseInt(process.env.REACT_APP_MD_BREAKPOINT);
+            const lg = parseInt(process.env.REACT_APP_LG_BREAKPOINT);
+
+            setCurrentBreakpoint(roundToBreakpoint(windowWidth, [0, sm, md, lg]))
+
+            if (currentBreakpoint !== prevBreakpoint) {
+                setPrevBreakpoint(currentBreakpoint);
+
+                const omitExtraSmall = process.env.REACT_APP_OMIT_IN_TABLE_X_SMALL.split(',').map(item => item.trim());
+                const omitSmall = process.env.REACT_APP_OMIT_IN_TABLE_SMALL.split(',').map(item => item.trim());
+                const omitMedium = process.env.REACT_APP_OMIT_IN_TABLE_MEDIUM.split(',').map(item => item.trim());
+                if (windowWidth <= sm) {
+                    for (let i = 0; i < omitExtraSmall.length; ++i) {
+                        toggleColumnVisibility(omitExtraSmall[i], false)
+                    }
+                    for (let i = 0; i < omitSmall.length; ++i) {
+                        toggleColumnVisibility(omitSmall[i], false);
+                    }
+                    for (let i = 0; i < omitMedium.length; ++i) {
+                        toggleColumnVisibility(omitMedium[i], false);
+                    }
+                } else if (windowWidth > sm && windowWidth <= md) {
+                    for (let i = 0; i < omitSmall.length; ++i) {
+                        toggleColumnVisibility(omitSmall[i], false);
+                    }
+                    for (let i = 0; i < omitExtraSmall.length; ++i) {
+                        toggleColumnVisibility(omitExtraSmall[i], true);
+                    }
+                    for (let i = 0; i < omitMedium.length; ++i) {
+                        toggleColumnVisibility(omitMedium[i], false);
+                    }
+                } else if (windowWidth > md && windowWidth <= lg) {
+                    for (let i = 0; i < omitMedium.length; ++i) {
+                        toggleColumnVisibility(omitMedium[i], false);
+                    }
+                    for (let i = 0; i < omitSmall.length; ++i) {
+                        toggleColumnVisibility(omitSmall[i], true);
+                    }
+                } else {
+                    for (let i = 0; i < omitMedium.length; ++i) {
+                        toggleColumnVisibility(omitMedium[i], true);
+                    }
                 }
             }
         };
@@ -288,7 +307,7 @@ function QueryResults(props) {
         return () => {
             window.removeEventListener('resize', handleWindowResize);
         };
-    }, []);
+    }, [currentBreakpoint, prevBreakpoint]);
 
     if (props.isLoading) {
         return (
