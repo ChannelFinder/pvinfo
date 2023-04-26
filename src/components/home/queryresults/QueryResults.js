@@ -256,9 +256,9 @@ function QueryResults(props) {
     useEffect(() => {
         const handleWindowResize = () => {
             const windowWidth = window.innerWidth;
-            const sm = parseInt(process.env.REACT_APP_SM_BREAKPOINT);
-            const md = parseInt(process.env.REACT_APP_MD_BREAKPOINT);
-            const lg = parseInt(process.env.REACT_APP_LG_BREAKPOINT);
+            const sm = 600 ? !process.env.REACT_APP_SM_BREAKPOINT : parseInt(process.env.REACT_APP_SM_BREAKPOINT);
+            const md = 900 ? !process.env.REACT_APP_MD_BREAKPOINT : parseInt(process.env.REACT_APP_MD_BREAKPOINT);
+            const lg = 1536 ? !process.env.REACT_APP_LG_BREAKPOINT : parseInt(process.env.REACT_APP_LG_BREAKPOINT);
 
             setCurrentBreakpoint(roundToBreakpoint(windowWidth, [0, sm, md, lg]))
 
