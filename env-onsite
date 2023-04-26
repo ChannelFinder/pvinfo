@@ -1,0 +1,42 @@
+REACT_APP_PVWS_URL_DEV=wss://controls-web.als.lbl.gov/pvws/pv
+REACT_APP_CF_URL_DEV=https://controls-web.als.lbl.gov/ChannelFinder/resources/channels
+
+REACT_APP_OMIT_IN_TABLE_MEDIUM=hostName,iocName,alias,archive
+REACT_APP_OMIT_IN_TABLE_SMALL=pvStatus,recordType
+REACT_APP_OMIT_IN_TABLE_X_SMALL=recordDesc
+REACT_APP_CF_RECORD_TYPE=true
+REACT_APP_CF_RECORD_DESC=true
+REACT_APP_CF_ALIAS=true
+
+
+REACT_APP_ENDPOINT=/pvinfo2_devel
+REACT_APP_ENDPOINT_DEV=/pvinfo2_devel
+
+REACT_APP_DOMAIN=controls2.als.lbl.gov
+REACT_APP_DOMAIN_DEV=controls-web.als.lbl.gov
+
+REACT_APP_AA_URL_DEV=https://controls-web.als.lbl.gov/archappl_retrieve/ui/viewer/archViewer.html
+REACT_APP_AA_POLICIES="VeryFast|0.1|10|None,Fast|1|30|None,Medium|10|60|None,Slow|60|180|None,VerySlow|900|None|None,VeryFastControlled|0.1|10|ALS:Archiver:Enable,FastControlled|1|30|ALS:Archiver:Enable,MediumControlled|10|60|ALS:Archiver:Enable,SlowControlled|60|180|ALS:Archiver:Enable,VerySlowControlled|900|None|ALS:Archiver:Enable"
+
+REACT_APP_EXTRA_PROP=archive
+REACT_APP_EXTRA_PROP_LABEL=Archive Policy
+REACT_APP_EXTRA_PROP_SHOW_IN_RESULTS=true
+REACT_APP_EXTRA_PROP_HELP_TEXT="The ALS archiver appliance is populated via the archive INFO tag which this field represents. There are 5 main policies: VeryFast, Fast, Medium, Slow, VerySlow. See the plotting page for more details."
+REACT_APP_EXTRA_PROP_DROPDOWN_LABELS="VeryFast,Fast,Medium,Slow,VerySlow,VeryFastControlled,FastControlled,MediumControlled,SlowControlled,VerySlowControlled"
+
+REACT_APP_SECOND_EXTRA_PROP=irm
+REACT_APP_SECOND_EXTRA_PROP_LABEL=IRM
+REACT_APP_SECOND_EXTRA_PROP_SHOW_IN_RESULTS=false
+REACT_APP_SECOND_EXTRA_PROP_HELP_TEXT="The IRM (ILC Replacement Module) number for the PV. This only applies if the PV is connected to an IRM; otherwise the field is blank. Clicking on the number will issue a new search for all PVs in the IRM. If you then wish to return to the original search, use the browser's Back button."
+REACT_APP_SECOND_EXTRA_PROP_DROPDOWN_LABELS="1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,150,151,240,241"
+
+
+REACT_APP_HELP_EXAMPLE_PV=cmm:beam_current
+REACT_APP_HELP_PV_NAMING_CONVENTION="The ALS PV names have been created by many people over many years so there are serveral different standards. The current naming standard is SystemSubSystem:DeviceSubDevice:SignalType, something like: LNRF:KLY1-FIL:Current which means - System=LN (Linac), Subsystem=RF, Device=KLY (Klystron), SubDevice=FIL (Filament), SignalType=Current"
+
+REACT_APP_HOMEPAGE_HEADER="This is the new version of PVInfo2 which uses the updated EPICS archiver with much faster sampling rates and the EPICS Channel Finder DB"
+REACT_APP_HOMEPAGE_SUBHEADER="Please send any bugs/comments/suggestions to tford@lbl.gov"
+
+REACT_APP_USE_OLOG=true
+REACT_APP_OLOG_URL_DEV=http://localhost:8080/Olog
+REACT_APP_OLOG_WEB_CLIENT_URL_DEV=http://localhost:8080/Olog

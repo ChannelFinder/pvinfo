@@ -16,19 +16,13 @@ const propTypes = {
 
 function QueryResults(props) {
     const navigate = useNavigate();
-    let pageSizeEnvValue = 50;
-    if(process.env.REACT_APP_RESULTS_TABLE_SIZE){
-        pageSizeEnvValue = Number(process.env.REACT_APP_RESULTS_TABLE_SIZE);
-    }
+    const pageSizeEnvValue = process.env.REACT_APP_RESULTS_TABLE_SIZE ? parseInt(process.env.REACT_APP_RESULTS_TABLE_SIZE.trim()) : 50;
     const [pageSize, setPageSize] = useState(pageSizeEnvValue);
     const [pvs, setPVs] = useState([]);
     const [pvValues, setPVValues] = useState({});
     const [pvSeverities, setPVSeverities] = useState({});
     const [pvUnits, setPVUnits] = useState({});
-    let defaultTableDensity = "standard";
-    if(process.env.REACT_APP_RESULTS_TABLE_DENSITY) {
-        defaultTableDensity = process.env.REACT_APP_RESULTS_TABLE_DENSITY;
-    }
+    const defaultTableDensity = process.env.REACT_APP_RESULTS_TABLE_DENSITY ? process.env.REACT_APP_RESULTS_TABLE_DENSITY : "standard";
     let tablePageSizeOptions = [5, 10, 20, 50, 100];
     if(process.env.REACT_APP_RESULTS_TABLE_SIZE_OPTIONS) {
         tablePageSizeOptions = process.env.REACT_APP_RESULTS_TABLE_SIZE_OPTIONS.split(',').filter(item => item.trim().length && !isNaN(item)).map(Number);
