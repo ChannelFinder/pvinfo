@@ -7,7 +7,7 @@ import KeyValuePair from "./KeyValuePair";
 import OLOGTable from "./ologtable";
 import ValueTable from "./valuetable";
 import PropTypes from "prop-types";
-import { dataNamesMapping, dataOrder } from "../../config";
+// import { dataNamesMapping, dataOrder } from "../../config";
 
 
 const propTypes = {
@@ -23,8 +23,27 @@ function PV(props) {
     const [isLoading, setIsLoading] = useState(true);
     const pvHTMLString = encodeURI(`${api.AA_VIEWER}?pv=${id}`);
     const [displayAllVars, setDisplayAllVars] = useState(false);
+    const [dataNamesMapping, setDataNamesMapping] = useState({});
+    const [dataOrder, setDataOrder] = useState([])
 
     let { handleErrorMessage, handleOpenErrorAlert } = props;
+
+    useEffect(() => {
+        const dict = {}
+        let order = []
+        let dataNames = process.env.REACT_APP_DATA_NAMES_MAPPING ? process.env.REACT_APP_DATA_NAMES_MAPPING : "";
+        dataNames.split(',').forEach((pair) => {
+            if (pair === "*") {
+                setDisplayAllVars(true);
+                return;
+            }
+            const [key, value] = pair.split(':');
+            dict[key] = value
+            order.push(key);
+        })
+        setDataNamesMapping(dict);
+        setDataOrder(order);
+    }, []);
 
     // Get channel finder data for this PV
     useEffect(() => {
@@ -74,14 +93,14 @@ function PV(props) {
         setPVData(pvObject);
     }, [cfPVData]);
 
-    useEffect(() => {
-        if (dataOrder[dataOrder.length - 1] === "*") {
-            setDisplayAllVars(true);
-            dataOrder.splice((dataOrder.length - 1), 1);
-            console.log(dataOrder)
-            return;
-        }
-    }, []);
+    // useEffect(() => {
+    //     if (dataOrder[dataOrder.length - 1] === "*") {
+    //         setDisplayAllVars(true);
+    //         dataOrder.splice((dataOrder.length - 1), 1);
+    //         console.log(dataOrder)
+    //         return;
+    //     }
+    // }, []);
 
     const handlePVMonitoringChangle = (e) => {
         if (e.target.checked) {
@@ -134,10 +153,10 @@ function PV(props) {
                             )
                         })}
                         {displayAllVars ? (
-                            Object.keys(pvData).map((key) => {
+                            Object.keys(pvData).map((key, i) => {
                                 if (!(key in dataNamesMapping)) {
 
-                                    return <KeyValuePair title={pvData[key].label} value={pvData[key].value} />
+                                    return <KeyValuePair key={i} title={pvData[key].label} value={pvData[key].value} />
                                 }
                                 return (
                                     null
