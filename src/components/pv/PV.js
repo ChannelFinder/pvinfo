@@ -68,11 +68,9 @@ function PV(props) {
         pvObject.owner.value = cfPVData.owner;
         cfPVData.properties.forEach((prop) => {
             pvObject[prop.name] = {}
-            pvObject[prop.name].label = dataNamesMapping[prop.name];
+            pvObject[prop.name].label = dataNamesMapping[prop.name] ? dataNamesMapping[prop.name] : prop.name;
             pvObject[prop.name].value = prop.value
         });
-        // console.log(cfPVData);
-        // console.log(pvObject)
         setPVData(pvObject);
     }, [cfPVData]);
 
@@ -122,20 +120,30 @@ function PV(props) {
                 }
                 <Box sx={{ border: 5, borderColor: 'primary.main' }}>
                     <Grid container>
-                        {dataOrder.map((item, i) => (
-                            <KeyValuePair key={i} title={dataNamesMapping[item]} value={pvData[item] ? pvData[item].value : ''} />
-                            // <Fragment key={i}>
-                            //     <Grid item xs={6} sm={2} sx={{ px: 2, py: 1, borderBottom: 1, borderColor: 'grey.300' }}>
-                            //         <Typography variant="subtitle2">{dataNamesMapping[item] ? dataNamesMapping[item] : 'hw'}</Typography>
-                            //     </Grid>
-                            //     <Grid item xs={6} sm={4} sx={{ px: 2, py: 1, borderBottom: 1, borderColor: 'grey.300' }}>
-                            //         <Typography variant="body2">{pvData[item] ? pvData[item].value : ''}</Typography>
-                            //     </Grid>
-                            // </Fragment>
-                        ))}
-                        {displayAllVars ?
-                            <KeyValuePair title="display more" />
-                            : null
+                        {dataOrder.map((item, i) => {
+                            return (
+                                <KeyValuePair key={i} title={dataNamesMapping[item]} value={pvData[item] ? pvData[item].value : ''} />
+                                // <Fragment key={i}>
+                                //     <Grid item xs={6} sm={2} sx={{ px: 2, py: 1, borderBottom: 1, borderColor: 'grey.300' }}>
+                                //         <Typography variant="subtitle2">{dataNamesMapping[item] ? dataNamesMapping[item] : 'hw'}</Typography>
+                                //     </Grid>
+                                //     <Grid item xs={6} sm={4} sx={{ px: 2, py: 1, borderBottom: 1, borderColor: 'grey.300' }}>
+                                //         <Typography variant="body2">{pvData[item] ? pvData[item].value : ''}</Typography>
+                                //     </Grid>
+                                // </Fragment>
+                            )
+                        })}
+                        {displayAllVars ? (
+                            Object.keys(pvData).map((key) => {
+                                if (!(key in dataNamesMapping)) {
+
+                                    return <KeyValuePair title={pvData[key].label} value={pvData[key].value} />
+                                }
+                                return (
+                                    null
+                                )
+                            })
+                        ) : null
                         }
                         {
                             process.env.REACT_APP_USE_PVWS === "true" ?

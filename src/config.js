@@ -9,8 +9,8 @@ export const dataNamesMapping = {
     'Location': 'Location',
     'iocName': 'IOC Name',
     'iocid': 'IOC IP Address',
-    'pvStatus': 'PV Status',
-    'time': 'Sync to Receiver',
+    // 'pvStatus': 'PV Status',
+    // 'time': 'Sync to Receiver',
 }
 
 export const dataOrder = [
@@ -24,7 +24,7 @@ export const dataOrder = [
     'Location',
     'iocName',
     'iocid',
-    'pvStatus',
-    'time',
+    // 'pvStatus',
+    // 'time',
     // '*'
 ]
