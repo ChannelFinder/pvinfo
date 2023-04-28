@@ -27,7 +27,9 @@ function PV(props) {
     const [dataOrder, setDataOrder] = useState([])
 
     let { handleErrorMessage, handleOpenErrorAlert } = props;
+    const omitVariables = process.env.REACT_APP_OMIT_PV_DATA ? new Set(process.env.REACT_APP_OMIT_PV_DATA.split(',').map(item => item.trim())) : new Set();
 
+    // Parse environment variable REACT_APP_DATA_NAMES_MAPPING to determine what variables to display
     useEffect(() => {
         const dict = {}
         let order = []
@@ -93,15 +95,6 @@ function PV(props) {
         setPVData(pvObject);
     }, [cfPVData]);
 
-    // useEffect(() => {
-    //     if (dataOrder[dataOrder.length - 1] === "*") {
-    //         setDisplayAllVars(true);
-    //         dataOrder.splice((dataOrder.length - 1), 1);
-    //         console.log(dataOrder)
-    //         return;
-    //     }
-    // }, []);
-
     const handlePVMonitoringChangle = (e) => {
         if (e.target.checked) {
             setPVMonitoring(true);
@@ -139,30 +132,25 @@ function PV(props) {
                 }
                 <Box sx={{ border: 5, borderColor: 'primary.main' }}>
                     <Grid container>
-                        {dataOrder.map((item, i) => {
-                            return (
-                                <KeyValuePair key={i} title={dataNamesMapping[item]} value={pvData[item] ? pvData[item].value : ''} />
-                                // <Fragment key={i}>
-                                //     <Grid item xs={6} sm={2} sx={{ px: 2, py: 1, borderBottom: 1, borderColor: 'grey.300' }}>
-                                //         <Typography variant="subtitle2">{dataNamesMapping[item] ? dataNamesMapping[item] : 'hw'}</Typography>
-                                //     </Grid>
-                                //     <Grid item xs={6} sm={4} sx={{ px: 2, py: 1, borderBottom: 1, borderColor: 'grey.300' }}>
-                                //         <Typography variant="body2">{pvData[item] ? pvData[item].value : ''}</Typography>
-                                //     </Grid>
-                                // </Fragment>
-                            )
-                        })}
-                        {displayAllVars ? (
-                            Object.keys(pvData).map((key, i) => {
-                                if (!(key in dataNamesMapping)) {
-
-                                    return <KeyValuePair key={i} title={pvData[key].label} value={pvData[key].value} />
-                                }
+                        {
+                            dataOrder.map((item, i) => {
                                 return (
-                                    null
+                                    <KeyValuePair key={i} title={dataNamesMapping[item]} value={pvData[item] ? pvData[item].value : ''} />
                                 )
                             })
-                        ) : null
+                        }
+                        {
+                            displayAllVars ? (
+                                Object.keys(pvData).map((key, i) => {
+                                    if (!(key in dataNamesMapping) && !(omitVariables.has(key))) {
+                                        console.log(key)
+                                        return <KeyValuePair key={i} title={pvData[key].label} value={pvData[key].value} />
+                                    }
+                                    return (
+                                        null
+                                    )
+                                })
+                            ) : null
                         }
                         {
                             process.env.REACT_APP_USE_PVWS === "true" ?
@@ -173,53 +161,6 @@ function PV(props) {
                         }
                     </Grid>
                 </Box>
-                {/* <TableContainer>
-					<Table sx={{ border: 5, borderColor: 'primary.main' }}>
-						<TableBody>
-							<TableRow>
-								<TableCell variant="head">PV Name</TableCell>
-								<TableCell variant="body">{pvData.name}</TableCell>
-								<TableCell variant="head">Alias Of</TableCell>
-								<TableCell variant="body"><Link component={RouterLink} to={`/?alias=${pvData.alias}`} underline="hover">{pvData.alias}</Link></TableCell>
-							</TableRow>
-							<TableRow>
-								<TableCell variant="head">Description</TableCell>
-								<TableCell variant="body">{pvData.recordDesc}</TableCell>
-								<TableCell variant="head">Engineer</TableCell>
-								<TableCell variant="body">{pvData.Engineer}</TableCell>
-							</TableRow>
-							<TableRow>
-								<TableCell variant="head">EPICS Record Type</TableCell>
-								<TableCell variant="body">{pvData.recordType}</TableCell>
-								<TableCell variant="head">IOC Name</TableCell>
-								<TableCell variant="body"><Link component={RouterLink} to={`/?iocName=${pvData.iocName}`} underline="hover">{pvData.iocName}</Link></TableCell>
-							</TableRow>
-							<TableRow>
-								<TableCell variant="head">Host Name</TableCell>
-								<TableCell variant="body">{pvData.hostName}</TableCell>
-								<TableCell variant="head">Location</TableCell>
-								<TableCell variant="body">{pvData.Location}</TableCell>
-							</TableRow>
-							<TableRow>
-								<TableCell variant="head">IOC IP Address</TableCell>
-								<TableCell variant="body">{pvData.iocid}</TableCell>
-								<TableCell variant="head">Sync to Recceiver</TableCell>
-								<TableCell variant="body">{new Date(pvData.time).toLocaleString()}</TableCell>
-							</TableRow>
-							<TableRow>
-								<TableCell variant="head">PV Status</TableCell>
-								<TableCell variant="body">{pvData.pvStatus}</TableCell>
-							</TableRow>
-						</TableBody>
-						{
-							process.env.REACT_APP_USE_PVWS === "true" ?
-								<ValueTable pvData={pvData} pvMonitoring={pvMonitoring}
-									isLoading={isLoading} pvName={id}
-									handleOpenErrorAlert={props.handleOpenErrorAlert} handleErrorMessage={props.handleErrorMessage} />
-								: null
-						}
-					</Table>
-				</TableContainer> */}
                 {
                     process.env.REACT_APP_USE_OLOG === "true" ? <OLOGTable pvName={id} /> : <br />
                 }
