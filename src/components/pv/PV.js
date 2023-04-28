@@ -1,6 +1,6 @@
 import React, { Fragment, useState, useEffect } from "react";
 import { useParams, Link as RouterLink } from "react-router-dom";
-import { Box, Button, Grid, Link, Typography, Table, TableCell, TableRow, TableContainer, TableBody, Checkbox, FormControlLabel } from "@mui/material";
+import { Box, Button, Checkbox, Grid, Typography, FormControlLabel } from "@mui/material";
 import TimelineIcon from '@mui/icons-material/Timeline';
 import api from "../../api";
 import KeyValuePair from "./KeyValuePair";
@@ -93,7 +93,7 @@ function PV(props) {
             pvObject[prop.name].value = prop.value
         });
         setPVData(pvObject);
-    }, [cfPVData]);
+    }, [cfPVData, dataNamesMapping]);
 
     const handlePVMonitoringChangle = (e) => {
         if (e.target.checked) {

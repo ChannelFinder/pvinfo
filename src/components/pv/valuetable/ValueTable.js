@@ -1,5 +1,5 @@
 import React, { Fragment, useState, useEffect } from "react";
-import { Grid, Typography, TableCell, TableBody, TableRow } from "@mui/material";
+import { Typography } from "@mui/material";
 import useWebSocket from 'react-use-websocket';
 import api from "../../../api";
 import PropTypes from "prop-types";
