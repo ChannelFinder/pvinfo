@@ -24,9 +24,9 @@ function QueryResults(props) {
     const [pvUnits, setPVUnits] = useState({});
     const defaultTableDensity = process.env.REACT_APP_RESULTS_TABLE_DENSITY ? process.env.REACT_APP_RESULTS_TABLE_DENSITY : "standard";
     let tablePageSizeOptions = [5, 10, 20, 50, 100];
-    if(process.env.REACT_APP_RESULTS_TABLE_SIZE_OPTIONS) {
+    if (process.env.REACT_APP_RESULTS_TABLE_SIZE_OPTIONS) {
         tablePageSizeOptions = process.env.REACT_APP_RESULTS_TABLE_SIZE_OPTIONS.split(',').filter(item => item.trim().length && !isNaN(item)).map(Number);
-        if(!tablePageSizeOptions.includes(pageSizeEnvValue)) {
+        if (!tablePageSizeOptions.includes(pageSizeEnvValue)) {
             tablePageSizeOptions.push(pageSizeEnvValue);
         }
         tablePageSizeOptions.sort();

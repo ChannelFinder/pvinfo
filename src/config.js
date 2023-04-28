@@ -10,7 +10,7 @@ export const dataNamesMapping = {
     'iocName': 'IOC Name',
     'iocid': 'IOC IP Address',
     'pvStatus': 'PV Status',
-    'time': 'Sync to Receiver'
+    'time': 'Sync to Receiver',
 }
 
 export const dataOrder = [
@@ -25,5 +25,6 @@ export const dataOrder = [
     'iocName',
     'iocid',
     'pvStatus',
-    'time'
+    'time',
+    // '*'
 ]
