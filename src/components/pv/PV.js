@@ -6,7 +6,7 @@ import api from "../../api";
 import OLOGTable from "./ologtable";
 import ValueTable from "./valuetable";
 import PropTypes from "prop-types";
-import { dataNamesMapping } from "../../config";
+import { dataNamesMapping, dataOrder } from "../../config";
 
 
 const propTypes = {
@@ -57,17 +57,17 @@ function PV(props) {
 		if (cfPVData === null || cfPVData === {} || Object.keys(cfPVData).length === 0) {
 			return;
 		}
-		let pvObject = [];
-		pvObject[0] = {}
-		pvObject[0].label = 'PV Name'
-		pvObject[0].value = cfPVData.name;
-		pvObject[1] = {}
-		pvObject[1].label = 'Owner'
-		pvObject[1].value = cfPVData.owner;
-		cfPVData.properties.forEach((prop, index) => {
-			pvObject[index + 2] = {}
-			pvObject[index + 2].label = dataNamesMapping[prop.name];
-			pvObject[index + 2].value = prop.value
+		let pvObject = {};
+		pvObject.pvName = {};
+		pvObject.pvName.label = 'PV Name'
+		pvObject.pvName.value = cfPVData.name;
+		pvObject.owner = {}
+		pvObject.owner.label = 'Owner'
+		pvObject.owner.value = cfPVData.owner;
+		cfPVData.properties.forEach((prop) => {
+			pvObject[prop.name] = {}
+			pvObject[prop.name].label = dataNamesMapping[prop.name];
+			pvObject[prop.name].value = prop.value
 		});
 		console.log(cfPVData);
 		console.log(pvObject)
@@ -110,7 +110,11 @@ function PV(props) {
 					process.env.REACT_APP_USE_PVWS === "true" ? <FormControlLabel control={<Checkbox color="primary" checked={pvMonitoring} onChange={handlePVMonitoringChangle}></Checkbox>} label="Enable Live PV Monitoring" /> : <div></div>
 				}
 
-				<TableContainer>
+				{dataOrder.map((item, i) => (
+					<div key={i}>{dataNamesMapping[item]}: {pvData[item] ? pvData[item].value : ''}</div>
+				))}
+
+				{/* <TableContainer>
 					<Table sx={{ border: 5, borderColor: 'primary.main' }}>
 						<TableBody>
 							<TableRow>
@@ -156,7 +160,7 @@ function PV(props) {
 								: null
 						}
 					</Table>
-				</TableContainer>
+				</TableContainer> */}
 				{
 					process.env.REACT_APP_USE_OLOG === "true" ? <OLOGTable pvName={id} /> : <br />
 				}

@@ -1,12 +1,29 @@
 export const dataNamesMapping = {
-    '': 'Alias Of',
+    'pvName': 'PV Name',
+    'alias': 'Alias Of',
     'recordDesc': 'Description',
     'Engineer': 'Engineer',
     'recordType': 'EPICS Record Type',
-    'iocName': 'IOC Name',
+    'archive': 'Archiving Policy',
     'hostName': 'Host Name',
     'Location': 'Location',
+    'iocName': 'IOC Name',
     'iocid': 'IOC IP Address',
-    'time': 'Sync to Receiver',
-    'pvStatus': 'PV Status'
+    'pvStatus': 'PV Status',
+    'time': 'Sync to Receiver'
 }
+
+export const dataOrder = [
+    'pvName',
+    'alias',
+    'recordDesc',
+    'Engineer',
+    'recordType',
+    'archive',
+    'hostName',
+    'Location',
+    'iocName',
+    'iocid',
+    'pvStatus',
+    'time'
+]
