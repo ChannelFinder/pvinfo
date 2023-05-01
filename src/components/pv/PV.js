@@ -91,6 +91,11 @@ function PV(props) {
             pvObject[prop.name] = {}
             pvObject[prop.name].label = dataNamesMapping[prop.name] ? dataNamesMapping[prop.name] : prop.name;
             pvObject[prop.name].value = prop.value
+            if (prop.name === "alias") {
+                pvObject[prop.name].url = `/?alias=${prop.value}`
+            } else if (prop.name === "iocName") {
+                pvObject[prop.name].url = `/?iocName=${prop.value}`
+            }
         });
         setPVData(pvObject);
     }, [cfPVData, dataNamesMapping]);
@@ -135,7 +140,7 @@ function PV(props) {
                         {
                             dataOrder.map((item, i) => {
                                 return (
-                                    <KeyValuePair key={i} title={dataNamesMapping[item]} value={pvData[item] ? pvData[item].value : ''} />
+                                    <KeyValuePair key={i} title={dataNamesMapping[item]} value={pvData[item] ? pvData[item].value : ''} url={pvData[item] ? (pvData[item].url ? pvData[item].url : null) : null} />
                                 )
                             })
                         }
