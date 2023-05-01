@@ -7,8 +7,6 @@ import KeyValuePair from "./KeyValuePair";
 import OLOGTable from "./ologtable";
 import ValueTable from "./valuetable";
 import PropTypes from "prop-types";
-// import { dataNamesMapping, dataOrder } from "../../config";
-
 
 const propTypes = {
     handleOpenErrorAlert: PropTypes.func,
@@ -27,13 +25,13 @@ function PV(props) {
     const [dataOrder, setDataOrder] = useState([])
 
     let { handleErrorMessage, handleOpenErrorAlert } = props;
-    const omitVariables = process.env.REACT_APP_OMIT_PV_DATA ? new Set(process.env.REACT_APP_OMIT_PV_DATA.split(',').map(item => item.trim())) : new Set();
+    const omitVariables = process.env.REACT_APP_DETAILS_PAGE_PROPERTIES_BLOCKLIST ? new Set(process.env.REACT_APP_DETAILS_PAGE_PROPERTIES_BLOCKLIST.split(',').map(item => item.trim())) : new Set();
 
-    // Parse environment variable REACT_APP_DATA_NAMES_MAPPING to determine what variables to display
+    // Parse environment variable REACT_APP_DETAILS_PAGE_PROPERTIES to determine what variables to display
     useEffect(() => {
         const dict = {}
         let order = []
-        let dataNames = process.env.REACT_APP_DATA_NAMES_MAPPING ? process.env.REACT_APP_DATA_NAMES_MAPPING : "";
+        let dataNames = process.env.REACT_APP_DETAILS_PAGE_PROPERTIES ? process.env.REACT_APP_DETAILS_PAGE_PROPERTIES : "";
         dataNames.split(',').forEach((pair) => {
             if (pair === "*") {
                 setDisplayAllVars(true);
@@ -148,7 +146,6 @@ function PV(props) {
                             displayAllVars ? (
                                 Object.keys(pvData).map((key, i) => {
                                     if (!(key in dataNamesMapping) && !(omitVariables.has(key))) {
-                                        console.log(key)
                                         return <KeyValuePair key={i} title={pvData[key].label} value={pvData[key].value} />
                                     }
                                     return (
