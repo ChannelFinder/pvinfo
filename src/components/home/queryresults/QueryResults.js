@@ -55,7 +55,12 @@ function QueryResults(props) {
                     return;
                 }
                 else if ("value" in message) {
-                    setPVValues(prevState => ({ ...prevState, [message.pv]: Number(message.value.toFixed(2)) }));
+                    setPVValues(prevState => ({
+                        ...prevState, [message.pv]: (((Number(message.value) >= 0.01 && Number(message.value) < 1000000000) ||
+                            (Number(message.value) <= -0.01 && Number(message.value) > -1000000000) ||
+                            Number(message.value) === 0) ?
+                            Number(message.value.toFixed(2)) : Number(message.value).toExponential())
+                    }));
                     return;
                 }
             }

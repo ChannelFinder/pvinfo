@@ -170,7 +170,7 @@ function ValueTable(props) {
                 }
                 else if ("value" in message) {
                     console.log("valuechange");
-                    setPVValue(Number(message.value.toFixed(2)));
+                    setPVValue((Number(message.value) >= 0.01 || Number(message.value) === 0) ? Number(message.value.toFixed(2)) : Number(message.value).toExponential());
                 }
             }
             else {
