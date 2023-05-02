@@ -113,6 +113,22 @@ function QueryResults(props) {
         }
     }
 
+    const handleMonitorSelectAll = () => (event) => {
+        if (event.target.checked) {
+            console.log("button checked");
+        }
+        const rowsString = document.getElementsByClassName('MuiTablePagination-displayedRows')[0].innerHTML;
+        const [start, end] = rowsString.split('\u2013').map(s => s.trim().replace(" of", ""));
+        const [firstRow, lastRow] = [parseInt(start) - 1, parseInt(end) - 1];
+        console.log(lastRow - firstRow + 1);
+        console.log(firstRow);
+        console.log(lastRow);
+        const row = document.querySelector(`data-id="${firstRow}"`);
+        const checkboxInput = row.querySelector('input[type="checkbox"]');
+        checkboxInput.checked = true;
+        return
+    }
+
     const toggleColumnVisibility = (field, state) => {
         setColumnVisibilityModel((prevColumnVisibilityModel) => {
             return {
@@ -153,6 +169,17 @@ function QueryResults(props) {
                 </Tooltip>
             </div>
         );
+    }
+
+    const renderActionsHeader = () => {
+        return (
+            <div>
+                <Typography display="inline" variant="subtitle2">Actions</Typography>
+                <Tooltip arrow title="Monitor All PVs">
+                    <Checkbox onChange={handleMonitorSelectAll()} sx={{ ml: "1rem" }}></Checkbox>
+                </Tooltip>
+            </div>
+        )
     }
 
     const renderIOCLink = (params) => {
@@ -240,7 +267,7 @@ function QueryResults(props) {
     if (process.env.REACT_APP_USE_PVWS === "true") {
         columns.push({ field: "value", headerName: 'Value', flex: 7.5, minWidth: 120, maxWidth: 140, renderCell: renderValue })
     }
-    columns.push({ field: "button", headerName: 'Actions', flex: 9.5, minWidth: 160, maxWidth: 200, disableClickEventBubbling: true, renderCell: renderButtons })
+    columns.push({ field: "button", headerName: 'Actions', flex: 9.5, minWidth: 160, maxWidth: 200, disableClickEventBubbling: true, renderCell: renderButtons, renderHeader: renderActionsHeader })
 
     useEffect(() => {
         if (props.cfData === null || props.cfData === {} || Object.keys(props.cfData).length === 0) {
