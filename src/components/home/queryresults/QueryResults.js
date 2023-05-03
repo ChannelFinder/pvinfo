@@ -34,6 +34,7 @@ function QueryResults(props) {
     const [columnVisibilityModel, setColumnVisibilityModel] = useState();
     const [currentBreakpoint, setCurrentBreakpoint] = useState();
     const [prevBreakpoint, setPrevBreakpoint] = useState();
+    const [checked, setChecked] = useState([]);
 
     const socketUrl = api.PVWS_URL;
     const { sendJsonMessage, lastJsonMessage } = useWebSocket(socketUrl, {
@@ -84,7 +85,10 @@ function QueryResults(props) {
         navigate(`/pv/${e.row.name}`);
     }
 
-    const handleMonitorPVChange = (pvName) => (event) => {
+    const handleMonitorPVChange = (pvName, index) => (event) => {
+        let newChecked = checked;
+        newChecked[index] = event.target.checked;
+        setChecked(newChecked);
         if (event.target.checked) {
             // maybe reopen here if closed
             // if (ws.current.readyState === WebSocket.CLOSED) {
@@ -114,18 +118,29 @@ function QueryResults(props) {
     }
 
     const handleMonitorSelectAll = () => (event) => {
-        if (event.target.checked) {
-            console.log("button checked");
-        }
         const rowsString = document.getElementsByClassName('MuiTablePagination-displayedRows')[0].innerHTML;
         const [start, end] = rowsString.split('\u2013').map(s => s.trim().replace(" of", ""));
         const [firstRow, lastRow] = [parseInt(start) - 1, parseInt(end) - 1];
-        console.log(lastRow - firstRow + 1);
-        console.log(firstRow);
-        console.log(lastRow);
-        const row = document.querySelector(`data-id="${firstRow}"`);
-        const checkboxInput = row.querySelector('input[type="checkbox"]');
-        checkboxInput.checked = true;
+        const pageSize = lastRow - firstRow + 1;
+        console.log(pageSize);
+
+        if (checked) {
+            const newChecked = checked;
+            newChecked.fill(event.target.checked, firstRow, (lastRow + 1));
+            setChecked(newChecked);
+        }
+
+        for (let i = firstRow; i <= lastRow; ++i) {
+            handleMonitorPVChange(pvs[i].name, i)(event);
+        }
+
+        // const row = document.querySelector(`[data-rowindex="${firstRow}"]`);
+        // const checkboxInput = row.querySelector('input[type="checkbox"]');
+        // checkboxInput.checked = true;
+        // checkboxInput.dispatchEvent(new Event('change', { bubbles: true }));
+        // checkboxRef.current.setChecked(true);
+        // console.log(checkboxRef.current)
+        // setChecked(event.target.checked)
         return
     }
 
@@ -165,7 +180,7 @@ function QueryResults(props) {
                     </IconButton>
                 </Tooltip>
                 <Tooltip arrow title={<div>Monitor PV<br />{params.row.name}</div>}>
-                    <Checkbox disabled={params.row.pvStatus === "Inactive" || params.row.recordType === "waveform"} color="primary" onChange={handleMonitorPVChange(params.row.name)} ></Checkbox>
+                    <Checkbox checked={checked[params.row.id]} disabled={params.row.pvStatus === "Inactive" || params.row.recordType === "waveform"} color="primary" onChange={handleMonitorPVChange(params.row.name, params.row.id)} ></Checkbox>
                 </Tooltip>
             </div>
         );
@@ -283,6 +298,7 @@ function QueryResults(props) {
             });
             return pvObject;
         }));
+        setChecked(new Array(props.cfData.length).fill(false));
     }, [props.cfData]);
 
     function roundToBreakpoint(width, breakpoints) {
