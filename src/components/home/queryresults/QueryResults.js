@@ -276,7 +276,7 @@ function QueryResults(props) {
             const lg = process.env.REACT_APP_LG_BREAKPOINT ? parseInt(process.env.REACT_APP_LG_BREAKPOINT) : 1536;
 
             const breakpoint = roundToBreakpoint(windowWidth, [0, sm, md, lg]);
-            setCurrentBreakpoint(roundToBreakpoint(breakpoint));
+            setCurrentBreakpoint(breakpoint);
 
             if (breakpoint !== prevBreakpoint) {
                 setPrevBreakpoint(currentBreakpoint);
