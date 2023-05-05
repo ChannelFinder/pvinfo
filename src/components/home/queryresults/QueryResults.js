@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import useWebSocket from 'react-use-websocket';
 import { Grid, Typography, Checkbox, Link, IconButton, Tooltip, Hidden } from '@mui/material';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
@@ -35,6 +35,8 @@ function QueryResults(props) {
     const [currentBreakpoint, setCurrentBreakpoint] = useState();
     const [prevBreakpoint, setPrevBreakpoint] = useState();
     const [checked, setChecked] = useState([]);
+    const [currentChecked, setCurrentChecked] = useState(new Set());
+    const [monitorAllChecked, setMonitorAllChecked] = useState(false);
 
     const socketUrl = api.PVWS_URL;
     const { sendJsonMessage, lastJsonMessage } = useWebSocket(socketUrl, {
@@ -46,16 +48,20 @@ function QueryResults(props) {
             const message = lastJsonMessage;
             if (message.type === "update") {
                 if ("severity" in message) {
+                    // console.log("severity")
                     setPVSeverities(prevState => ({ ...prevState, [message.pv]: message.severity }));
                 }
                 if ("units" in message) {
+                    // console.log("units")
                     setPVUnits(prevState => ({ ...prevState, [message.pv]: message.units }));
                 }
                 if ("text" in message) {
+                    // console.log("text")
                     setPVValues(prevState => ({ ...prevState, [message.pv]: message.text }));
                     return;
                 }
                 else if ("value" in message) {
+                    // console.log("value")
                     setPVValues(prevState => ({
                         ...prevState, [message.pv]: (((Number(message.value) >= 0.01 && Number(message.value) < 1000000000) ||
                             (Number(message.value) <= -0.01 && Number(message.value) > -1000000000) ||
@@ -71,24 +77,21 @@ function QueryResults(props) {
         }
     }, [lastJsonMessage]);
 
-    /*
-    const connectionStatus = {
-        [ReadyState.CONNECTING]: 'Connecting',
-        [ReadyState.OPEN]: 'Open',
-        [ReadyState.CLOSING]: 'Closing',
-        [ReadyState.CLOSED]: 'Closed',
-        [ReadyState.UNINSTANTIATED]: 'Uninstantiated',
-    }[readyState];
-    */
-
-    const handleRowDoubleClick = (e) => {
-        navigate(`/pv/${e.row.name}`);
-    }
-
-    const handleMonitorPVChange = (pvName, index) => (event) => {
+    const handleMonitorPVChange = useCallback((pvName, index) => (event) => {
+        if (currentChecked.has(index) && event.target.checked) {
+            return
+        }
         let newChecked = checked;
         newChecked[index] = event.target.checked;
         setChecked(newChecked);
+        let newCurrentChecked = currentChecked;
+        if (event.target.checked) {
+            newCurrentChecked.add(index);
+            setCurrentChecked(newCurrentChecked);
+        } else {
+            newCurrentChecked.delete(index);
+            setCurrentChecked(newCurrentChecked);
+        }
         if (event.target.checked) {
             // maybe reopen here if closed
             // if (ws.current.readyState === WebSocket.CLOSED) {
@@ -115,14 +118,67 @@ function QueryResults(props) {
                 return newData;
             });
         }
+    }, [checked, currentChecked, sendJsonMessage]);
+
+
+    useEffect(() => {
+        const nextButton = document.querySelector('[title="Go to next page"]');
+        const prevButton = document.querySelector('[title="Go to previous page"]');
+
+        const handlePageChange = (params) => {
+            setMonitorAllChecked(false);
+            let newCurrentChecked = currentChecked;
+
+            const iterator = newCurrentChecked.values();
+            let current = iterator.next();
+
+            while (!current.done) {
+                newCurrentChecked.delete(current.value);
+
+                const myEvent = { target: { checked: false } }
+                handleMonitorPVChange(pvs[current.value].name, current.value)(myEvent);
+                current = iterator.next();
+            }
+            setCurrentChecked(newCurrentChecked);
+        }
+
+        if (nextButton) {
+            nextButton.addEventListener("click", handlePageChange);
+        }
+
+        if (prevButton) {
+            prevButton.addEventListener("click", handlePageChange);
+        }
+        return () => {
+            if (nextButton) {
+                nextButton.removeEventListener("click", handlePageChange);
+            }
+            if (prevButton) {
+                prevButton.removeEventListener("click", handlePageChange);
+            }
+        };
+    }, [pvs, currentChecked, checked, handleMonitorPVChange]);
+
+    /*
+    const connectionStatus = {
+        [ReadyState.CONNECTING]: 'Connecting',
+        [ReadyState.OPEN]: 'Open',
+        [ReadyState.CLOSING]: 'Closing',
+        [ReadyState.CLOSED]: 'Closed',
+        [ReadyState.UNINSTANTIATED]: 'Uninstantiated',
+    }[readyState];
+    */
+
+    const handleRowDoubleClick = (e) => {
+        navigate(`/pv/${e.row.name}`);
     }
 
     const handleMonitorSelectAll = () => (event) => {
+        setMonitorAllChecked(event.target.checked);
         const rowsString = document.getElementsByClassName('MuiTablePagination-displayedRows')[0].innerHTML;
         const [start, end] = rowsString.split('\u2013').map(s => s.trim().replace(" of", ""));
         const [firstRow, lastRow] = [parseInt(start) - 1, parseInt(end) - 1];
-        const pageSize = lastRow - firstRow + 1;
-        console.log(pageSize);
+        // const pageSize = lastRow - firstRow + 1;
 
         if (checked) {
             const newChecked = checked;
@@ -133,14 +189,6 @@ function QueryResults(props) {
         for (let i = firstRow; i <= lastRow; ++i) {
             handleMonitorPVChange(pvs[i].name, i)(event);
         }
-
-        // const row = document.querySelector(`[data-rowindex="${firstRow}"]`);
-        // const checkboxInput = row.querySelector('input[type="checkbox"]');
-        // checkboxInput.checked = true;
-        // checkboxInput.dispatchEvent(new Event('change', { bubbles: true }));
-        // checkboxRef.current.setChecked(true);
-        // console.log(checkboxRef.current)
-        // setChecked(event.target.checked)
         return
     }
 
@@ -191,7 +239,7 @@ function QueryResults(props) {
             <div>
                 <Typography display="inline" variant="subtitle2">Actions</Typography>
                 <Tooltip arrow title="Monitor All PVs">
-                    <Checkbox onChange={handleMonitorSelectAll()} sx={{ ml: "1rem" }}></Checkbox>
+                    <Checkbox checked={monitorAllChecked} onChange={handleMonitorSelectAll()} sx={{ ml: "1rem" }}></Checkbox>
                 </Tooltip>
             </div>
         )
@@ -420,6 +468,7 @@ function QueryResults(props) {
                 onColumnVisibilityModelChange={(newModel) =>
                     setColumnVisibilityModel(newModel)
                 }
+            // onPaginationModelChange={console.log("Page change")}
             />
             {/* <button onClick={() => toggleColumnVisibility('name', false)}>hide name</button> */}
         </ Fragment>
