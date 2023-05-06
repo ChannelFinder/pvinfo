@@ -84,14 +84,25 @@ function QueryResults(props) {
         let newChecked = checked;
         newChecked[index] = event.target.checked;
         setChecked(newChecked);
-        let newCurrentChecked = currentChecked;
-        if (event.target.checked) {
-            newCurrentChecked.add(index);
-            setCurrentChecked(newCurrentChecked);
-        } else {
-            newCurrentChecked.delete(index);
-            setCurrentChecked(newCurrentChecked);
-        }
+        // let newCurrentChecked = currentChecked;
+        // if (event.target.checked) {
+        //     newCurrentChecked.add(index);
+        //     setCurrentChecked(newCurrentChecked);
+        // } else {
+        //     console.log(`removing ${index}`)
+        //     newCurrentChecked.delete(index);
+        //     console.log(newCurrentChecked)
+        //     setCurrentChecked(newCurrentChecked);
+        // }
+        setCurrentChecked(prevState => {
+            const newCurrentChecked = new Set(prevState);
+            if (event.target.checked) {
+                newCurrentChecked.add(index);
+            } else {
+                newCurrentChecked.delete(index);
+            }
+            return newCurrentChecked;
+        });
         if (event.target.checked) {
             // maybe reopen here if closed
             // if (ws.current.readyState === WebSocket.CLOSED) {
@@ -121,6 +132,7 @@ function QueryResults(props) {
     }, [checked, currentChecked, sendJsonMessage]);
 
 
+    // Event listeners for page change buttons
     useEffect(() => {
         const nextButton = document.querySelector('[title="Go to next page"]');
         const prevButton = document.querySelector('[title="Go to previous page"]');
@@ -159,6 +171,12 @@ function QueryResults(props) {
         };
     }, [pvs, currentChecked, checked, handleMonitorPVChange]);
 
+    useEffect(() => {
+        if (currentChecked.size > 100) {
+            alert(`Warning, monitoring ${currentChecked.size} PVs`)
+        }
+    }, [currentChecked])
+
     /*
     const connectionStatus = {
         [ReadyState.CONNECTING]: 'Connecting',
@@ -180,11 +198,11 @@ function QueryResults(props) {
         const [firstRow, lastRow] = [parseInt(start) - 1, parseInt(end) - 1];
         // const pageSize = lastRow - firstRow + 1;
 
-        if (checked) {
-            const newChecked = checked;
-            newChecked.fill(event.target.checked, firstRow, (lastRow + 1));
-            setChecked(newChecked);
-        }
+        // if (checked) {
+        //     const newChecked = checked;
+        //     newChecked.fill(event.target.checked, firstRow, (lastRow + 1));
+        //     setChecked(newChecked);
+        // }
 
         for (let i = firstRow; i <= lastRow; ++i) {
             handleMonitorPVChange(pvs[i].name, i)(event);
