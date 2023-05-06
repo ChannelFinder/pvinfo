@@ -29,7 +29,7 @@ function QueryResults(props) {
         if (!tablePageSizeOptions.includes(pageSizeEnvValue)) {
             tablePageSizeOptions.push(pageSizeEnvValue);
         }
-        tablePageSizeOptions.sort();
+        tablePageSizeOptions.sort(function (a, b) { return a - b; });
     }
     const [columnVisibilityModel, setColumnVisibilityModel] = useState();
     const [currentBreakpoint, setCurrentBreakpoint] = useState();
