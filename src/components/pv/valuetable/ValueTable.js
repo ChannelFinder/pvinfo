@@ -13,6 +13,7 @@ const propTypes = {
     pvName: PropTypes.string,
     handleOpenErrorAlert: PropTypes.func,
     handleErrorMessage: PropTypes.func,
+    handleSeverity: PropTypes.func
 }
 
 function ValueTable(props) {
@@ -47,7 +48,7 @@ function ValueTable(props) {
         shouldReconnect: (closeEvent) => true,
     });
 
-    let { handleErrorMessage, handleOpenErrorAlert } = props;
+    let { handleErrorMessage, handleOpenErrorAlert, handleSeverity } = props;
 
     useEffect(() => {
         if (props.pvMonitoring) {
@@ -57,10 +58,12 @@ function ValueTable(props) {
             else if (props.pvData.pvStatus.value === "Inactive") {
                 handleErrorMessage("Can't show live PV values - PV is in Inactive state!");
                 handleOpenErrorAlert(true);
+                handleSeverity("error")
             }
             else if (props.pvData.recordType.value === "waveform") {
                 handleErrorMessage("Can't show live PV values - Waveform record type not supported");
                 handleOpenErrorAlert(true);
+                handleSeverity("error")
             }
             else if (props.pvData.pvStatus.value === "Active") {
                 sendJsonMessage({ "type": "subscribe", "pvs": [props.pvName] });
@@ -80,7 +83,7 @@ function ValueTable(props) {
             setPVTimestamp(null);
             setPVUnits(null);
         }
-    }, [props.pvMonitoring, props.isLoading, props.pvData, props.pvName, handleErrorMessage, handleOpenErrorAlert, sendJsonMessage]);
+    }, [props.pvMonitoring, props.isLoading, props.pvData, props.pvName, handleErrorMessage, handleOpenErrorAlert, sendJsonMessage, handleSeverity]);
 
     useEffect(() => {
         // console.log(lastJsonMessage)

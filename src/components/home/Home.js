@@ -13,6 +13,7 @@ import './Home.css';
 const propTypes = {
     handleOpenErrorAlert: PropTypes.func,
     handleErrorMessage: PropTypes.func,
+    handleSeverity: PropTypes.func,
 }
 
 
@@ -181,6 +182,7 @@ function Home(props) {
                 console.log(err);
                 props.handleErrorMessage("Error in EPICS Channel Finder query");
                 props.handleOpenErrorAlert(true);
+                props.handleSeverity("error")
                 setIsLoading(false);
                 setCFData(null);
 
@@ -485,7 +487,7 @@ function Home(props) {
                     {/* </Box> */}
                 </Grid>
                 <Grid container item xs={12} style={{ display: "flex" }}>
-                    <QueryResults isLoading={isLoading} cfData={cfData} />
+                    <QueryResults isLoading={isLoading} cfData={cfData} handleErrorMessage={props.handleErrorMessage} handleOpenErrorAlert={props.handleOpenErrorAlert} handleSeverity={props.handleSeverity} />
                 </Grid>
             </form>
         </ Fragment >

@@ -11,7 +11,10 @@ import PropTypes from "prop-types";
 
 const propTypes = {
     isLoading: PropTypes.bool,
-    cfData: PropTypes.array
+    cfData: PropTypes.array,
+    handleErrorMessage: PropTypes.func,
+    handleOpenErrorAlert: PropTypes.func,
+    handleSeverity: PropTypes.func
 }
 
 function QueryResults(props) {
@@ -37,6 +40,8 @@ function QueryResults(props) {
     const [checked, setChecked] = useState([]);
     const [currentChecked, setCurrentChecked] = useState(new Set());
     const [monitorAllChecked, setMonitorAllChecked] = useState(false);
+
+    let { handleErrorMessage, handleOpenErrorAlert, handleSeverity } = props;
 
     const socketUrl = api.PVWS_URL;
     const { sendJsonMessage, lastJsonMessage } = useWebSocket(socketUrl, {
@@ -173,9 +178,11 @@ function QueryResults(props) {
 
     useEffect(() => {
         if (currentChecked.size > 100) {
-            alert(`Warning, monitoring ${currentChecked.size} PVs`)
+            handleErrorMessage(`Warning: Monitoring ${currentChecked.size} PVs`);
+            handleOpenErrorAlert(true);
+            handleSeverity("warning")
         }
-    }, [currentChecked])
+    }, [currentChecked, handleErrorMessage, handleOpenErrorAlert, handleSeverity])
 
     /*
     const connectionStatus = {

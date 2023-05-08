@@ -14,6 +14,7 @@ import Page404 from '../Page404';
 function App() {
   const [openErrorAlert, setOpenErrorAlert] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [severity, setSeverity] = useState("");
 
   const handleClose = (event, reason) => {
     if (reason === 'clickaway') {
@@ -31,17 +32,17 @@ function App() {
         <main style={{ width: "90%" }}>
           <Routes>
             <Route path='*' element={<Page404 />} />
-            <Route path="/pv/:id" exact={true} element={<PV handleOpenErrorAlert={setOpenErrorAlert} handleErrorMessage={setErrorMessage} />} />
+            <Route path="/pv/:id" exact={true} element={<PV handleOpenErrorAlert={setOpenErrorAlert} handleErrorMessage={setErrorMessage} handleSeverity={setSeverity} />} />
             <Route path="/ioc" exact={true} element={<IOC />} />
             <Route path="/plot" exact={true} element={<Plot />} />
             <Route path="/help" exact={true} element={<Help />} />
-            <Route path="/" exact={true} element={<Home handleOpenErrorAlert={setOpenErrorAlert} handleErrorMessage={setErrorMessage} />} />
+            <Route path="/" exact={true} element={<Home handleOpenErrorAlert={setOpenErrorAlert} handleErrorMessage={setErrorMessage} handleSeverity={setSeverity} />} />
           </Routes>
         </main>
       </Grid>
       <div>
         <Snackbar open={openErrorAlert} autoHideDuration={6000} onClose={handleClose}>
-          <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
+          <Alert onClose={handleClose} severity={severity} sx={{ width: '100%' }}>
             {errorMessage}
           </Alert>
         </Snackbar>
