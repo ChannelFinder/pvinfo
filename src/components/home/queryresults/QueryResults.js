@@ -89,16 +89,6 @@ function QueryResults(props) {
         let newChecked = checked;
         newChecked[index] = event.target.checked;
         setChecked(newChecked);
-        // let newCurrentChecked = currentChecked;
-        // if (event.target.checked) {
-        //     newCurrentChecked.add(index);
-        //     setCurrentChecked(newCurrentChecked);
-        // } else {
-        //     console.log(`removing ${index}`)
-        //     newCurrentChecked.delete(index);
-        //     console.log(newCurrentChecked)
-        //     setCurrentChecked(newCurrentChecked);
-        // }
         setCurrentChecked(prevState => {
             const newCurrentChecked = new Set(prevState);
             if (event.target.checked) {
@@ -176,6 +166,7 @@ function QueryResults(props) {
         };
     }, [pvs, currentChecked, checked, handleMonitorPVChange]);
 
+    // Notify user if monitoring over 100 pvs
     useEffect(() => {
         if (currentChecked.size > 100) {
             handleErrorMessage(`Warning: Monitoring ${currentChecked.size} PVs`);
@@ -203,13 +194,6 @@ function QueryResults(props) {
         const rowsString = document.getElementsByClassName('MuiTablePagination-displayedRows')[0].innerHTML;
         const [start, end] = rowsString.split('\u2013').map(s => s.trim().replace(" of", ""));
         const [firstRow, lastRow] = [parseInt(start) - 1, parseInt(end) - 1];
-        // const pageSize = lastRow - firstRow + 1;
-
-        // if (checked) {
-        //     const newChecked = checked;
-        //     newChecked.fill(event.target.checked, firstRow, (lastRow + 1));
-        //     setChecked(newChecked);
-        // }
 
         for (let i = firstRow; i <= lastRow; ++i) {
             handleMonitorPVChange(pvs[i].name, i)(event);
