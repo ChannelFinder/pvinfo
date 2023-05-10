@@ -126,6 +126,23 @@ function QueryResults(props) {
         }
     }, [checked, currentChecked, sendJsonMessage]);
 
+    const clearMonitoring = useCallback(() => {
+        setMonitorAllChecked(false);
+        let newCurrentChecked = currentChecked;
+
+        const iterator = newCurrentChecked.values();
+        let current = iterator.next();
+
+        while (!current.done) {
+            newCurrentChecked.delete(current.value);
+
+            const myEvent = { target: { checked: false } }
+            handleMonitorPVChange(pvs[current.value].name, current.value)(myEvent);
+            current = iterator.next();
+        }
+        setCurrentChecked(newCurrentChecked);
+    }, [pvs, currentChecked, handleMonitorPVChange])
+
 
     // Event listeners for page change buttons
     useEffect(() => {
@@ -133,20 +150,7 @@ function QueryResults(props) {
         const prevButton = document.querySelector('[title="Go to previous page"]');
 
         const handlePageChange = (params) => {
-            setMonitorAllChecked(false);
-            let newCurrentChecked = currentChecked;
-
-            const iterator = newCurrentChecked.values();
-            let current = iterator.next();
-
-            while (!current.done) {
-                newCurrentChecked.delete(current.value);
-
-                const myEvent = { target: { checked: false } }
-                handleMonitorPVChange(pvs[current.value].name, current.value)(myEvent);
-                current = iterator.next();
-            }
-            setCurrentChecked(newCurrentChecked);
+            clearMonitoring();
         }
 
         if (nextButton) {
@@ -164,16 +168,23 @@ function QueryResults(props) {
                 prevButton.removeEventListener("click", handlePageChange);
             }
         };
-    }, [pvs, currentChecked, checked, handleMonitorPVChange]);
+    }, [pvs, currentChecked, checked, clearMonitoring]);
 
     // Notify user if monitoring over 100 pvs
     useEffect(() => {
         if (currentChecked.size > 100) {
             handleErrorMessage(`Warning: Monitoring ${currentChecked.size} PVs`);
+            handleSeverity("warning");
             handleOpenErrorAlert(true);
-            handleSeverity("warning")
         }
     }, [currentChecked, handleErrorMessage, handleOpenErrorAlert, handleSeverity])
+
+    useEffect(() => {
+        if (props.isLoading) {
+            console.log("loading")
+            clearMonitoring();
+        }
+    }, [props.isLoading, clearMonitoring])
 
     /*
     const connectionStatus = {

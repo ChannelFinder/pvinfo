@@ -57,13 +57,13 @@ function ValueTable(props) {
             }
             else if (props.pvData.pvStatus.value === "Inactive") {
                 handleErrorMessage("Can't show live PV values - PV is in Inactive state!");
+                handleSeverity("error");
                 handleOpenErrorAlert(true);
-                handleSeverity("error")
             }
             else if (props.pvData.recordType.value === "waveform") {
                 handleErrorMessage("Can't show live PV values - Waveform record type not supported");
+                handleSeverity("error");
                 handleOpenErrorAlert(true);
-                handleSeverity("error")
             }
             else if (props.pvData.pvStatus.value === "Active") {
                 sendJsonMessage({ "type": "subscribe", "pvs": [props.pvName] });

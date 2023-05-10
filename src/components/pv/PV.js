@@ -68,8 +68,8 @@ function PV(props) {
             .catch((err) => {
                 console.log(err);
                 handleErrorMessage("Error in EPICS Channel Finder query");
+                handleSeverity("error");
                 handleOpenErrorAlert(true);
-                handleSeverity("error")
                 setCFPVData(null);
                 setIsLoading(false);
             })

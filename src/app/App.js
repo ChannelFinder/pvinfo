@@ -14,7 +14,7 @@ import Page404 from '../Page404';
 function App() {
   const [openErrorAlert, setOpenErrorAlert] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [severity, setSeverity] = useState("");
+  const [severity, setSeverity] = useState("error");
 
   const handleClose = (event, reason) => {
     if (reason === 'clickaway') {

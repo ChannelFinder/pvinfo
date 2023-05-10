@@ -101,6 +101,7 @@ function Home(props) {
                 console.log("Error in fetch of channel finder data");
                 console.log(err);
                 props.handleErrorMessage("Error in EPICS Channel Finder query");
+                props.handleSeverity("error");
                 props.handleOpenErrorAlert(true);
                 setIsLoading(false);
                 setCFData(null);
@@ -181,8 +182,8 @@ function Home(props) {
                 console.log("Error in fetch of channel finder data");
                 console.log(err);
                 props.handleErrorMessage("Error in EPICS Channel Finder query");
+                props.handleSeverity("error");
                 props.handleOpenErrorAlert(true);
-                props.handleSeverity("error")
                 setIsLoading(false);
                 setCFData(null);
 
