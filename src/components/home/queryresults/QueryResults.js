@@ -87,43 +87,48 @@ function QueryResults(props) {
             return
         }
         let newChecked = checked;
-        newChecked[index] = event.target.checked;
-        setChecked(newChecked);
         setCurrentChecked(prevState => {
             const newCurrentChecked = new Set(prevState);
+            if (newCurrentChecked.size >= 100 && event.target.checked) {
+                return newCurrentChecked;
+            }
             if (event.target.checked) {
                 newCurrentChecked.add(index);
             } else {
                 newCurrentChecked.delete(index);
             }
+            newChecked[index] = event.target.checked;
+            setChecked(newChecked);
+
+            if (event.target.checked) {
+                // maybe reopen here if closed
+                // if (ws.current.readyState === WebSocket.CLOSED) {
+                //     // Do your stuff...
+                //  }
+                sendJsonMessage({ "type": "subscribe", "pvs": [pvName] });
+                setPVValues(prevState => ({ ...prevState, [pvName]: 'obtaining...' }));
+            }
+            else {
+                sendJsonMessage({ "type": "clear", "pvs": [pvName] });
+                setPVValues((prevData) => {
+                    const newData = { ...prevData };
+                    delete newData[pvName];
+                    return newData;
+                });
+                setPVUnits((prevData) => {
+                    const newData = { ...prevData };
+                    delete newData[pvName];
+                    return newData;
+                });
+                setPVSeverities((prevData) => {
+                    const newData = { ...prevData };
+                    delete newData[pvName];
+                    return newData;
+                });
+            }
+
             return newCurrentChecked;
         });
-        if (event.target.checked) {
-            // maybe reopen here if closed
-            // if (ws.current.readyState === WebSocket.CLOSED) {
-            //     // Do your stuff...
-            //  }
-            sendJsonMessage({ "type": "subscribe", "pvs": [pvName] });
-            setPVValues(prevState => ({ ...prevState, [pvName]: 'obtaining...' }));
-        }
-        else {
-            sendJsonMessage({ "type": "clear", "pvs": [pvName] });
-            setPVValues((prevData) => {
-                const newData = { ...prevData };
-                delete newData[pvName];
-                return newData;
-            });
-            setPVUnits((prevData) => {
-                const newData = { ...prevData };
-                delete newData[pvName];
-                return newData;
-            });
-            setPVSeverities((prevData) => {
-                const newData = { ...prevData };
-                delete newData[pvName];
-                return newData;
-            });
-        }
     }, [checked, currentChecked, sendJsonMessage]);
 
     const clearMonitoring = useCallback(() => {
@@ -181,7 +186,6 @@ function QueryResults(props) {
 
     useEffect(() => {
         if (props.isLoading) {
-            console.log("loading")
             clearMonitoring();
         }
     }, [props.isLoading, clearMonitoring])
