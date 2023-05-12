@@ -134,7 +134,7 @@ function QueryResults(props) {
 
             return newCurrentChecked;
         });
-    }, [checked, currentChecked, sendJsonMessage, sendJsonAsync]);
+    }, [checked, currentChecked, sendJsonAsync]);
 
     const clearMonitoring = useCallback(() => {
         setMonitorAllChecked(false);
