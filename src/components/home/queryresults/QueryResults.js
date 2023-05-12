@@ -82,6 +82,10 @@ function QueryResults(props) {
         }
     }, [lastJsonMessage]);
 
+    const sendJsonAsync = useCallback(async (message) => {
+        return sendJsonMessage(message);
+    }, [sendJsonMessage]);
+
     const handleMonitorPVChange = useCallback((pvName, index) => (event) => {
         if (currentChecked.has(index) && event.target.checked) {
             return
@@ -105,11 +109,12 @@ function QueryResults(props) {
                 // if (ws.current.readyState === WebSocket.CLOSED) {
                 //     // Do your stuff...
                 //  }
-                sendJsonMessage({ "type": "subscribe", "pvs": [pvName] });
+                // sendJsonMessage({ "type": "subscribe", "pvs": [pvName] });
+                sendJsonAsync({ "type": "subscribe", "pvs": [pvName] })
                 setPVValues(prevState => ({ ...prevState, [pvName]: 'obtaining...' }));
             }
             else {
-                sendJsonMessage({ "type": "clear", "pvs": [pvName] });
+                sendJsonAsync({ "type": "clear", "pvs": [pvName] });
                 setPVValues((prevData) => {
                     const newData = { ...prevData };
                     delete newData[pvName];
@@ -129,7 +134,7 @@ function QueryResults(props) {
 
             return newCurrentChecked;
         });
-    }, [checked, currentChecked, sendJsonMessage]);
+    }, [checked, currentChecked, sendJsonMessage, sendJsonAsync]);
 
     const clearMonitoring = useCallback(() => {
         setMonitorAllChecked(false);
