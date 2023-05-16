@@ -83,12 +83,10 @@ function ValueTable(props) {
     }, [props.pvMonitoring, props.isLoading, props.pvData, props.pvName, handleErrorMessage, handleOpenErrorAlert, sendJsonMessage]);
 
     useEffect(() => {
-        // console.log(lastJsonMessage)
         if (lastJsonMessage !== null) {
             if (!props.pvMonitoring) return;
             const message = lastJsonMessage;
             if (message.type === "update") {
-                console.log("update")
                 // pv, severity, value, text, units, precision, labels
                 if ("units" in message) {
                     setPVUnits(message.units);
@@ -169,7 +167,6 @@ function ValueTable(props) {
                     setPVValue(message.text);
                 }
                 else if ("value" in message) {
-                    console.log("valuechange");
                     setPVValue((Number(message.value) >= 0.01 || Number(message.value) === 0) ? Number(message.value.toFixed(2)) : Number(message.value).toExponential());
                 }
             }
