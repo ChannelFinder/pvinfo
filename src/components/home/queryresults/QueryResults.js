@@ -44,74 +44,29 @@ function QueryResults(props) {
     let { handleErrorMessage, handleOpenErrorAlert, handleSeverity } = props;
 
     const socketUrl = api.PVWS_URL;
-    const { sendJsonMessage, lastJsonMessage } = useWebSocket(socketUrl, {
+    const { sendJsonMessage } = useWebSocket(socketUrl, {
         shouldReconnect: (closeEvent) => true,
-        filter: (message) => {
+        onMessage: (message) => {
             const jsonMessage = JSON.parse(message.data)
-            if (jsonMessage.type !== "update") return false;
-            if (!("severity" in jsonMessage) && !("units" in jsonMessage) && !("text" in jsonMessage) && !("value" in jsonMessage)) {
-                // console.log("1")
-                return false;
-            }
-            // if (!("severity" in jsonMessage && "units" in jsonMessage && ("text" in jsonMessage || "value" in jsonMessage))) {
-            //     console.log("1.5")
-            //     return false
-            // }
-            return true;
-        },
-        // onMessage: (message) => {
-        //     console.log("2")
-        //     const jsonMessage = JSON.parse(message.data)
-        //     if (jsonMessage.type === "update") {
-        //         if ("severity" in jsonMessage) {
-        //             // console.log("severity")
-        //             setPVSeverities(prevState => ({ ...prevState, [message.pv]: message.severity }));
-        //         }
-        //         if ("units" in jsonMessage) {
-        //             // console.log("units")
-        //             setPVUnits(prevState => ({ ...prevState, [message.pv]: message.units }));
-        //         }
-        //         if ("text" in jsonMessage) {
-        //             // console.log("text")
-        //             setPVValues(prevState => ({ ...prevState, [message.pv]: message.text }));
-        //             return;
-        //         }
-        //         else if ("value" in jsonMessage) {
-        //             // console.log("value")
-        //             setPVValues(prevState => ({
-        //                 ...prevState, [message.pv]: (((Number(message.value) >= 0.01 && Number(message.value) < 1000000000) ||
-        //                     (Number(message.value) <= -0.01 && Number(message.value) > -1000000000) ||
-        //                     Number(message.value) === 0) ?
-        //                     Number(message.value.toFixed(2)) : Number(message.value).toExponential())
-        //             }));
-        //             return;
-        //         }
-        //     }
-        //     else {
-        //         console.log("Unexpected message type: ", message);
-        //     }
-        // },
-    });
-
-    useEffect(() => {
-        if (lastJsonMessage !== null) {
-            const message = lastJsonMessage;
-            if (message.type === "update") {
-                if ("severity" in message) {
+            if (jsonMessage.type === "update") {
+                if (!("severity" in jsonMessage) && !("units" in jsonMessage) && !("text" in jsonMessage) && !("value" in jsonMessage)) {
+                    console.log("1")
+                    return;
+                }
+                if ("severity" in jsonMessage) {
                     // console.log("severity")
                     setPVSeverities(prevState => ({ ...prevState, [message.pv]: message.severity }));
                 }
-                if ("units" in message) {
+                if ("units" in jsonMessage) {
                     // console.log("units")
                     setPVUnits(prevState => ({ ...prevState, [message.pv]: message.units }));
                 }
-                if ("text" in message) {
+                if ("text" in jsonMessage) {
                     // console.log("text")
                     setPVValues(prevState => ({ ...prevState, [message.pv]: message.text }));
                     return;
                 }
-                else if ("value" in message) {
-                    // console.log("value")
+                else if ("value" in jsonMessage) {
                     setPVValues(prevState => ({
                         ...prevState, [message.pv]: (((Number(message.value) >= 0.01 && Number(message.value) < 1000000000) ||
                             (Number(message.value) <= -0.01 && Number(message.value) > -1000000000) ||
@@ -124,12 +79,8 @@ function QueryResults(props) {
             else {
                 console.log("Unexpected message type: ", message);
             }
-        }
-    }, [lastJsonMessage]);
-
-    const sendJsonAsync = useCallback(async (message) => {
-        return sendJsonMessage(message);
-    }, [sendJsonMessage]);
+        },
+    });
 
     const handleMonitorPVChange = useCallback((pvName, index) => (event) => {
         if (currentChecked.has(index) && event.target.checked) {
@@ -155,12 +106,10 @@ function QueryResults(props) {
                 //     // Do your stuff...
                 //  }
                 sendJsonMessage({ "type": "subscribe", "pvs": [pvName] });
-                // sendJsonAsync({ "type": "subscribe", "pvs": [pvName] })
                 setPVValues(prevState => ({ ...prevState, [pvName]: 'obtaining...' }));
             }
             else {
-                sendJsonMessage({ "type": "clear", "pvs": [pvName] })
-                // sendJsonAsync({ "type": "clear", "pvs": [pvName] });
+                sendJsonMessage({ "type": "clear", "pvs": [pvName] });
                 setPVValues((prevData) => {
                     const newData = { ...prevData };
                     delete newData[pvName];
@@ -180,7 +129,7 @@ function QueryResults(props) {
 
             return newCurrentChecked;
         });
-    }, [checked, currentChecked, sendJsonAsync, sendJsonMessage]);
+    }, [checked, currentChecked, sendJsonMessage]);
 
     const clearMonitoring = useCallback(() => {
         setMonitorAllChecked(false);

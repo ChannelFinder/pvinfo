@@ -40,7 +40,7 @@ const pvRecordTypes = ['ao', 'ai', 'bo', 'bi', 'mbbo', 'mbbi', 'longout', 'longi
 
 function Home(props) {
     const [searchParams, setSearchParams] = useSearchParams();
-    const [cfData, setCFData] = useState(null); //array
+    const [cfData, setCFData] = useState(null);
     const [pvName, setPVName] = useState(searchParams.get("pvName") || "");
     const [hostName, setHostName] = useState(searchParams.get("hostName") || "");
     const [iocName, setIOCName] = useState(searchParams.get("iocName") || "");
