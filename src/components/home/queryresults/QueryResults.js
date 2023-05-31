@@ -49,24 +49,21 @@ function QueryResults(props) {
         onMessage: (message) => {
             const jsonMessage = JSON.parse(message.data)
             if (jsonMessage.type === "update") {
-                if (!("severity" in jsonMessage) && !("units" in jsonMessage) && !("text" in jsonMessage) && !("value" in jsonMessage)) {
-                    console.log("1")
+                const message = jsonMessage;
+                if (!("severity" in message) && !("units" in message) && !("text" in message) && !("value" in message)) {
                     return;
                 }
-                if ("severity" in jsonMessage) {
-                    // console.log("severity")
+                if ("severity" in message) {
                     setPVSeverities(prevState => ({ ...prevState, [message.pv]: message.severity }));
                 }
-                if ("units" in jsonMessage) {
-                    // console.log("units")
+                if ("units" in message) {
                     setPVUnits(prevState => ({ ...prevState, [message.pv]: message.units }));
                 }
-                if ("text" in jsonMessage) {
-                    // console.log("text")
+                if ("text" in message) {
                     setPVValues(prevState => ({ ...prevState, [message.pv]: message.text }));
                     return;
                 }
-                else if ("value" in jsonMessage) {
+                else if ("value" in message) {
                     setPVValues(prevState => ({
                         ...prevState, [message.pv]: (((Number(message.value) >= 0.01 && Number(message.value) < 1000000000) ||
                             (Number(message.value) <= -0.01 && Number(message.value) > -1000000000) ||
