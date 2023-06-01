@@ -8,6 +8,7 @@ import KeyValuePair from "../KeyValuePair";
 
 const propTypes = {
     pvMonitoring: PropTypes.bool,
+    getSnapshot: PropTypes.bool,
     pvData: PropTypes.object,
     isLoading: PropTypes.bool,
     pvName: PropTypes.string,
@@ -50,7 +51,7 @@ function ValueTable(props) {
     let { handleErrorMessage, handleOpenErrorAlert } = props;
 
     useEffect(() => {
-        if (props.pvMonitoring) {
+        if (props.pvMonitoring || props.getSnapshot) {
             if (props.pvData === null || props.isLoading) {
                 return;
             }
@@ -63,6 +64,7 @@ function ValueTable(props) {
                 handleOpenErrorAlert(true);
             }
             else if (props.pvData.pvStatus.value === "Active") {
+                console.log("here")
                 sendJsonMessage({ "type": "subscribe", "pvs": [props.pvName] });
             }
         }
@@ -80,11 +82,11 @@ function ValueTable(props) {
             setPVTimestamp(null);
             setPVUnits(null);
         }
-    }, [props.pvMonitoring, props.isLoading, props.pvData, props.pvName, handleErrorMessage, handleOpenErrorAlert, sendJsonMessage]);
+    }, [props.pvMonitoring, props.getSnapshot, props.isLoading, props.pvData, props.pvName, handleErrorMessage, handleOpenErrorAlert, sendJsonMessage]);
 
     useEffect(() => {
         if (lastJsonMessage !== null) {
-            if (!props.pvMonitoring) return;
+            if (!props.pvMonitoring && !props.getSnapshot) return;
             const message = lastJsonMessage;
             if (message.type === "update") {
                 // pv, severity, value, text, units, precision, labels
@@ -145,7 +147,9 @@ function ValueTable(props) {
                 else {
                     setPVTimestamp(null);
                 }
-                if ("severity" in message) {
+                console.log(`monitoring is ${props.pvMonitoring}`)
+                console.log(`severity is ${"severity" in message}`)
+                if ("severity" in message && props.pvMonitoring) {
                     if (message.severity === "NONE") {
                         setAlarmColor("green");
                     }
@@ -174,7 +178,7 @@ function ValueTable(props) {
                 console.log("Unexpected message type: ", message);
             }
         }
-    }, [lastJsonMessage, props.pvMonitoring]);
+    }, [lastJsonMessage, props.pvMonitoring, props.getSnapshot]);
 
     if (props.isLoading) {
         return (
