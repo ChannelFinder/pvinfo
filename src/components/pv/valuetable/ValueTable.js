@@ -194,7 +194,7 @@ function ValueTable(props) {
                 console.log("Unexpected message type: ", message);
             }
         }
-    }, [lastJsonMessage, props.pvMonitoring, snapshot]);
+    }, [lastJsonMessage, props.pvMonitoring, props.snapshot, snapshot]);
 
     if (props.isLoading) {
         return (
