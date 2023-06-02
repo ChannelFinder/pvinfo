@@ -292,35 +292,41 @@ function QueryResults(props) {
 
     const renderValue = (params) => {
         let textColor = "black";
-        if (params.row.name in pvSeverities) {
-            if (pvSeverities[params.row.name] === "INVALID") {
+        const pvSevertiy = pvSeverities[params.row.name];
+        const pvUnit = pvUnits[params.row.name];
+        let pvValue = pvValues[params.row.name];
+        if (pvValue === undefined) {
+            pvValue = "";
+        }
+        if (pvSevertiy !== undefined) {
+            if (pvSevertiy === "INVALID") {
                 return (
-                    <div style={{ color: "#FF00FF" }}>{pvValues[params.row.name]} ({pvSeverities[params.row.name]})</div>
+                    <div style={{ color: "#FF00FF" }}>{pvValue} ({pvSevertiy})</div>
                 );
             }
-            else if (pvSeverities[params.row.name] === "UNDEFINED") {
+            else if (pvSevertiy === "UNDEFINED") {
                 return (
-                    <div style={{ color: "#C800C8" }}>{pvSeverities[params.row.name]}</div>
+                    <div style={{ color: "#C800C8" }}>{pvSevertiy}</div>
                 );
             }
-            else if (pvSeverities[params.row.name] === "NONE") {
+            else if (pvSevertiy === "NONE") {
                 textColor = "green";
             }
-            else if (pvSeverities[params.row.name] === "MINOR") {
+            else if (pvSevertiy === "MINOR") {
                 textColor = "#FF9900";
             }
-            else if (pvSeverities[params.row.name] === "MAJOR") {
+            else if (pvSevertiy === "MAJOR") {
                 textColor = "red";
             }
         }
-        if (params.row.name in pvUnits) {
+        if (pvUnit !== undefined) {
             return (
-                <div style={{ color: textColor }}>{`${pvValues[params.row.name]} ${pvUnits[params.row.name]}`}</div>
+                <div style={{ color: textColor }}>{`${pvValue} ${pvUnit}`}</div>
             );
         }
         else {
             return (
-                <div style={{ color: textColor }}>{pvValues[params.row.name]}</div>
+                <div style={{ color: textColor }}>{pvValue}</div>
             );
         }
     }
