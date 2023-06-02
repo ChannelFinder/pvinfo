@@ -160,12 +160,12 @@ function PV(props) {
                                     if (!(key in dataNamesMapping) && !(omitVariables.has(key))) {
                                         return <KeyValuePair key={i} title={pvData[key].label} value={pvData[key].value} />
                                     }
-                                    return (
-                                        null
-                                    )
+                                    return (null)
                                 })
                             ) : null
                         }
+                    </Grid>
+                    <Grid container sx={{ mt: -0.1, borderTop: 1, borderColor: 'grey.300' }}>
                         {
                             process.env.REACT_APP_USE_PVWS === "true" ?
                                 <ValueTable pvData={pvData} pvMonitoring={pvMonitoring}
@@ -178,7 +178,7 @@ function PV(props) {
                 {
                     process.env.REACT_APP_USE_OLOG === "true" ? <OLOGTable pvName={id} /> : <br />
                 }
-            </Fragment>
+            </Fragment >
         );
     }
 }
