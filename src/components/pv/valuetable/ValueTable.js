@@ -185,7 +185,14 @@ function ValueTable(props) {
                 }
                 else if ("value" in message) {
                     if (!props.snapshot) {
-                        setPVValue((Number(message.value) >= 0.01 || Number(message.value) === 0) ? Number(message.value.toFixed(2)) : Number(message.value).toExponential());
+                        // if precision was explicitly set (and badly assume 0 is not explicit) then use that
+                        if (pvPrecision !== null && pvPrecision !== "" && !isNaN(pvPrecision) && pvPrecision !== 0) {
+                            setPVValue((Number(message.value) >= 0.01 || Number(message.value) === 0) ? Number(message.value.toFixed(Number(pvPrecision))) : Number(message.value).toExponential(Number(pvPrecision)));
+                        }
+                        // otherwise show full value
+                        else {
+                            setPVValue((Number(message.value) >= 0.01 || Number(message.value) === 0) ? Number(message.value) : Number(message.value).toExponential());
+                        }
                     }
                     setSnapshot(false);
                 }
