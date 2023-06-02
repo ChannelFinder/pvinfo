@@ -98,6 +98,7 @@ function ValueTable(props) {
                 // pv, severity, value, text, units, precision, labels
                 if ("units" in message) {
                     setPVUnits(message.units);
+
                 }
                 if ("min" in message) {
                     setPVMin(message.min);
@@ -148,7 +149,9 @@ function ValueTable(props) {
                     else {
                         timestamp = new Date(message.seconds * 1000).toLocaleString();
                     }
-                    setPVTimestamp(timestamp);
+                    if (!props.snapshot) {
+                        setPVTimestamp(timestamp);
+                    }
                 }
                 else {
                     setPVTimestamp(null);
@@ -169,15 +172,21 @@ function ValueTable(props) {
                     else if (message.severity === "MINOR") {
                         setAlarmColor("#FF9900");
                     }
-                    setPVSeverity(message.severity);
+                    if (!props.snapshot) {
+                        setPVSeverity(message.severity);
+                    }
                 }
                 if ("text" in message) {
-                    setPVValue(message.text);
+                    if (!props.snapshot) {
+                        setPVValue(message.text);
+                    }
                     setSnapshot(false);
 
                 }
                 else if ("value" in message) {
-                    setPVValue((Number(message.value) >= 0.01 || Number(message.value) === 0) ? Number(message.value.toFixed(2)) : Number(message.value).toExponential());
+                    if (!props.snapshot) {
+                        setPVValue((Number(message.value) >= 0.01 || Number(message.value) === 0) ? Number(message.value.toFixed(2)) : Number(message.value).toExponential());
+                    }
                     setSnapshot(false);
                 }
             }

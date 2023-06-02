@@ -28,8 +28,7 @@ function PV(props) {
     let { handleErrorMessage, handleOpenErrorAlert } = props;
     const omitVariables = process.env.REACT_APP_DETAILS_PAGE_PROPERTIES_BLOCKLIST ? new Set(process.env.REACT_APP_DETAILS_PAGE_PROPERTIES_BLOCKLIST.split(',').map(item => item.trim())) : new Set();
 
-    // Parse environment variable REACT_APP_DETAILS_PAGE_PROPERTIES to determine what variables to display and
-    // whether or not to enable pv monitoring initially
+    // Parse environment variable REACT_APP_DETAILS_PAGE_PROPERTIES to determine what variables to display
     useEffect(() => {
         const dict = {}
         let order = []
@@ -113,10 +112,10 @@ function PV(props) {
     const handlePVMonitoringChange = (e) => {
         if (e.target.checked) {
             setPVMonitoring(true);
+            if (snapshot) setSnapshot(false);
         }
         else {
             setPVMonitoring(false);
-            if (snapshot) setSnapshot(false);
         }
     }
 
