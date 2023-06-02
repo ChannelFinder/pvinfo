@@ -18,7 +18,7 @@ function PV(props) {
     const [cfPVData, setCFPVData] = useState(null); //object
     const [pvData, setPVData] = useState({});
     const [pvMonitoring, setPVMonitoring] = useState(false);
-    const [getSnapshot, setGetSnapshot] = useState(false);
+    const [snapshot, setSnapshot] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const pvHTMLString = encodeURI(`${api.AA_VIEWER}?pv=${id}`);
     const [displayAllVars, setDisplayAllVars] = useState(false);
@@ -105,7 +105,7 @@ function PV(props) {
             if (process.env.REACT_APP_DEFAULT_LIVE_MONITORING === "true") {
                 setPVMonitoring(true);
             } else {
-                setGetSnapshot(true);
+                setSnapshot(true);
             }
         }
     }, [pvData])
@@ -116,7 +116,7 @@ function PV(props) {
         }
         else {
             setPVMonitoring(false);
-            setGetSnapshot(false);
+            if (snapshot) setSnapshot(false);
         }
     }
 
@@ -170,7 +170,7 @@ function PV(props) {
                         {
                             process.env.REACT_APP_USE_PVWS === "true" ?
                                 <ValueTable pvData={pvData} pvMonitoring={pvMonitoring}
-                                    isLoading={isLoading} pvName={id} getSnapshot={getSnapshot}
+                                    isLoading={isLoading} pvName={id} snapshot={snapshot}
                                     handleOpenErrorAlert={props.handleOpenErrorAlert} handleErrorMessage={props.handleErrorMessage} />
                                 : null
                         }

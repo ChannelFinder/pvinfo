@@ -8,7 +8,7 @@ import KeyValuePair from "../KeyValuePair";
 
 const propTypes = {
     pvMonitoring: PropTypes.bool,
-    getSnapshot: PropTypes.bool,
+    snapshot: PropTypes.bool,
     pvData: PropTypes.object,
     isLoading: PropTypes.bool,
     pvName: PropTypes.string,
@@ -29,10 +29,12 @@ function ValueTable(props) {
     const [pvWarnHigh, setPVWarnHigh] = useState(null);
     const [pvTimestamp, setPVTimestamp] = useState(null);
     const [alarmColor, setAlarmColor] = useState("");
+    const [snapshot, setSnapshot] = useState(props.snapshot);
 
     const socketUrl = api.PVWS_URL;
     const { sendJsonMessage, lastJsonMessage } = useWebSocket(socketUrl, {
         onClose: () => {
+            if (props.snapshot && !props.pvMonitoring) return;
             setPVValue(null);
             setPVSeverity(null);
             setPVMin(null);
@@ -51,7 +53,11 @@ function ValueTable(props) {
     let { handleErrorMessage, handleOpenErrorAlert } = props;
 
     useEffect(() => {
-        if (props.pvMonitoring || props.getSnapshot) {
+        setSnapshot(props.snapshot)
+    }, [props.snapshot])
+
+    useEffect(() => {
+        if (props.pvMonitoring || snapshot) {
             if (props.pvData === null || props.isLoading) {
                 return;
             }
@@ -64,12 +70,12 @@ function ValueTable(props) {
                 handleOpenErrorAlert(true);
             }
             else if (props.pvData.pvStatus.value === "Active") {
-                console.log("here")
                 sendJsonMessage({ "type": "subscribe", "pvs": [props.pvName] });
             }
         }
         else {
             sendJsonMessage({ "type": "clear", "pvs": [props.pvName] });
+            if (props.snapshot && !props.pvMonitoring) return;
             setPVValue(null);
             setPVSeverity(null);
             setPVMin(null);
@@ -82,11 +88,11 @@ function ValueTable(props) {
             setPVTimestamp(null);
             setPVUnits(null);
         }
-    }, [props.pvMonitoring, props.getSnapshot, props.isLoading, props.pvData, props.pvName, handleErrorMessage, handleOpenErrorAlert, sendJsonMessage]);
+    }, [props.pvMonitoring, props.snapshot, snapshot, props.isLoading, props.pvData, props.pvName, handleErrorMessage, handleOpenErrorAlert, sendJsonMessage]);
 
     useEffect(() => {
         if (lastJsonMessage !== null) {
-            if (!props.pvMonitoring && !props.getSnapshot) return;
+            if (!props.pvMonitoring && !snapshot) return;
             const message = lastJsonMessage;
             if (message.type === "update") {
                 // pv, severity, value, text, units, precision, labels
@@ -147,8 +153,6 @@ function ValueTable(props) {
                 else {
                     setPVTimestamp(null);
                 }
-                console.log(`monitoring is ${props.pvMonitoring}`)
-                console.log(`severity is ${"severity" in message}`)
                 if ("severity" in message && props.pvMonitoring) {
                     if (message.severity === "NONE") {
                         setAlarmColor("green");
@@ -169,16 +173,19 @@ function ValueTable(props) {
                 }
                 if ("text" in message) {
                     setPVValue(message.text);
+                    setSnapshot(false);
+
                 }
                 else if ("value" in message) {
                     setPVValue((Number(message.value) >= 0.01 || Number(message.value) === 0) ? Number(message.value.toFixed(2)) : Number(message.value).toExponential());
+                    setSnapshot(false);
                 }
             }
             else {
                 console.log("Unexpected message type: ", message);
             }
         }
-    }, [lastJsonMessage, props.pvMonitoring, props.getSnapshot]);
+    }, [lastJsonMessage, props.pvMonitoring, snapshot]);
 
     if (props.isLoading) {
         return (
