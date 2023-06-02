@@ -18,6 +18,7 @@ function PV(props) {
     const [cfPVData, setCFPVData] = useState(null); //object
     const [pvData, setPVData] = useState({});
     const [pvMonitoring, setPVMonitoring] = useState(false);
+    const [snapshot, setSnapshot] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const pvHTMLString = encodeURI(`${api.AA_VIEWER}?pv=${id}`);
     const [displayAllVars, setDisplayAllVars] = useState(false);
@@ -98,9 +99,20 @@ function PV(props) {
         setPVData(pvObject);
     }, [cfPVData, dataNamesMapping]);
 
-    const handlePVMonitoringChangle = (e) => {
+    useEffect(() => {
+        if (Object.keys(pvData).length !== 0) {
+            if (process.env.REACT_APP_DEFAULT_LIVE_MONITORING === "true") {
+                setPVMonitoring(true);
+            } else {
+                setSnapshot(true);
+            }
+        }
+    }, [pvData])
+
+    const handlePVMonitoringChange = (e) => {
         if (e.target.checked) {
             setPVMonitoring(true);
+            if (snapshot) setSnapshot(false);
         }
         else {
             setPVMonitoring(false);
@@ -131,7 +143,7 @@ function PV(props) {
                 }
                 <br />
                 {
-                    process.env.REACT_APP_USE_PVWS === "true" ? <FormControlLabel control={<Checkbox color="primary" checked={pvMonitoring} onChange={handlePVMonitoringChangle}></Checkbox>} label="Enable Live PV Monitoring" /> : <div></div>
+                    process.env.REACT_APP_USE_PVWS === "true" ? <FormControlLabel control={<Checkbox color="primary" checked={pvMonitoring} onChange={handlePVMonitoringChange}></Checkbox>} label="Enable Live PV Monitoring" /> : <div></div>
                 }
                 <Box sx={{ border: 5, borderColor: 'primary.main' }}>
                     <Grid container>
@@ -157,7 +169,7 @@ function PV(props) {
                         {
                             process.env.REACT_APP_USE_PVWS === "true" ?
                                 <ValueTable pvData={pvData} pvMonitoring={pvMonitoring}
-                                    isLoading={isLoading} pvName={id}
+                                    isLoading={isLoading} pvName={id} snapshot={snapshot}
                                     handleOpenErrorAlert={props.handleOpenErrorAlert} handleErrorMessage={props.handleErrorMessage} />
                                 : null
                         }
