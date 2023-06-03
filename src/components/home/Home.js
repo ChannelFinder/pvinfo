@@ -212,6 +212,7 @@ function Home(props) {
                     exclusive
                     onChange={handleSearchType}
                     aria-label="search type"
+                    style={{ marginBottom: 20 }}
                 >
                     <ToggleButton value="paramSearch" aria-label="param search">
                         <ViewModuleIcon />
