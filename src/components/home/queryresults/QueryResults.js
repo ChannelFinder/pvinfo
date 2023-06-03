@@ -1,13 +1,16 @@
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
-import useWebSocket from 'react-use-websocket';
 import { Grid, Typography, Checkbox, Link, IconButton, Tooltip, Hidden } from '@mui/material';
+import useWebSocket from 'react-use-websocket';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import { useNavigate, Link as RouterLink } from "react-router-dom";
 import TimelineIcon from '@mui/icons-material/Timeline';
 import ReadMoreIcon from '@mui/icons-material/ReadMore';
 import api from "../../../api";
 import bannerLogo from "../../../assets/home-banner-logo.png";
+import ValueCheckbox from './valuecheckbox/ValueCheckbox';
+import Value from "./value";
 import PropTypes from "prop-types";
+
 
 const propTypes = {
     isLoading: PropTypes.bool,
@@ -22,9 +25,6 @@ function QueryResults(props) {
     const pageSizeEnvValue = process.env.REACT_APP_RESULTS_TABLE_SIZE ? parseInt(process.env.REACT_APP_RESULTS_TABLE_SIZE.trim()) : 50;
     const [pageSize, setPageSize] = useState(pageSizeEnvValue);
     const [pvs, setPVs] = useState([]);
-    const [pvValues, setPVValues] = useState({});
-    const [pvSeverities, setPVSeverities] = useState({});
-    const [pvUnits, setPVUnits] = useState({});
     const defaultTableDensity = process.env.REACT_APP_RESULTS_TABLE_DENSITY ? process.env.REACT_APP_RESULTS_TABLE_DENSITY : "standard";
     let tablePageSizeOptions = [5, 10, 20, 50, 100];
     if (process.env.REACT_APP_RESULTS_TABLE_SIZE_OPTIONS) {
@@ -43,40 +43,12 @@ function QueryResults(props) {
 
     let { handleErrorMessage, handleOpenErrorAlert, handleSeverity } = props;
 
-    const socketUrl = api.PVWS_URL;
-    const { sendJsonMessage } = useWebSocket(socketUrl, {
-        shouldReconnect: (closeEvent) => true,
-        onMessage: (message) => {
-            const jsonMessage = JSON.parse(message.data)
-            if (jsonMessage.type === "update") {
-                const message = jsonMessage;
-                if (!("severity" in message) && !("units" in message) && !("text" in message) && !("value" in message)) {
-                    return;
-                }
-                if ("severity" in message) {
-                    setPVSeverities(prevState => ({ ...prevState, [message.pv]: message.severity }));
-                }
-                if ("units" in message) {
-                    setPVUnits(prevState => ({ ...prevState, [message.pv]: message.units }));
-                }
-                if ("text" in message) {
-                    setPVValues(prevState => ({ ...prevState, [message.pv]: message.text }));
-                    return;
-                }
-                else if ("value" in message) {
-                    setPVValues(prevState => ({
-                        ...prevState, [message.pv]: (((Number(message.value) >= 0.01 && Number(message.value) < 1000000000) ||
-                            (Number(message.value) <= -0.01 && Number(message.value) > -1000000000) ||
-                            Number(message.value) === 0) ?
-                            Number(message.value.toFixed(2)) : Number(message.value).toExponential())
-                    }));
-                    return;
-                }
-            }
-            else {
-                console.log("Unexpected message type: ", message);
-            }
-        },
+    // open web socket for sending subscribe/clear messages
+    // filter all messages as false since we don't need to read anything in parent component
+    // This still is in QueryResults so even with USE_PVWS===false it will try to connect, would be better to move to ValueCheckbox?
+    const { sendJsonMessage } = useWebSocket(api.PVWS_URL, {
+        share: true,
+        filter: (message) => false,
     });
 
     const handleMonitorPVChange = useCallback((pvName, index) => (event) => {
@@ -96,36 +68,15 @@ function QueryResults(props) {
             }
             newChecked[index] = event.target.checked;
             setChecked(newChecked);
-
-            if (event.target.checked) {
-                // maybe reopen here if closed
-                // if (ws.current.readyState === WebSocket.CLOSED) {
-                //     // Do your stuff...
-                //  }
-                sendJsonMessage({ "type": "subscribe", "pvs": [pvName] });
-                setPVValues(prevState => ({ ...prevState, [pvName]: 'obtaining...' }));
-            }
-            else {
-                sendJsonMessage({ "type": "clear", "pvs": [pvName] });
-                setPVValues((prevData) => {
-                    const newData = { ...prevData };
-                    delete newData[pvName];
-                    return newData;
-                });
-                setPVUnits((prevData) => {
-                    const newData = { ...prevData };
-                    delete newData[pvName];
-                    return newData;
-                });
-                setPVSeverities((prevData) => {
-                    const newData = { ...prevData };
-                    delete newData[pvName];
-                    return newData;
-                });
-            }
-
             return newCurrentChecked;
         });
+
+        if (event.target.checked) {
+            sendJsonMessage({ "type": "subscribe", "pvs": [pvName] });
+        }
+        else {
+            sendJsonMessage({ "type": "clear", "pvs": [pvName] });
+        }
     }, [checked, currentChecked, sendJsonMessage]);
 
     const clearMonitoring = useCallback(() => {
@@ -187,16 +138,6 @@ function QueryResults(props) {
         }
     }, [props.isLoading, clearMonitoring])
 
-    /*
-    const connectionStatus = {
-        [ReadyState.CONNECTING]: 'Connecting',
-        [ReadyState.OPEN]: 'Open',
-        [ReadyState.CLOSING]: 'Closing',
-        [ReadyState.CLOSED]: 'Closed',
-        [ReadyState.UNINSTANTIATED]: 'Uninstantiated',
-    }[readyState];
-    */
-
     const handleRowDoubleClick = (e) => {
         navigate(`/pv/${e.row.name}`);
     }
@@ -248,9 +189,13 @@ function QueryResults(props) {
                         <TimelineIcon />
                     </IconButton>
                 </Tooltip>
-                <Tooltip arrow title={<div>Monitor PV<br />{params.row.name}</div>}>
-                    <Checkbox checked={checked[params.row.id]} disabled={params.row.pvStatus === "Inactive" || params.row.recordType === "waveform"} color="primary" onChange={handleMonitorPVChange(params.row.name, params.row.id)} ></Checkbox>
-                </Tooltip>
+                {
+                    // if PVWS is on, show checkbox for live monitoring, else nothing
+                    process.env.REACT_APP_USE_PVWS === "true" ? <ValueCheckbox checked={checked} pvName={params.row.name} id={params.row.id}
+                                                                    pvStatus={params.row.pvStatus} recordType={params.row.recordType}
+                                                                    handleMonitorPVChange={handleMonitorPVChange} />
+                                                                : <div></div>
+                }
             </div>
         );
     }
@@ -291,44 +236,9 @@ function QueryResults(props) {
     }
 
     const renderValue = (params) => {
-        let textColor = "black";
-        const pvSevertiy = pvSeverities[params.row.name];
-        const pvUnit = pvUnits[params.row.name];
-        let pvValue = pvValues[params.row.name];
-        if (pvValue === undefined) {
-            pvValue = "";
-        }
-        if (pvSevertiy !== undefined) {
-            if (pvSevertiy === "INVALID") {
-                return (
-                    <div style={{ color: "#FF00FF" }}>{pvValue} ({pvSevertiy})</div>
-                );
-            }
-            else if (pvSevertiy === "UNDEFINED") {
-                return (
-                    <div style={{ color: "#C800C8" }}>{pvSevertiy}</div>
-                );
-            }
-            else if (pvSevertiy === "NONE") {
-                textColor = "green";
-            }
-            else if (pvSevertiy === "MINOR") {
-                textColor = "#FF9900";
-            }
-            else if (pvSevertiy === "MAJOR") {
-                textColor = "red";
-            }
-        }
-        if (pvUnit !== undefined) {
-            return (
-                <div style={{ color: textColor }}>{`${pvValue} ${pvUnit}`}</div>
-            );
-        }
-        else {
-            return (
-                <div style={{ color: textColor }}>{pvValue}</div>
-            );
-        }
+        return (
+            <Value pvName={params.row.name} id={params.row.id} isChecked={currentChecked.has(params.row.id)} />
+        );
     }
 
     let columns = [
@@ -495,9 +405,7 @@ function QueryResults(props) {
                 onColumnVisibilityModelChange={(newModel) =>
                     setColumnVisibilityModel(newModel)
                 }
-            // onPaginationModelChange={console.log("Page change")}
             />
-            {/* <button onClick={() => toggleColumnVisibility('name', false)}>hide name</button> */}
         </ Fragment>
     );
 }
