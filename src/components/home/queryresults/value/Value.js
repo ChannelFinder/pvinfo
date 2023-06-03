@@ -5,6 +5,8 @@ import PropTypes from "prop-types";
 
 const propTypes = {
     pvName: PropTypes.string,
+    pvRecordType: PropTypes.string,
+    pvStatus: PropTypes.string,
     id: PropTypes.number,
     isChecked: PropTypes.bool,
 }
@@ -21,6 +23,7 @@ function Value(props) {
         filter: message => JSON.parse(message.data).pv === props.pvName,
     });
 
+    // parse web socket message. filter on useWebSocket above means we only parse messages for this PV
     useEffect(() => {
         if (lastJsonMessage === null) {
             return;
@@ -59,47 +62,51 @@ function Value(props) {
         }
     }, [lastJsonMessage]);
 
+    // check if the checkbox in MUI is checked, if not ignore updating state and UI
     if (!props.isChecked) {
         return (
             <div></div>
         );
     }
-    let textColor = "black";
-    if (pvSeverity !== undefined) {
-        if (pvSeverity === "INVALID") {
-            return (
-                <div style={{ color: "#FF00FF" }}>{pvValue} ({pvSeverity})</div>
-            );
-        }
-        else if (pvSeverity === "UNDEFINED") {
-            return (
-                <div style={{ color: "#C800C8" }}>{pvSeverity}</div>
-            );
-        }
-        else if (pvSeverity === "NONE") {
-            textColor = "green";
-        }
-        else if (pvSeverity === "MINOR") {
-            textColor = "#FF9900";
-        }
-        else if (pvSeverity === "MAJOR") {
-            textColor = "red";
-        }
-    }
-    if (pvUnit !== undefined) {
-        return (
-            <div style={{ color: textColor }}>{`${pvValue} ${pvUnit}`}</div>
-        );
-    }
-    else if (pvValue !== undefined) {
-        return (
-            <div style={{ color: textColor }}>{pvValue}</div>
-        );
-    }
+    // otherwise check severity for color, check if units are present, and display value
     else {
-        return (
-            <div></div>
-        );
+        let textColor = "black";
+        if (pvSeverity !== undefined) {
+            if (pvSeverity === "INVALID") {
+                return (
+                    <div style={{ color: "#FF00FF" }}>{pvValue} ({pvSeverity})</div>
+                );
+            }
+            else if (pvSeverity === "UNDEFINED") {
+                return (
+                    <div style={{ color: "#C800C8" }}>{pvSeverity}</div>
+                );
+            }
+            else if (pvSeverity === "NONE") {
+                textColor = "green";
+            }
+            else if (pvSeverity === "MINOR") {
+                textColor = "#FF9900";
+            }
+            else if (pvSeverity === "MAJOR") {
+                textColor = "red";
+            }
+        }
+        if (pvUnit !== undefined) {
+            return (
+                <div style={{ color: textColor }}>{`${pvValue} ${pvUnit}`}</div>
+            );
+        }
+        else if (pvValue !== undefined) {
+            return (
+                <div style={{ color: textColor }}>{pvValue}</div>
+            );
+        }
+        else {
+            return (
+                <div></div>
+            );
+        }
     }
 }
 

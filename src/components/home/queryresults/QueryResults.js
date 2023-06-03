@@ -1,6 +1,5 @@
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import { Grid, Typography, Checkbox, Link, IconButton, Tooltip, Hidden } from '@mui/material';
-import useWebSocket from 'react-use-websocket';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import { useNavigate, Link as RouterLink } from "react-router-dom";
 import TimelineIcon from '@mui/icons-material/Timeline';
@@ -10,7 +9,6 @@ import bannerLogo from "../../../assets/home-banner-logo.png";
 import ValueCheckbox from './valuecheckbox/ValueCheckbox';
 import Value from "./value";
 import PropTypes from "prop-types";
-
 
 const propTypes = {
     isLoading: PropTypes.bool,
@@ -43,15 +41,7 @@ function QueryResults(props) {
 
     let { handleErrorMessage, handleOpenErrorAlert, handleSeverity } = props;
 
-    // open web socket for sending subscribe/clear messages
-    // filter all messages as false since we don't need to read anything in parent component
-    // This still is in QueryResults so even with USE_PVWS===false it will try to connect, would be better to move to ValueCheckbox?
-    const { sendJsonMessage } = useWebSocket(api.PVWS_URL, {
-        share: true,
-        filter: (message) => false,
-    });
-
-    const handleMonitorPVChange = useCallback((pvName, index) => (event) => {
+    const updateCurrentChecked = useCallback((index, event) => {
         if (currentChecked.has(index) && event.target.checked) {
             return
         }
@@ -70,14 +60,7 @@ function QueryResults(props) {
             setChecked(newChecked);
             return newCurrentChecked;
         });
-
-        if (event.target.checked) {
-            sendJsonMessage({ "type": "subscribe", "pvs": [pvName] });
-        }
-        else {
-            sendJsonMessage({ "type": "clear", "pvs": [pvName] });
-        }
-    }, [checked, currentChecked, sendJsonMessage]);
+    }, [currentChecked, checked]);
 
     const clearMonitoring = useCallback(() => {
         setMonitorAllChecked(false);
@@ -90,11 +73,11 @@ function QueryResults(props) {
             newCurrentChecked.delete(current.value);
 
             const myEvent = { target: { checked: false } }
-            handleMonitorPVChange(pvs[current.value].name, current.value)(myEvent);
+            updateCurrentChecked(current.value, myEvent);
             current = iterator.next();
         }
         setCurrentChecked(newCurrentChecked);
-    }, [pvs, currentChecked, handleMonitorPVChange])
+    }, [currentChecked, updateCurrentChecked])
 
 
     // Event listeners for page change buttons
@@ -149,7 +132,7 @@ function QueryResults(props) {
         const [firstRow, lastRow] = [parseInt(start) - 1, parseInt(end) - 1];
 
         for (let i = firstRow; i <= lastRow; ++i) {
-            handleMonitorPVChange(pvs[i].name, i)(event);
+            updateCurrentChecked(i, event);
         }
         return
     }
@@ -191,9 +174,9 @@ function QueryResults(props) {
                 </Tooltip>
                 {
                     // if PVWS is on, show checkbox for live monitoring, else nothing
-                    process.env.REACT_APP_USE_PVWS === "true" ? <ValueCheckbox checked={checked} pvName={params.row.name} id={params.row.id}
-                                                                    pvStatus={params.row.pvStatus} recordType={params.row.recordType}
-                                                                    handleMonitorPVChange={handleMonitorPVChange} />
+                    process.env.REACT_APP_USE_PVWS === "true" ? <ValueCheckbox pvName={params.row.name} id={params.row.id}
+                                                                    pvStatus={params.row.pvStatus} recordType={params.row.recordType} checked={checked}
+                                                                    currentChecked={currentChecked} updateCurrentChecked={updateCurrentChecked} />
                                                                 : <div></div>
                 }
             </div>
@@ -201,14 +184,17 @@ function QueryResults(props) {
     }
 
     const renderActionsHeader = () => {
-        return (
-            <div>
-                <Typography display="inline" variant="subtitle2">Actions</Typography>
-                <Tooltip arrow title="Monitor All PVs">
-                    <Checkbox checked={monitorAllChecked} onChange={handleMonitorSelectAll()} sx={{ ml: "1rem" }}></Checkbox>
-                </Tooltip>
-            </div>
-        )
+            return (
+                <div>
+                    <Typography display="inline" variant="subtitle2">Actions</Typography>
+                    {
+                        process.env.REACT_APP_USE_PVWS === "true" ? <Tooltip arrow title="Monitor All PVs">
+                                                                    <Checkbox checked={monitorAllChecked} onChange={handleMonitorSelectAll()} sx={{ ml: ".5rem" }}></Checkbox>
+                                                                </Tooltip>
+                                                                : <div></div>
+                    }
+                </div>
+            )
     }
 
     const renderIOCLink = (params) => {
@@ -236,9 +222,16 @@ function QueryResults(props) {
     }
 
     const renderValue = (params) => {
-        return (
-            <Value pvName={params.row.name} id={params.row.id} isChecked={currentChecked.has(params.row.id)} />
-        );
+        if (process.env.REACT_APP_USE_PVWS === "true") {
+            return (
+                <Value pvName={params.row.name} id={params.row.id} isChecked={currentChecked.has(params.row.id)} pvRecordType={params.row.recordType} pvStatus={params.row.pvStatus} />
+            );
+        }
+        else {
+            return (
+                <div></div>
+            )
+        }
     }
 
     let columns = [
@@ -306,6 +299,7 @@ function QueryResults(props) {
             setCurrentBreakpoint(roundToBreakpoint(windowWidth, [0, sm, md, lg]))
 
             if (currentBreakpoint !== prevBreakpoint) {
+                console.log("HERE IN change breakpoint")
                 setPrevBreakpoint(currentBreakpoint);
 
                 const omitExtraSmall = process.env.REACT_APP_OMIT_IN_TABLE_X_SMALL ? process.env.REACT_APP_OMIT_IN_TABLE_X_SMALL.split(',').map(item => item.trim()) : [];
