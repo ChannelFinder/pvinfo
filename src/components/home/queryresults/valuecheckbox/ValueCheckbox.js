@@ -28,17 +28,11 @@ function ValueCheckbox(props) {
         filter: (message) => false,
     });
 
-    const handleMonitorPVChange = ((pvName, index) => (event) => {
-        props.updateCurrentChecked(index, event);
-        if (event.target.checked) {
-            sendJsonMessage({ "type": "subscribe", "pvs": [pvName] });
-        }
-        else {
-            sendJsonMessage({ "type": "clear", "pvs": [pvName] });
-        }
-    }, [sendJsonMessage, props.updateCurrentChecked]);
+    const handleMonitorPVChange = (index) => (event) => {
+        props.updateCurrentChecked(index, event.target.checked);
+    }
 
-    // if monitor all button is pressed, we have to send subscribe message since it's not caught on Checkbox onChange
+    // watch for changes in checked, if so send a subscribe message
     useEffect(() => {
         if(props.checked[props.id] && props.currentChecked.has(props.id)) {
             sendJsonMessage({ "type": "subscribe", "pvs": [props.pvName] });
@@ -51,7 +45,7 @@ function ValueCheckbox(props) {
                 checked={props.checked[props.id]}
                 disabled={props.pvStatus === "Inactive" || props.recordType === "waveform"}
                 color="primary"
-                onChange={handleMonitorPVChange(props.pvName, props.id)} >
+                onChange={handleMonitorPVChange(props.id)} >
             </Checkbox>
         </Tooltip>
     );

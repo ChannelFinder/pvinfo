@@ -41,22 +41,22 @@ function QueryResults(props) {
 
     let { handleErrorMessage, handleOpenErrorAlert, handleSeverity } = props;
 
-    const updateCurrentChecked = useCallback((index, event) => {
-        if (currentChecked.has(index) && event.target.checked) {
+    const updateCurrentChecked = useCallback((index, checkedStatus) => {
+        if (currentChecked.has(index) && checkedStatus) {
             return
         }
         let newChecked = checked;
         setCurrentChecked(prevState => {
             const newCurrentChecked = new Set(prevState);
-            if (newCurrentChecked.size >= 100 && event.target.checked) {
+            if (newCurrentChecked.size >= 100 && checkedStatus) {
                 return newCurrentChecked;
             }
-            if (event.target.checked) {
+            if (checkedStatus) {
                 newCurrentChecked.add(index);
             } else {
                 newCurrentChecked.delete(index);
             }
-            newChecked[index] = event.target.checked;
+            newChecked[index] = checkedStatus;
             setChecked(newChecked);
             return newCurrentChecked;
         });
@@ -73,7 +73,7 @@ function QueryResults(props) {
             newCurrentChecked.delete(current.value);
 
             const myEvent = { target: { checked: false } }
-            updateCurrentChecked(current.value, myEvent);
+            updateCurrentChecked(current.value, myEvent.target.checked);
             current = iterator.next();
         }
         setCurrentChecked(newCurrentChecked);
@@ -132,7 +132,7 @@ function QueryResults(props) {
         const [firstRow, lastRow] = [parseInt(start) - 1, parseInt(end) - 1];
 
         for (let i = firstRow; i <= lastRow; ++i) {
-            updateCurrentChecked(i, event);
+            updateCurrentChecked(i, event.target.checked);
         }
         return
     }
@@ -299,7 +299,6 @@ function QueryResults(props) {
             setCurrentBreakpoint(roundToBreakpoint(windowWidth, [0, sm, md, lg]))
 
             if (currentBreakpoint !== prevBreakpoint) {
-                console.log("HERE IN change breakpoint")
                 setPrevBreakpoint(currentBreakpoint);
 
                 const omitExtraSmall = process.env.REACT_APP_OMIT_IN_TABLE_X_SMALL ? process.env.REACT_APP_OMIT_IN_TABLE_X_SMALL.split(',').map(item => item.trim()) : [];
