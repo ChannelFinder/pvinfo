@@ -11,6 +11,7 @@ import PropTypes from "prop-types";
 const propTypes = {
     handleOpenErrorAlert: PropTypes.func,
     handleErrorMessage: PropTypes.func,
+    hanleSeverity: PropTypes.func
 }
 
 function PV(props) {
@@ -25,7 +26,7 @@ function PV(props) {
     const [dataNamesMapping, setDataNamesMapping] = useState({});
     const [dataOrder, setDataOrder] = useState([])
 
-    let { handleErrorMessage, handleOpenErrorAlert } = props;
+    let { handleErrorMessage, handleOpenErrorAlert, handleSeverity } = props;
     const omitVariables = process.env.REACT_APP_DETAILS_PAGE_PROPERTIES_BLOCKLIST ? new Set(process.env.REACT_APP_DETAILS_PAGE_PROPERTIES_BLOCKLIST.split(',').map(item => item.trim())) : new Set();
 
     // Parse environment variable REACT_APP_DETAILS_PAGE_PROPERTIES to determine what variables to display
@@ -68,11 +69,12 @@ function PV(props) {
             .catch((err) => {
                 console.log(err);
                 handleErrorMessage("Error in EPICS Channel Finder query");
+                handleSeverity("error");
                 handleOpenErrorAlert(true);
                 setCFPVData(null);
                 setIsLoading(false);
             })
-    }, [id, handleErrorMessage, handleOpenErrorAlert]);
+    }, [id, handleErrorMessage, handleOpenErrorAlert, handleSeverity]);
 
     // transform PV data from CF into JS object. This should be moved to api.js!
     useEffect(() => {
@@ -170,7 +172,7 @@ function PV(props) {
                             process.env.REACT_APP_USE_PVWS === "true" ?
                                 <ValueTable pvData={pvData} pvMonitoring={pvMonitoring}
                                     isLoading={isLoading} pvName={id} snapshot={snapshot}
-                                    handleOpenErrorAlert={props.handleOpenErrorAlert} handleErrorMessage={props.handleErrorMessage} />
+                                    handleOpenErrorAlert={props.handleOpenErrorAlert} handleErrorMessage={props.handleErrorMessage} handleSeverity={props.handleSeverity} />
                                 : null
                         }
                     </Grid>

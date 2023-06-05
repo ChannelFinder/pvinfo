@@ -1,5 +1,4 @@
-import React, { Fragment, useEffect, useState } from 'react';
-import useWebSocket from 'react-use-websocket';
+import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import { Grid, Typography, Checkbox, Link, IconButton, Tooltip, Hidden } from '@mui/material';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import { useNavigate, Link as RouterLink } from "react-router-dom";
@@ -7,11 +6,16 @@ import TimelineIcon from '@mui/icons-material/Timeline';
 import ReadMoreIcon from '@mui/icons-material/ReadMore';
 import api from "../../../api";
 import bannerLogo from "../../../assets/home-banner-logo.png";
+import ValueCheckbox from './valuecheckbox/ValueCheckbox';
+import Value from "./value";
 import PropTypes from "prop-types";
 
 const propTypes = {
     isLoading: PropTypes.bool,
-    cfData: PropTypes.array
+    cfData: PropTypes.array,
+    handleErrorMessage: PropTypes.func,
+    handleOpenErrorAlert: PropTypes.func,
+    handleSeverity: PropTypes.func
 }
 
 function QueryResults(props) {
@@ -19,9 +23,6 @@ function QueryResults(props) {
     const pageSizeEnvValue = process.env.REACT_APP_RESULTS_TABLE_SIZE ? parseInt(process.env.REACT_APP_RESULTS_TABLE_SIZE.trim()) : 50;
     const [pageSize, setPageSize] = useState(pageSizeEnvValue);
     const [pvs, setPVs] = useState([]);
-    const [pvValues, setPVValues] = useState({});
-    const [pvSeverities, setPVSeverities] = useState({});
-    const [pvUnits, setPVUnits] = useState({});
     const defaultTableDensity = process.env.REACT_APP_RESULTS_TABLE_DENSITY ? process.env.REACT_APP_RESULTS_TABLE_DENSITY : "standard";
     let tablePageSizeOptions = [5, 10, 20, 50, 100];
     if (process.env.REACT_APP_RESULTS_TABLE_SIZE_OPTIONS) {
@@ -34,83 +35,106 @@ function QueryResults(props) {
     const [columnVisibilityModel, setColumnVisibilityModel] = useState();
     const [currentBreakpoint, setCurrentBreakpoint] = useState();
     const [prevBreakpoint, setPrevBreakpoint] = useState();
+    const [checked, setChecked] = useState([]);
+    const [currentChecked, setCurrentChecked] = useState(new Set());
+    const [monitorAllChecked, setMonitorAllChecked] = useState(false);
 
-    const socketUrl = api.PVWS_URL;
-    const { sendJsonMessage, lastJsonMessage } = useWebSocket(socketUrl, {
-        shouldReconnect: (closeEvent) => true,
-    });
+    let { handleErrorMessage, handleOpenErrorAlert, handleSeverity } = props;
+
+    const updateCurrentChecked = useCallback((index, checkedStatus) => {
+        if (currentChecked.has(index) && checkedStatus) {
+            return
+        }
+        let newChecked = checked;
+        setCurrentChecked(prevState => {
+            const newCurrentChecked = new Set(prevState);
+            if (newCurrentChecked.size >= 100 && checkedStatus) {
+                return newCurrentChecked;
+            }
+            if (checkedStatus) {
+                newCurrentChecked.add(index);
+            } else {
+                newCurrentChecked.delete(index);
+            }
+            newChecked[index] = checkedStatus;
+            setChecked(newChecked);
+            return newCurrentChecked;
+        });
+    }, [currentChecked, checked]);
+
+    const clearMonitoring = useCallback(() => {
+        setMonitorAllChecked(false);
+        let newCurrentChecked = currentChecked;
+
+        const iterator = newCurrentChecked.values();
+        let current = iterator.next();
+
+        while (!current.done) {
+            newCurrentChecked.delete(current.value);
+
+            const myEvent = { target: { checked: false } }
+            updateCurrentChecked(current.value, myEvent.target.checked);
+            current = iterator.next();
+        }
+        setCurrentChecked(newCurrentChecked);
+    }, [currentChecked, updateCurrentChecked])
+
+
+    // Event listeners for page change buttons
+    useEffect(() => {
+        const nextButton = document.querySelector('[title="Go to next page"]');
+        const prevButton = document.querySelector('[title="Go to previous page"]');
+
+        const handlePageChange = (params) => {
+            clearMonitoring();
+        }
+
+        if (nextButton) {
+            nextButton.addEventListener("click", handlePageChange);
+        }
+
+        if (prevButton) {
+            prevButton.addEventListener("click", handlePageChange);
+        }
+        return () => {
+            if (nextButton) {
+                nextButton.removeEventListener("click", handlePageChange);
+            }
+            if (prevButton) {
+                prevButton.removeEventListener("click", handlePageChange);
+            }
+        };
+    }, [pvs, currentChecked, checked, clearMonitoring]);
+
+    // Notify user if monitoring over 100 pvs
+    useEffect(() => {
+        if (currentChecked.size > 100) {
+            handleErrorMessage(`Warning: Monitoring ${currentChecked.size} PVs`);
+            handleSeverity("warning");
+            handleOpenErrorAlert(true);
+        }
+    }, [currentChecked, handleErrorMessage, handleOpenErrorAlert, handleSeverity])
 
     useEffect(() => {
-        if (lastJsonMessage !== null) {
-            const message = lastJsonMessage;
-            if (message.type === "update") {
-                if ("severity" in message) {
-                    setPVSeverities(prevState => ({ ...prevState, [message.pv]: message.severity }));
-                }
-                if ("units" in message) {
-                    setPVUnits(prevState => ({ ...prevState, [message.pv]: message.units }));
-                }
-                if ("text" in message) {
-                    setPVValues(prevState => ({ ...prevState, [message.pv]: message.text }));
-                    return;
-                }
-                else if ("value" in message) {
-                    setPVValues(prevState => ({
-                        ...prevState, [message.pv]: (((Number(message.value) >= 0.01 && Number(message.value) < 1000000000) ||
-                            (Number(message.value) <= -0.01 && Number(message.value) > -1000000000) ||
-                            Number(message.value) === 0) ?
-                            Number(message.value.toFixed(2)) : Number(message.value).toExponential(2))
-                    }));
-                    return;
-                }
-            }
-            else {
-                console.log("Unexpected message type: ", message);
-            }
+        if (props.isLoading) {
+            clearMonitoring();
         }
-    }, [lastJsonMessage]);
-
-    /*
-    const connectionStatus = {
-        [ReadyState.CONNECTING]: 'Connecting',
-        [ReadyState.OPEN]: 'Open',
-        [ReadyState.CLOSING]: 'Closing',
-        [ReadyState.CLOSED]: 'Closed',
-        [ReadyState.UNINSTANTIATED]: 'Uninstantiated',
-    }[readyState];
-    */
+    }, [props.isLoading, clearMonitoring])
 
     const handleRowDoubleClick = (e) => {
         navigate(`/pv/${e.row.name}`);
     }
 
-    const handleMonitorPVChange = (pvName) => (event) => {
-        if (event.target.checked) {
-            // maybe reopen here if closed
-            // if (ws.current.readyState === WebSocket.CLOSED) {
-            //     // Do your stuff...
-            //  }
-            sendJsonMessage({ "type": "subscribe", "pvs": [pvName] });
-            setPVValues(prevState => ({ ...prevState, [pvName]: 'obtaining...' }));
+    const handleMonitorSelectAll = () => (event) => {
+        setMonitorAllChecked(event.target.checked);
+        const rowsString = document.getElementsByClassName('MuiTablePagination-displayedRows')[0].innerHTML;
+        const [start, end] = rowsString.split('\u2013').map(s => s.trim().replace(" of", ""));
+        const [firstRow, lastRow] = [parseInt(start) - 1, parseInt(end) - 1];
+
+        for (let i = firstRow; i <= lastRow; ++i) {
+            updateCurrentChecked(i, event.target.checked);
         }
-        else {
-            sendJsonMessage({ "type": "clear", "pvs": [pvName] });
-            setPVValues((prevData) => {
-                const newData = { ...prevData };
-                delete newData[pvName];
-                return newData;
-            });
-            setPVUnits((prevData) => {
-                const newData = { ...prevData };
-                delete newData[pvName];
-                return newData;
-            });
-            setPVSeverities((prevData) => {
-                const newData = { ...prevData };
-                delete newData[pvName];
-                return newData;
-            });
-        }
+        return
     }
 
     const toggleColumnVisibility = (field, state) => {
@@ -148,11 +172,29 @@ function QueryResults(props) {
                         <TimelineIcon />
                     </IconButton>
                 </Tooltip>
-                <Tooltip arrow title={<div>Monitor PV<br />{params.row.name}</div>}>
-                    <Checkbox disabled={params.row.pvStatus === "Inactive" || params.row.recordType === "waveform"} color="primary" onChange={handleMonitorPVChange(params.row.name)} ></Checkbox>
-                </Tooltip>
+                {
+                    // if PVWS is on, show checkbox for live monitoring, else nothing
+                    process.env.REACT_APP_USE_PVWS === "true" ? <ValueCheckbox pvName={params.row.name} id={params.row.id}
+                                                                    pvStatus={params.row.pvStatus} recordType={params.row.recordType} checked={checked}
+                                                                    currentChecked={currentChecked} updateCurrentChecked={updateCurrentChecked} />
+                                                                : <div></div>
+                }
             </div>
         );
+    }
+
+    const renderActionsHeader = () => {
+            return (
+                <div>
+                    <Typography display="inline" variant="subtitle2">Actions</Typography>
+                    {
+                        process.env.REACT_APP_USE_PVWS === "true" ? <Tooltip arrow title="Monitor All PVs">
+                                                                    <Checkbox checked={monitorAllChecked} onChange={handleMonitorSelectAll()} sx={{ ml: ".5rem" }}></Checkbox>
+                                                                </Tooltip>
+                                                                : <div></div>
+                    }
+                </div>
+            )
     }
 
     const renderIOCLink = (params) => {
@@ -180,37 +222,15 @@ function QueryResults(props) {
     }
 
     const renderValue = (params) => {
-        let textColor = "black";
-        if (params.row.name in pvSeverities) {
-            if (pvSeverities[params.row.name] === "INVALID") {
-                return (
-                    <div style={{ color: "#FF00FF" }}>{pvValues[params.row.name]} ({pvSeverities[params.row.name]})</div>
-                );
-            }
-            else if (pvSeverities[params.row.name] === "UNDEFINED") {
-                return (
-                    <div style={{ color: "#C800C8" }}>{pvSeverities[params.row.name]}</div>
-                );
-            }
-            else if (pvSeverities[params.row.name] === "NONE") {
-                textColor = "green";
-            }
-            else if (pvSeverities[params.row.name] === "MINOR") {
-                textColor = "#FF9900";
-            }
-            else if (pvSeverities[params.row.name] === "MAJOR") {
-                textColor = "red";
-            }
-        }
-        if (params.row.name in pvUnits) {
+        if (process.env.REACT_APP_USE_PVWS === "true") {
             return (
-                <div style={{ color: textColor }}>{`${pvValues[params.row.name]} ${pvUnits[params.row.name]}`}</div>
+                <Value pvName={params.row.name} id={params.row.id} isChecked={currentChecked.has(params.row.id)} pvRecordType={params.row.recordType} pvStatus={params.row.pvStatus} />
             );
         }
         else {
             return (
-                <div style={{ color: textColor }}>{pvValues[params.row.name]}</div>
-            );
+                <div></div>
+            )
         }
     }
 
@@ -240,7 +260,7 @@ function QueryResults(props) {
     if (process.env.REACT_APP_USE_PVWS === "true") {
         columns.push({ field: "value", headerName: 'Value', flex: 7.5, minWidth: 120, maxWidth: 140, renderCell: renderValue })
     }
-    columns.push({ field: "button", headerName: 'Actions', flex: 9.5, minWidth: 160, maxWidth: 200, disableClickEventBubbling: true, renderCell: renderButtons })
+    columns.push({ field: "button", headerName: 'Actions', flex: 9.5, minWidth: 160, maxWidth: 200, disableClickEventBubbling: true, renderCell: renderButtons, renderHeader: renderActionsHeader })
 
     useEffect(() => {
         if (props.cfData === null || props.cfData === {} || Object.keys(props.cfData).length === 0) {
@@ -256,6 +276,7 @@ function QueryResults(props) {
             });
             return pvObject;
         }));
+        setChecked(new Array(props.cfData.length).fill(false));
     }, [props.cfData]);
 
     function roundToBreakpoint(width, breakpoints) {
@@ -379,7 +400,6 @@ function QueryResults(props) {
                     setColumnVisibilityModel(newModel)
                 }
             />
-            {/* <button onClick={() => toggleColumnVisibility('name', false)}>hide name</button> */}
         </ Fragment>
     );
 }

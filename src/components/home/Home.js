@@ -13,6 +13,7 @@ import './Home.css';
 const propTypes = {
     handleOpenErrorAlert: PropTypes.func,
     handleErrorMessage: PropTypes.func,
+    handleSeverity: PropTypes.func,
 }
 
 
@@ -39,7 +40,7 @@ const pvRecordTypes = ['ao', 'ai', 'bo', 'bi', 'mbbo', 'mbbi', 'longout', 'longi
 
 function Home(props) {
     const [searchParams, setSearchParams] = useSearchParams();
-    const [cfData, setCFData] = useState(null); //array
+    const [cfData, setCFData] = useState(null);
     const [pvName, setPVName] = useState(searchParams.get("pvName") || "");
     const [hostName, setHostName] = useState(searchParams.get("hostName") || "");
     const [iocName, setIOCName] = useState(searchParams.get("iocName") || "");
@@ -100,6 +101,7 @@ function Home(props) {
                 console.log("Error in fetch of channel finder data");
                 console.log(err);
                 props.handleErrorMessage("Error in EPICS Channel Finder query");
+                props.handleSeverity("error");
                 props.handleOpenErrorAlert(true);
                 setIsLoading(false);
                 setCFData(null);
@@ -180,6 +182,7 @@ function Home(props) {
                 console.log("Error in fetch of channel finder data");
                 console.log(err);
                 props.handleErrorMessage("Error in EPICS Channel Finder query");
+                props.handleSeverity("error");
                 props.handleOpenErrorAlert(true);
                 setIsLoading(false);
                 setCFData(null);
@@ -485,7 +488,7 @@ function Home(props) {
                     {/* </Box> */}
                 </Grid>
                 <Grid container item xs={12} style={{ display: "flex" }}>
-                    <QueryResults isLoading={isLoading} cfData={cfData} />
+                    <QueryResults isLoading={isLoading} cfData={cfData} handleErrorMessage={props.handleErrorMessage} handleOpenErrorAlert={props.handleOpenErrorAlert} handleSeverity={props.handleSeverity} />
                 </Grid>
             </form>
         </ Fragment >
