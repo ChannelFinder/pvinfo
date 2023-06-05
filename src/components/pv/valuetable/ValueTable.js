@@ -38,15 +38,7 @@ function ValueTable(props) {
             if (props.snapshot && !props.pvMonitoring) return;
             setPVValue(null);
             setPVSeverity(null);
-            setPVMin(null);
-            setPVMax(null);
-            setPVAlarmLow(null);
-            setPVAlarmHigh(null);
-            setPVWarnLow(null);
-            setPVWarnHigh(null);
-            setPVPrecision(null);
             setPVTimestamp(null);
-            setPVUnits(null);
         },
         shouldReconnect: (closeEvent) => true,
     });
@@ -81,15 +73,7 @@ function ValueTable(props) {
             if (props.snapshot && !props.pvMonitoring) return;
             setPVValue(null);
             setPVSeverity(null);
-            setPVMin(null);
-            setPVMax(null);
-            setPVAlarmLow(null);
-            setPVAlarmHigh(null);
-            setPVWarnLow(null);
-            setPVWarnHigh(null);
-            setPVPrecision(null);
             setPVTimestamp(null);
-            setPVUnits(null);
         }
     }, [props.pvMonitoring, props.snapshot, snapshot, props.isLoading, props.pvData, props.pvName, handleErrorMessage, handleOpenErrorAlert, sendJsonMessage, handleSeverity]);
 
