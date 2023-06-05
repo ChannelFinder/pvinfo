@@ -30,7 +30,7 @@ function QueryResults(props) {
         if (!tablePageSizeOptions.includes(pageSizeEnvValue)) {
             tablePageSizeOptions.push(pageSizeEnvValue);
         }
-        tablePageSizeOptions.sort();
+        tablePageSizeOptions.sort(function (a, b) { return a - b; });
     }
     const [columnVisibilityModel, setColumnVisibilityModel] = useState();
     const [currentBreakpoint, setCurrentBreakpoint] = useState();
@@ -296,9 +296,10 @@ function QueryResults(props) {
             const md = process.env.REACT_APP_MD_BREAKPOINT ? parseInt(process.env.REACT_APP_MD_BREAKPOINT) : 900;
             const lg = process.env.REACT_APP_LG_BREAKPOINT ? parseInt(process.env.REACT_APP_LG_BREAKPOINT) : 1536;
 
-            setCurrentBreakpoint(roundToBreakpoint(windowWidth, [0, sm, md, lg]))
+            const breakpoint = roundToBreakpoint(windowWidth, [0, sm, md, lg]);
+            setCurrentBreakpoint(breakpoint);
 
-            if (currentBreakpoint !== prevBreakpoint) {
+            if (breakpoint !== prevBreakpoint) {
                 setPrevBreakpoint(currentBreakpoint);
 
                 const omitExtraSmall = process.env.REACT_APP_OMIT_IN_TABLE_X_SMALL ? process.env.REACT_APP_OMIT_IN_TABLE_X_SMALL.split(',').map(item => item.trim()) : [];

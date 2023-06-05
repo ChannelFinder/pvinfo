@@ -8,6 +8,7 @@ import KeyValuePair from "../KeyValuePair";
 
 const propTypes = {
     pvMonitoring: PropTypes.bool,
+    snapshot: PropTypes.bool,
     pvData: PropTypes.object,
     isLoading: PropTypes.bool,
     pvName: PropTypes.string,
@@ -29,10 +30,12 @@ function ValueTable(props) {
     const [pvWarnHigh, setPVWarnHigh] = useState(null);
     const [pvTimestamp, setPVTimestamp] = useState(null);
     const [alarmColor, setAlarmColor] = useState("");
+    const [snapshot, setSnapshot] = useState(props.snapshot);
 
     const socketUrl = api.PVWS_URL;
     const { sendJsonMessage, lastJsonMessage } = useWebSocket(socketUrl, {
         onClose: () => {
+            if (props.snapshot && !props.pvMonitoring) return;
             setPVValue(null);
             setPVSeverity(null);
             setPVMin(null);
@@ -51,7 +54,11 @@ function ValueTable(props) {
     let { handleErrorMessage, handleOpenErrorAlert, handleSeverity } = props;
 
     useEffect(() => {
-        if (props.pvMonitoring) {
+        setSnapshot(props.snapshot)
+    }, [props.snapshot])
+
+    useEffect(() => {
+        if (props.pvMonitoring || snapshot) {
             if (props.pvData === null || props.isLoading) {
                 return;
             }
@@ -71,6 +78,7 @@ function ValueTable(props) {
         }
         else {
             sendJsonMessage({ "type": "clear", "pvs": [props.pvName] });
+            if (props.snapshot && !props.pvMonitoring) return;
             setPVValue(null);
             setPVSeverity(null);
             setPVMin(null);
@@ -83,18 +91,17 @@ function ValueTable(props) {
             setPVTimestamp(null);
             setPVUnits(null);
         }
-    }, [props.pvMonitoring, props.isLoading, props.pvData, props.pvName, handleErrorMessage, handleOpenErrorAlert, sendJsonMessage, handleSeverity]);
+    }, [props.pvMonitoring, props.snapshot, snapshot, props.isLoading, props.pvData, props.pvName, handleErrorMessage, handleOpenErrorAlert, sendJsonMessage, handleSeverity]);
 
     useEffect(() => {
-        // console.log(lastJsonMessage)
         if (lastJsonMessage !== null) {
-            if (!props.pvMonitoring) return;
+            if (!props.pvMonitoring && !snapshot) return;
             const message = lastJsonMessage;
             if (message.type === "update") {
-                console.log("update")
                 // pv, severity, value, text, units, precision, labels
                 if ("units" in message) {
                     setPVUnits(message.units);
+
                 }
                 if ("min" in message) {
                     setPVMin(message.min);
@@ -145,12 +152,14 @@ function ValueTable(props) {
                     else {
                         timestamp = new Date(message.seconds * 1000).toLocaleString();
                     }
-                    setPVTimestamp(timestamp);
+                    if (!props.snapshot) {
+                        setPVTimestamp(timestamp);
+                    }
                 }
                 else {
                     setPVTimestamp(null);
                 }
-                if ("severity" in message) {
+                if ("severity" in message && props.pvMonitoring) {
                     if (message.severity === "NONE") {
                         setAlarmColor("green");
                     }
@@ -166,21 +175,36 @@ function ValueTable(props) {
                     else if (message.severity === "MINOR") {
                         setAlarmColor("#FF9900");
                     }
-                    setPVSeverity(message.severity);
+                    if (!props.snapshot) {
+                        setPVSeverity(message.severity);
+                    }
                 }
                 if ("text" in message) {
-                    setPVValue(message.text);
+                    if (!props.snapshot) {
+                        setPVValue(message.text);
+                    }
+                    setSnapshot(false);
+
                 }
                 else if ("value" in message) {
-                    console.log("valuechange");
-                    setPVValue((Number(message.value) >= 0.01 || Number(message.value) === 0) ? Number(message.value.toFixed(2)) : Number(message.value).toExponential());
+                    if (!props.snapshot) {
+                        // if precision was explicitly set (and badly assume 0 is not explicit) then use that
+                        if (pvPrecision !== null && pvPrecision !== "" && !isNaN(pvPrecision) && pvPrecision !== 0) {
+                            setPVValue((Number(message.value) >= 0.01 || Number(message.value) === 0) ? Number(message.value.toFixed(Number(pvPrecision))) : Number(message.value).toExponential(Number(pvPrecision)));
+                        }
+                        // otherwise show full value
+                        else {
+                            setPVValue((Number(message.value) >= 0.01 || Number(message.value) === 0) ? Number(message.value) : Number(message.value).toExponential());
+                        }
+                    }
+                    setSnapshot(false);
                 }
             }
             else {
                 console.log("Unexpected message type: ", message);
             }
         }
-    }, [lastJsonMessage, props.pvMonitoring]);
+    }, [lastJsonMessage, props.pvMonitoring, props.snapshot, snapshot, pvPrecision]);
 
     if (props.isLoading) {
         return (

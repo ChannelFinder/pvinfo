@@ -63,7 +63,7 @@ Installs the needed NPM modules into node_modules directory. Run this the first 
 ### `npm start`
 
 Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Open [http://localhost:3000](http://localhost:3000) or possibly [http://localhost:3000/pvinfo](http://localhost:3000/pvinfo) to view it in the browser.
 
 The page will reload if you make edits.\
 You will also see any lint errors in the console.
@@ -79,3 +79,16 @@ The build is minified and the filenames include the hashes.\
 Your app is ready to be deployed!
 
 See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+
+### React Routing Configuration
+
+Since React routing is done on the client side, direct links to sub pages of PV Info might not load (i.e. https://myhost/pvinfo/pv/mypv). To solve this, something like this can be added to .htaccess for apache setups to always route through the index endpoint:
+
+```bash
+$ cat .htaccess
+Options -MultiViews
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^ index.html [QSA,L]
+```
+https://stackoverflow.com/questions/27928372/react-router-urls-dont-work-when-refreshing-or-writing-manually/46035346#46035346
