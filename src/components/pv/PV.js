@@ -102,6 +102,9 @@ function PV(props) {
     }, [cfPVData, dataNamesMapping]);
 
     useEffect(() => {
+        if(isLoading || pvData === null) {
+            return;
+        }
         if (Object.keys(pvData).length !== 0) {
             if (process.env.REACT_APP_DEFAULT_LIVE_MONITORING === "true") {
                 setPVMonitoring(true);
@@ -109,7 +112,7 @@ function PV(props) {
                 setSnapshot(true);
             }
         }
-    }, [pvData])
+    }, [pvData, isLoading])
 
     const handlePVMonitoringChange = (e) => {
         if (e.target.checked) {
