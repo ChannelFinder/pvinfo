@@ -38,8 +38,10 @@ function QueryResults(props) {
     const [checked, setChecked] = useState([]);
     const [currentChecked, setCurrentChecked] = useState(new Set());
     const [monitorAllChecked, setMonitorAllChecked] = useState(false);
+    const liveMonitorMax = process.env.REACT_APP_LIVE_MONITOR_MAX ? process.env.REACT_APP_LIVE_MONITOR_MAX : 100;
+    const liveMonitorWarn = process.env.REACT_APP_LIVE_MONITOR_WARN ? process.env.REACT_APP_LIVE_MONITOR_WARN : 50;
 
-    let { handleErrorMessage, handleOpenErrorAlert, handleSeverity } = props;
+  let { handleErrorMessage, handleOpenErrorAlert, handleSeverity } = props;
 
     const updateCurrentChecked = useCallback((index, checkedStatus) => {
         if (currentChecked.has(index) && checkedStatus) {
@@ -48,7 +50,7 @@ function QueryResults(props) {
         let newChecked = checked;
         setCurrentChecked(prevState => {
             const newCurrentChecked = new Set(prevState);
-            if (newCurrentChecked.size >= 100 && checkedStatus) {
+            if (newCurrentChecked.size > liveMonitorMax && checkedStatus) {
                 return newCurrentChecked;
             }
             if (checkedStatus) {
@@ -60,7 +62,7 @@ function QueryResults(props) {
             setChecked(newChecked);
             return newCurrentChecked;
         });
-    }, [currentChecked, checked]);
+    }, [currentChecked, checked, liveMonitorMax]);
 
     const clearMonitoring = useCallback(() => {
         setMonitorAllChecked(false);
@@ -108,12 +110,17 @@ function QueryResults(props) {
 
     // Notify user if monitoring over 100 pvs
     useEffect(() => {
-        if (currentChecked.size > 100) {
+        if (currentChecked.size > liveMonitorMax) {
+            handleErrorMessage(`Error: Number of monitored PVs is limited to ${liveMonitorMax}!`);
+            handleSeverity("error");
+            handleOpenErrorAlert(true);
+        }
+        else if (currentChecked.size > liveMonitorWarn) {
             handleErrorMessage(`Warning: Monitoring ${currentChecked.size} PVs`);
             handleSeverity("warning");
             handleOpenErrorAlert(true);
         }
-    }, [currentChecked, handleErrorMessage, handleOpenErrorAlert, handleSeverity])
+    }, [currentChecked, handleErrorMessage, handleOpenErrorAlert, handleSeverity, liveMonitorMax, liveMonitorWarn])
 
     useEffect(() => {
         if (props.isLoading) {
