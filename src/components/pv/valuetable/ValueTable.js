@@ -38,15 +38,7 @@ function ValueTable(props) {
             if (props.snapshot && !props.pvMonitoring) return;
             setPVValue(null);
             setPVSeverity(null);
-            setPVMin(null);
-            setPVMax(null);
-            setPVAlarmLow(null);
-            setPVAlarmHigh(null);
-            setPVWarnLow(null);
-            setPVWarnHigh(null);
-            setPVPrecision(null);
             setPVTimestamp(null);
-            setPVUnits(null);
         },
         shouldReconnect: (closeEvent) => true,
     });
@@ -81,15 +73,7 @@ function ValueTable(props) {
             if (props.snapshot && !props.pvMonitoring) return;
             setPVValue(null);
             setPVSeverity(null);
-            setPVMin(null);
-            setPVMax(null);
-            setPVAlarmLow(null);
-            setPVAlarmHigh(null);
-            setPVWarnLow(null);
-            setPVWarnHigh(null);
-            setPVPrecision(null);
             setPVTimestamp(null);
-            setPVUnits(null);
         }
     }, [props.pvMonitoring, props.snapshot, snapshot, props.isLoading, props.pvData, props.pvName, handleErrorMessage, handleOpenErrorAlert, sendJsonMessage, handleSeverity]);
 
@@ -101,7 +85,6 @@ function ValueTable(props) {
                 // pv, severity, value, text, units, precision, labels
                 if ("units" in message) {
                     setPVUnits(message.units);
-
                 }
                 if ("min" in message) {
                     setPVMin(message.min);
@@ -110,36 +93,16 @@ function ValueTable(props) {
                     setPVMax(message.max);
                 }
                 if ("alarm_low" in message) {
-                    if (message.alarm_low === "NaN" || message.alarm_low === "Infinity" || message.alarm_low === "-Infinity") {
-                        setPVAlarmLow("");
-                    }
-                    else {
-                        setPVAlarmLow(message.alarm_low);
-                    }
+                    setPVAlarmLow(message.alarm_low);
                 }
                 if ("alarm_high" in message) {
-                    if (message.alarm_high === "NaN" || message.alarm_high === "Infinity" || message.alarm_high === "-Infinity") {
-                        setPVAlarmHigh("");
-                    }
-                    else {
-                        setPVAlarmHigh(message.alarm_high);
-                    }
+                    setPVAlarmHigh(message.alarm_high);
                 }
                 if ("warn_low" in message) {
-                    if (message.warn_low === "NaN" || message.warn_low === "Infinity" || message.warn_low === "-Infinity") {
-                        setPVWarnLow("");
-                    }
-                    else {
-                        setPVWarnLow(message.warn_low);
-                    }
+                    setPVWarnLow(message.warn_low);
                 }
                 if ("warn_high" in message) {
-                    if (message.warn_high === "NaN" || message.warn_high === "Infinity" || message.warn_high === "-Infinity") {
-                        setPVWarnHigh("");
-                    }
-                    else {
-                        setPVWarnHigh(message.warn_high);
-                    }
+                    setPVWarnHigh(message.warn_high);
                 }
                 if ("precision" in message) {
                     setPVPrecision(message.precision);
