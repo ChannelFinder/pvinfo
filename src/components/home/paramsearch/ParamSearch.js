@@ -1,8 +1,7 @@
 import React, { Fragment } from 'react';
-import { Grid, Box, Button, TextField, MenuItem, Tooltip, Typography } from '@mui/material';
-import SearchIcon from '@mui/icons-material/Search';
+import { Grid, TextField, MenuItem, Tooltip } from '@mui/material';
+import SearchActions from '../searchactions/SearchActions';
 import Autocomplete from '@mui/material/Autocomplete';
-import ClearIcon from '@mui/icons-material/Clear';
 import PropTypes from "prop-types";
 
 const propTypes = {
@@ -294,29 +293,7 @@ function ParamSearch(props) {
                 {extraPropARender()}
                 {extraPropBRender()}
                 {aliasOfSearchRender()}
-                <Box sx={{ display: 'flex', flexDirection: 'row', flexGrow: 1, flexWrap: { xs: 'nowrap' }, minWidth: { xs: '50%', md: '25%', lg: '8%' } }}>
-                    <Tooltip arrow title="Search">
-                        <Button
-                            sx={{ display: "flex", flexGrow: 1, minWidth: '50%' }}
-                            aria-label="search"
-                            variant="contained"
-                            color="info"
-                            type="submit"
-                        >
-                            <SearchIcon style={{ color: 'black' }} fontSize='large' />
-                        </Button>
-                    </Tooltip>
-                    <Tooltip arrow title="Clear">
-                        <Button aria-label="clear"
-                            sx={{ display: "flex", flexGrow: 1, minWidth: '50%' }}
-                            variant="contained"
-                            color="secondary"
-                            onClick={props.handleClear}
-                        >
-                            <ClearIcon style={{ color: 'black' }} fontSize='large' />
-                        </Button>
-                    </Tooltip>
-                </Box>
+                <SearchActions />
                 {/* </Box> */}
             </Grid>
         </Fragment>

@@ -2,16 +2,14 @@ import React, { Fragment, useEffect, useState } from 'react';
 import { Grid, Box, Button, TextField, MenuItem, Tooltip, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
 import QueryResults from "./queryresults";
 import api from "../../api";
-import SearchIcon from '@mui/icons-material/Search';
 import Autocomplete from '@mui/material/Autocomplete';
 import { useSearchParams } from "react-router-dom";
-import ClearIcon from '@mui/icons-material/Clear';
-import ViewModuleIcon from '@mui/icons-material/ViewModule';
-import PageviewIcon from '@mui/icons-material/Pageview';
+import ManageSearchRoundedIcon from '@mui/icons-material/ManageSearchRounded';
+import PageviewRoundedIcon from '@mui/icons-material/PageviewRounded';
 import PropTypes from "prop-types";
 
-import ParamSearch from './paramsearch/ParamSearch';
-import FreeSearch from './freesearch/FreeSearch';
+import ParamSearch from './paramsearch';
+import FreeSearch from './freesearch';
 // is this needed?
 import './Home.css';
 
@@ -21,7 +19,7 @@ const propTypes = {
 }
 
 function Home(props) {
-    const [searchType, setSearchType] = useState('paramSearch');
+    const [standardSearch, setStandardSearch] = useState(true);
     const [searchParams, setSearchParams] = useSearchParams();
     const [cfData, setCFData] = useState(null); //array
     const [pvName, setPVName] = useState(searchParams.get("pvName") || "");
@@ -40,7 +38,7 @@ function Home(props) {
     const [isLoading, setIsLoading] = useState(false);
 
     const handleSearchType = (e, newSearchType) => {
-        setSearchType(newSearchType);
+        setStandardSearch(newSearchType);
     };
     const handlePVNameChange = (e) => {
         setPVName(e.target.value);
@@ -127,9 +125,7 @@ function Home(props) {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [searchParams]);
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        setIsLoading(true);
+    const parseParamSearch = (e) => {
         let params = {}
         if (e.target.pvName.value) { params[e.target.pvName.name] = e.target.pvName.value; }
         if (e.target.hostName.value) { params[e.target.hostName.name] = e.target.hostName.value; }
@@ -149,6 +145,24 @@ function Home(props) {
         }
         if (extraPropBName !== null) {
             if (e.target.extraPropB.value) { params[process.env.REACT_APP_SECOND_EXTRA_PROP] = e.target.extraPropB.value; }
+        }
+        return params;
+    }
+
+    const parseFreeformSearch = (e) => {
+        console.log(e.target.freeSearch.value)
+        let params = {}
+        return params;
+    }
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        setIsLoading(true);
+        let params = {}
+        if (standardSearch) {
+            params = parseParamSearch(e);
+        } else {
+            params = parseFreeformSearch(e);
         }
         api.CF_QUERY(params)
             .then((data) => {
@@ -173,6 +187,7 @@ function Home(props) {
             })
         setSearchParams(params);
     }
+
     const handleClear = (e) => {
         e.preventDefault();
         setPVName("");
@@ -208,21 +223,21 @@ function Home(props) {
                     </Typography>
                 </Grid>
                 <ToggleButtonGroup
-                    value={searchType}
+                    value={standardSearch}
                     exclusive
                     onChange={handleSearchType}
                     aria-label="search type"
                     style={{ marginBottom: 20 }}
                 >
-                    <ToggleButton value="paramSearch" aria-label="param search">
-                        <ViewModuleIcon />
+                    <ToggleButton value={true} aria-label="param search">
+                        <ManageSearchRoundedIcon />
                     </ToggleButton>
-                    <ToggleButton value="freeSearch" aria-label="free search">
-                        <PageviewIcon />
+                    <ToggleButton value={false} aria-label="free search">
+                        <PageviewRoundedIcon />
                     </ToggleButton>
                 </ToggleButtonGroup>
                 {
-                    searchType === "paramSearch" ? (
+                    standardSearch ? (
                         <ParamSearch handleOpenErrorAlert={props.handleOpenErrorAlert} handleErrorMessage={props.handleErrorMessage}
                             pvName={pvName} handlePVNameChange={handlePVNameChange}
                             hostName={hostName} handleHostNameChange={handleHostNameChange}
@@ -237,10 +252,8 @@ function Home(props) {
                             extraPropBValue={extraPropBValue} handleExtraPropBChange={handleExtraPropBChange}
                             handleClear={handleClear}
                             setIsLoading={setIsLoading}></ParamSearch>
-                    ) : searchType === "freeSearch" ? (
-                        <FreeSearch handleOpenErrorAlert={props.handleOpenErrorAlert} handleErrorMessage={props.handleErrorMessage} />
                     ) : (
-                        null
+                        <FreeSearch handleOpenErrorAlert={props.handleOpenErrorAlert} handleErrorMessage={props.handleErrorMessage} />
                     )
                 }
                 <Grid container item xs={12} style={{ display: "flex" }}>

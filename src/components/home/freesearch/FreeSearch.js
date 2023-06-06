@@ -1,4 +1,5 @@
 import { Grid, TextField, Tooltip } from '@mui/material'
+import SearchActions from '../searchactions/SearchActions';
 import PropTypes from "prop-types";
 
 const propTypes = {
@@ -20,9 +21,9 @@ function FreeSearch(props) {
                     placeholder="Search Query"
                     type="search"
                     variant="outlined"
-                // onChange={handlePVNameChange}
                 />
             </Tooltip>
+            <SearchActions />
         </Grid>
     )
 }
