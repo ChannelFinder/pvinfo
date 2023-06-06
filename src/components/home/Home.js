@@ -30,6 +30,7 @@ function Home(props) {
     const [recordType, setRecordType] = useState(searchParams.get("recordType") || "");
     const [recordTypeAutocompleteKey, setRecordTypeAutocompleteKey] = useState(-1);
     const [recordDesc, setRecordDesc] = useState(searchParams.get("recordDesc") || "");
+    const [freeformQuery, setFreeformQuery] = useState("");
     const extraPropAName = process.env.REACT_APP_EXTRA_PROP === "" ? null : process.env.REACT_APP_EXTRA_PROP;
     const extraPropBName = process.env.REACT_APP_SECOND_EXTRA_PROP === "" ? null : process.env.REACT_APP_SECOND_EXTRA_PROP;
 
@@ -67,6 +68,9 @@ function Home(props) {
     const handleExtraPropBChange = (e) => {
         setExtraPropBValue(e.target.value);
     };
+    const handleFreeformChange = (e) => {
+        setFreeformQuery(e.target.value);
+    }
     const queryPVs = (parameters) => {
         api.CF_QUERY(parameters)
             .then((data) => {
@@ -150,8 +154,19 @@ function Home(props) {
     }
 
     const parseFreeformSearch = (e) => {
-        console.log(e.target.freeSearch.value)
-        let params = {}
+        const keyValuePairs = e.target.freeSearch.value.split(' ');
+        let params = {};
+
+        for (let pair of keyValuePairs) {
+            const [key, value] = pair.split('=');
+            if (key === keyValuePairs[0]) {
+                params['pvName'] = key;
+            } else if (value !== undefined) {
+                params[key] = value;
+            }
+        }
+        params['freeform'] = true;
+        console.log(params);
         return params;
     }
 
@@ -238,7 +253,7 @@ function Home(props) {
                 </ToggleButtonGroup>
                 {
                     standardSearch ? (
-                        <ParamSearch handleOpenErrorAlert={props.handleOpenErrorAlert} handleErrorMessage={props.handleErrorMessage}
+                        <ParamSearch
                             pvName={pvName} handlePVNameChange={handlePVNameChange}
                             hostName={hostName} handleHostNameChange={handleHostNameChange}
                             iocName={iocName} handleIOCNameChange={handleIOCNameChange}
@@ -253,7 +268,7 @@ function Home(props) {
                             handleClear={handleClear}
                             setIsLoading={setIsLoading}></ParamSearch>
                     ) : (
-                        <FreeSearch handleOpenErrorAlert={props.handleOpenErrorAlert} handleErrorMessage={props.handleErrorMessage} />
+                        <FreeSearch freeformQuery={freeformQuery} handleFreeformChange={handleFreeformChange} />
                     )
                 }
                 <Grid container item xs={12} style={{ display: "flex" }}>

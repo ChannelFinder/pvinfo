@@ -3,8 +3,8 @@ import SearchActions from '../searchactions/SearchActions';
 import PropTypes from "prop-types";
 
 const propTypes = {
-    handleOpenErrorAlert: PropTypes.func,
-    handleErrorMessage: PropTypes.func
+    freeformQuery: PropTypes.string,
+    handleFreeformChange: PropTypes.func
 }
 
 function FreeSearch(props) {
@@ -17,10 +17,11 @@ function FreeSearch(props) {
                     label="Search Query"
                     name="freeSearch"
                     autoComplete="off"
-                    value={null}
+                    value={props.freeformQuery}
                     placeholder="Search Query"
                     type="search"
                     variant="outlined"
+                    onChange={props.handleFreeformChange}
                 />
             </Tooltip>
             <SearchActions />

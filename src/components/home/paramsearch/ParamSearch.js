@@ -5,8 +5,6 @@ import Autocomplete from '@mui/material/Autocomplete';
 import PropTypes from "prop-types";
 
 const propTypes = {
-    handleOpenErrorAlert: PropTypes.func,
-    handleErrorMessage: PropTypes.func,
     pvName: PropTypes.string,
     handlePVNameChange: PropTypes.func,
     hostName: PropTypes.string,
