@@ -5,10 +5,18 @@ const aaViewerURL = process.env.NODE_ENV === 'development' ? process.env.REACT_A
 const pvwsURL = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_PVWS_URL_DEV : process.env.REACT_APP_PVWS_URL;
 const serverURL = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_BASE_URL_DEV : process.env.REACT_APP_BASE_URL;
 
-function queryParse(params) {
-    let addOn = ""
+function standardParse(params) {
+    let noWildcard = new Set(["pvStatus", "recordType"]);
+    if (process.env.REACT_APP_EXTRA_PROP && process.env.REACT_APP_EXTRA_PROP_DROPDOWN_LABELS) {
+        noWildcard.add(process.env.REACT_APP_EXTRA_PROP);
+    }
+    if (process.env.REACT_APP_SECOND_EXTRA_PROP && process.env.REACT_APP_SECOND_EXTRA_PROP_DROPDOWN_LABELS) {
+        noWildcard.add(process.enc.REACT_APP_SECOND_EXTRA_PROP);
+    }
+
+    let addOn = "";
     for (let key in params) {
-        if (key === 'pvName' || key === 'freeform') continue;
+        if (key === 'pvName' || key === "standardSearch") continue;
         const value = params[key];
         let newParam = `&${key}`
         if (value !== "") {
@@ -18,7 +26,7 @@ function queryParse(params) {
             else if (value.charAt(0) === "!") {
                 newParam = newParam.concat(`!=*${value.substring(1)}*`);
             }
-            else if (value.charAt(0) !== "*" && value.charAt(value.length - 1) !== "*") {
+            else if ((value.charAt(0) !== "*" && value.charAt(value.length - 1) !== "*") && !(noWildcard.has(key))) {
                 newParam = newParam.concat(`=*${value}*`);
             }
             else {
@@ -30,9 +38,18 @@ function queryParse(params) {
     return addOn;
 }
 
+function freeformParse(params) {
+    let addOn = "";
+    for (let key in params) {
+        if (key === 'pvName' || key === 'standardSearch') continue;
+        addOn = addOn.concat(`&${key}=${params[key]}`);
+    }
+    return addOn;
+}
+
 async function queryChannelFinder(params) {
     let data = {};
-    let addOn = ""
+    let urlParams = "";
     let pvName = "*";
     if ("pvName" in params && params.pvName !== "") {
         if (params.pvName.charAt(0) === "=") {
@@ -45,142 +62,15 @@ async function queryChannelFinder(params) {
             pvName = params.pvName;
         }
     }
-    if (params['freeform']) {
-        addOn = queryParse(params);
-        console.log(addOn);
-    }
-    let hostName = "=*";
-    if ("hostName" in params && params.hostName !== "") {
-        if (params.hostName.charAt(0) === "=") {
-            hostName = params.hostName;
-        }
-        else if (params.hostName.charAt(0) === "!") {
-            hostName = `!=*${params.hostName.substring(1)}*`;
-        }
-        else if (params.hostName.charAt(0) !== "*" && params.hostName.charAt(params.hostName.length - 1) !== "*") {
-            hostName = `=*${params.hostName}*`;
-        }
-        else {
-            hostName = `=${params.hostName}`;
-        }
-    }
-    let iocName = "=*";
-    if ("iocName" in params && params.iocName !== "") {
-        if (params.iocName.charAt(0) === "=") {
-            iocName = params.iocName;
-        }
-        else if (params.iocName.charAt(0) === "!") {
-            iocName = `!=*${params.iocName.substring(1)}*`;
-        }
-        else if (params.iocName.charAt(0) !== "*" && params.iocName.charAt(params.iocName.length - 1) !== "*") {
-            iocName = `=*${params.iocName}*`;
-        }
-        else {
-            iocName = `=${params.iocName}`;
-        }
-    }
-    let pvStatus = "=*";
-    if ("pvStatus" in params && params.pvStatus !== "") {
-        if (params.pvStatus.charAt(0) === "=") {
-            pvStatus = params.pvStatus;
-        }
-        else if (params.pvStatus.charAt(0) === "!") {
-            pvStatus = `!=*${params.pvStatus.substring(1)}*`;
-        }
-        else if (params.pvStatus.charAt(0) !== "*" && params.pvStatus.charAt(params.pvStatus.length - 1) !== "*") {
-            pvStatus = `=*${params.pvStatus}*`;
-        }
-        else {
-            pvStatus = `=${params.pvStatus}`;
-        }
+    if (params['standardSearch']) {
+        console.log("Standard Search");
+        urlParams = standardParse(params);
+    } else {
+        console.log("freeform parse");
+        urlParams = freeformParse(params);
     }
 
-
-    let requestURI = `${channelFinderURL}?~name=${pvName}&hostName${hostName}&iocName${iocName}&pvStatus${pvStatus}${addOn}`;
-
-    if (process.env.REACT_APP_CF_RECORD_TYPE === "true") {
-        let recordType = "=*";
-        if ("recordType" in params && params.recordType !== "") {
-            if (params.recordType.charAt(0) === "=") {
-                recordType = params.recordType;
-            }
-            else if (params.recordType.charAt(0) === "!") {
-                recordType = `!=*${params.recordType.substring(1)}*`;
-            }
-            // don't assume wildcard on dropdowns
-            // else if (params.recordType.charAt(0) !== "*" && params.recordType.charAt(params.recordType.length - 1) !== "*") {
-            //     recordType = `=*${params.recordType}*`;
-            // }
-            else {
-                recordType = `=${params.recordType}`;
-            }
-        }
-        requestURI = requestURI + `&recordType${recordType}`;
-    }
-    if (process.env.REACT_APP_CF_RECORD_DESC === "true") {
-        if ("recordDesc" in params && params.recordDesc !== "") {
-            if (params.recordDesc.charAt(0) === "=") {
-                requestURI = requestURI + `&recordDesc${params.recordDesc}`;
-            }
-            else if (params.recordDesc.charAt(0) === "!") {
-                requestURI = requestURI + `&recordDesc!=${params.recordDesc.substring(1)}`;
-            }
-            else if (params.recordDesc.charAt(0) !== "*" && params.recordDesc.charAt(params.recordDesc.length - 1) !== "*") {
-                requestURI = requestURI + `&recordDesc=*${params.recordDesc}*`;
-            }
-            else {
-                requestURI = requestURI + `&recordDesc=${params.recordDesc}`;
-            }
-        }
-    }
-    if (process.env.REACT_APP_CF_ALIAS === "true") {
-        if ("alias" in params && params.alias !== "") {
-            if (params.alias.charAt(0) === "=") {
-                requestURI = requestURI + `&alias${params.alias}`;
-            }
-            else if (params.alias.charAt(0) === "!") {
-                requestURI = requestURI + `&alias!=${params.alias.substring(1)}`;
-            }
-            else if (params.alias.charAt(0) !== "*" && params.alias.charAt(params.alias.length - 1) !== "*") {
-                requestURI = requestURI + `&alias=*${params.alias}*`;
-            }
-            else {
-                requestURI = requestURI + `&alias=${params.alias}`;
-            }
-        }
-    }
-    if (process.env.REACT_APP_EXTRA_PROP !== "") {
-        if (process.env.REACT_APP_EXTRA_PROP in params && params[process.env.REACT_APP_EXTRA_PROP] !== "") {
-            if (params[process.env.REACT_APP_EXTRA_PROP].charAt(0) === "=") {
-                requestURI = requestURI + `&${process.env.REACT_APP_EXTRA_PROP}${params[process.env.REACT_APP_EXTRA_PROP]}`;
-            }
-            else if (params[process.env.REACT_APP_EXTRA_PROP].charAt(0) === "!") {
-                requestURI = requestURI + `&${process.env.REACT_APP_EXTRA_PROP}!=${params[process.env.REACT_APP_EXTRA_PROP].substring(1)}`;
-            }
-            else if (params[process.env.REACT_APP_EXTRA_PROP].charAt(0) !== "*" && params[process.env.REACT_APP_EXTRA_PROP].charAt(params[process.env.REACT_APP_EXTRA_PROP].length - 1) !== "*") {
-                requestURI = requestURI + `&${process.env.REACT_APP_EXTRA_PROP}=*${params[process.env.REACT_APP_EXTRA_PROP]}*`;
-            }
-            else {
-                requestURI = requestURI + `&${process.env.REACT_APP_EXTRA_PROP}=${params[process.env.REACT_APP_EXTRA_PROP]}`;
-            }
-        }
-    }
-    if (process.env.REACT_APP_SECOND_EXTRA_PROP !== "") {
-        if (process.env.REACT_APP_SECOND_EXTRA_PROP in params && params[process.env.REACT_APP_SECOND_EXTRA_PROP] !== "") {
-            if (params[process.env.REACT_APP_SECOND_EXTRA_PROP].charAt(0) === "=") {
-                requestURI = requestURI + `&${process.env.REACT_APP_SECOND_EXTRA_PROP}${params[process.env.REACT_APP_SECOND_EXTRA_PROP]}`;
-            }
-            else if (params[process.env.REACT_APP_SECOND_EXTRA_PROP].charAt(0) === "!") {
-                requestURI = requestURI + `&${process.env.REACT_APP_SECOND_EXTRA_PROP}!=${params[process.env.REACT_APP_SECOND_EXTRA_PROP].substring(1)}`;
-            }
-            else if (params[process.env.REACT_APP_SECOND_EXTRA_PROP].charAt(0) !== "*" && params[process.env.REACT_APP_SECOND_EXTRA_PROP].charAt(params[process.env.REACT_APP_SECOND_EXTRA_PROP].length - 1) !== "*") {
-                requestURI = requestURI + `&${process.env.REACT_APP_SECOND_EXTRA_PROP}=*${params[process.env.REACT_APP_SECOND_EXTRA_PROP]}*`;
-            }
-            else {
-                requestURI = requestURI + `&${process.env.REACT_APP_SECOND_EXTRA_PROP}=${params[process.env.REACT_APP_SECOND_EXTRA_PROP]}`;
-            }
-        }
-    }
+    let requestURI = `${channelFinderURL}?~name=${pvName}${urlParams}`;
 
     let options = {};
     let errorFlag = false;

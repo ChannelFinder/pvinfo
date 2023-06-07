@@ -1,8 +1,7 @@
 import React, { Fragment, useEffect, useState } from 'react';
-import { Grid, Box, Button, TextField, MenuItem, Tooltip, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
+import { Grid, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
 import QueryResults from "./queryresults";
 import api from "../../api";
-import Autocomplete from '@mui/material/Autocomplete';
 import { useSearchParams } from "react-router-dom";
 import ManageSearchRoundedIcon from '@mui/icons-material/ManageSearchRounded';
 import PageviewRoundedIcon from '@mui/icons-material/PageviewRounded';
@@ -179,6 +178,7 @@ function Home(props) {
         } else {
             params = parseFreeformSearch(e);
         }
+        params['standardSearch'] = standardSearch;
         api.CF_QUERY(params)
             .then((data) => {
                 if (data === null) {
