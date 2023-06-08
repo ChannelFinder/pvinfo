@@ -11,7 +11,7 @@ function standardParse(params) {
         noWildcard.add(process.env.REACT_APP_EXTRA_PROP);
     }
     if (process.env.REACT_APP_SECOND_EXTRA_PROP && process.env.REACT_APP_SECOND_EXTRA_PROP_DROPDOWN_LABELS) {
-        noWildcard.add(process.enc.REACT_APP_SECOND_EXTRA_PROP);
+        noWildcard.add(process.env.REACT_APP_SECOND_EXTRA_PROP);
     }
 
     let addOn = "";

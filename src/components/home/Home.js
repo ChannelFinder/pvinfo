@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState } from 'react';
-import { Grid, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
+import { Grid, ToggleButton, ToggleButtonGroup, Typography, Tooltip } from '@mui/material';
 import QueryResults from "./queryresults";
 import api from "../../api";
 import { useSearchParams } from "react-router-dom";
@@ -153,7 +153,6 @@ function Home(props) {
             if (!standardSearch) {
                 for (let key in params) {
                     const value = params[key];
-                    console.log(`${key}: ${value}`);
                     freeformQuery = freeformQuery.concat(` ${key}=${value}`);
                 }
             }
@@ -217,7 +216,6 @@ function Home(props) {
                 params[key] = value;
             }
         }
-        console.log(params);
         return params;
     }
 
@@ -276,34 +274,36 @@ function Home(props) {
             <form onSubmit={handleSubmit}>
                 <Grid item alignItems="center" sx={{ backgroundColor: '#d7e3f5' }} xs={12}>
                     <Typography
-                        style={{ marginBottom: 20 }}
+                        style={{ marginBottom: 10 }}
                         align="center"
                         variant="h6"
                     >
                         {process.env.REACT_APP_HOMEPAGE_HEADER}
                     </Typography>
                     <Typography
-                        style={{ marginBottom: 20 }}
+                        style={{ marginBottom: 10 }}
                         align="center"
                         variant="subtitle1"
                     >
                         {process.env.REACT_APP_HOMEPAGE_SUBHEADER}
                     </Typography>
                 </Grid>
-                <ToggleButtonGroup
-                    value={standardSearch}
-                    exclusive
-                    onChange={handleSearchType}
-                    aria-label="search type"
-                    style={{ marginBottom: 20 }}
-                >
-                    <ToggleButton value={true} aria-label="param search">
-                        <ManageSearchRoundedIcon />
-                    </ToggleButton>
-                    <ToggleButton value={false} aria-label="free search">
-                        <PageviewRoundedIcon />
-                    </ToggleButton>
-                </ToggleButtonGroup>
+                <Tooltip arrow title="Search Type - Standard / Free Form">
+                    <ToggleButtonGroup
+                        value={standardSearch}
+                        exclusive
+                        onChange={handleSearchType}
+                        aria-label="search type"
+                        style={{ marginBottom: 15 }}
+                    >
+                        <ToggleButton value={true} aria-label="param search">
+                            <ManageSearchRoundedIcon />
+                        </ToggleButton>
+                        <ToggleButton value={false} aria-label="free search">
+                            <PageviewRoundedIcon />
+                        </ToggleButton>
+                    </ToggleButtonGroup>
+                </Tooltip>
                 {
                     standardSearch ? (
                         <ParamSearch
