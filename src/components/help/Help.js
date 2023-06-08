@@ -28,7 +28,7 @@ function Help() {
               <Typography variant='h6' style={{marginTop: 10, marginBottom: 10}}><strong>Using PV Info Search</strong></Typography>
               <Typography variant='body1' paragraph={true}>The application opens initially on the search page with all search fields blank. You may enter search terms under each
               column heading; after entering the desired terms, press the return key or the search button to execute your search.</Typography>
-              <Typography variant='body1' paragraph={true}>Search terms are case-sensitive (for now). Special characters are:</Typography>
+              <Typography variant='body1' paragraph={true}>Search terms are case-insensitive. Special characters are:</Typography>
               <ul>
                 <li>* (asterisk) matches any number of any characters</li>
                 <li>? (question mark) matches one of any character</li>
@@ -45,7 +45,14 @@ function Help() {
                 <li>cmm:beam_current will match any PV name containing that term; however (as of this writing) there is only one such PV.</li>
                 <li>=cmm:beam_current will match cmm:beam_current exactly.</li>
               </ul>
-
+              <Typography variant='h6' style={{marginTop: 10, marginBottom: 10}}><strong>Free Form Search</strong></Typography>
+              <Typography variant='body1' paragraph={true}>
+                There is also an option on the home page to toggle on a "Free Form Search". This option allows you to create your own PV and property search. This operates similarly to the CS Studio Phoebus Channel Table application. It can be very useful if you have other ChannelFinder properties available that are not in the "standard" search boxes.
+              </Typography>
+              <Typography variant='body1' paragraph={true}>
+                An example free form search would be: <strong>TEST*PV* Sector=5 Acc=SR iocName=test*</strong><br />
+                Which will result in a Channel Finder query like so: <strong>~name=TEST*PV*&Sector=5&Acc=SR&iocName=test*</strong>
+              </Typography>
               <Typography variant='h6' style={{marginTop: 10, marginBottom: 10}}><strong>Viewing Search Results</strong></Typography>
               <Typography variant='body1' paragraph={true}>The search results display a table with the matching PVs with the following fields:</Typography>
               <ul>
