@@ -115,7 +115,7 @@ function Home(props) {
                 delete params["recordDesc"];
             }
             if ("recordType" in params) {
-                setRecordDesc(params["recordType"]);
+                setRecordType(params["recordType"]);
                 freeformQuery = freeformQuery.concat(` recordType=${params["recordType"]}`)
                 delete params["recordType"];
             }
