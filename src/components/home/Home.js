@@ -94,22 +94,74 @@ function Home(props) {
     }
     useEffect(() => {
         // If there are search parameters in the URL, query channel finder and show the PV data
-        if (searchParams.has("pvName") || searchParams.has("recordDesc") || searchParams.has("iocName") ||
-            searchParams.has("hostName") || searchParams.has("pvStatus") || searchParams.has("alias") ||
-            searchParams.has("recordType") || searchParams.has(extraPropAName) || searchParams.has(extraPropBName)) {
-            let params = {}
-            searchParams.forEach((val, key) => { if (val !== "") { params[key] = val } });
-            setPVName(searchParams.get("pvName") || "");
-            setRecordDesc(searchParams.get("recordDesc") || "");
-            setRecordDesc(searchParams.get("recordType") || "");
-            setIOCName(searchParams.get("iocName") || "");
-            setHostName(searchParams.get("hostName") || "");
-            setPVStatus(searchParams.has("pvStatus") ? searchParams.get("pvStatus") : "*");
-            setAliasOf(searchParams.get("alias") || "");
-            setExtraPropAValue(searchParams.get(extraPropAName) || "");
-            setExtraPropBValue(searchParams.get(extraPropBName) || "");
+        let params = {}
+        searchParams.forEach((val, key) => { if (val !== "") { params[key] = val } });
+        let standardSearch = true;
+        if ("standardSearch" in params) {
+            standardSearch = params["standardSearch"] === "false" ? false : true;
+            setStandardSearch(standardSearch);
+            delete params["standardSearch"];
+        }
+        if (Object.keys(params).length > 0) {
+            let freeformQuery = ""
+            if ("pvName" in params) {
+                setPVName(params["pvName"]);
+                freeformQuery = params["pvName"];
+                delete params["pvName"];
+            }
+            if ("recordDesc" in params) {
+                setRecordDesc(params["recordDesc"]);
+                freeformQuery = freeformQuery.concat(` recordDesc=${params["recordDesc"]}`);
+                delete params["recordDesc"];
+            }
+            if ("recordType" in params) {
+                setRecordDesc(params["recordType"]);
+                freeformQuery = freeformQuery.concat(` recordType=${params["recordType"]}`)
+                delete params["recordType"];
+            }
+            if ("iocName" in params) {
+                setIOCName(params["iocName"]);
+                freeformQuery = freeformQuery.concat(` iocName=${params["iocName"]}`);
+                delete params["iocName"];
+            }
+            if ("hostName" in params) {
+                setHostName(params["hostName"]);
+                freeformQuery = freeformQuery.concat(` hostName=${params["hostName"]}`);
+                delete params["hostName"];
+            }
+            if ("pvStatus" in params) {
+                setPVStatus(params["pvStatus"]);
+                freeformQuery = freeformQuery.concat(` pvStatus=${params["pvStatus"]}`);
+            } else {
+                setPVStatus("*");
+            }
+            if ("alias" in params) {
+                setAliasOf(params["alias"]);
+                freeformQuery = freeformQuery.concat(` alias=${params["alias"]}`);
+                delete params["alias"];
+            }
+            if (extraPropAName in params) {
+                setExtraPropAValue(params[extraPropAName]);
+                freeformQuery = freeformQuery.concat(` ${extraPropAName}=${params[extraPropAName]}`);
+                delete params[extraPropAName];
+            }
+            if (extraPropBName in params) {
+                setExtraPropBValue(params[extraPropBName]);
+                freeformQuery = freeformQuery.concat(` ${extraPropBName}=${params[extraPropBName]}`);
+                delete params[extraPropBName];
+            }
+            if (!standardSearch) {
+                for (let key in params) {
+                    const value = params[key];
+                    console.log(`${key}: ${value}`);
+                    freeformQuery = freeformQuery.concat(` ${key}=${value}`);
+                }
+            }
+            setFreeformQuery(freeformQuery);
+            let resetParams = {}
+            searchParams.forEach((val, key) => { if (val !== "") { resetParams[key] = val } });
             setIsLoading(true);
-            queryPVs(params);
+            queryPVs(resetParams);
         }
         else {
             setPVName("");
@@ -164,7 +216,6 @@ function Home(props) {
                 params[key] = value;
             }
         }
-        params['freeform'] = true;
         console.log(params);
         return params;
     }

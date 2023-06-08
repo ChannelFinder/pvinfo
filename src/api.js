@@ -63,10 +63,8 @@ async function queryChannelFinder(params) {
         }
     }
     if (params['standardSearch']) {
-        console.log("Standard Search");
         urlParams = standardParse(params);
     } else {
-        console.log("freeform parse");
         urlParams = freeformParse(params);
     }
 
