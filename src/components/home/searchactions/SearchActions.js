@@ -1,10 +1,17 @@
 import { Box, Button, Tooltip } from '@mui/material';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import ClearRoundedIcon from '@mui/icons-material/ClearRounded';
+import PropTypes from "prop-types";
+
+
+const propTypes = {
+    handleClear: PropTypes.func,
+    minWidth: PropTypes.object
+}
 
 function SearchActions(props) {
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'row', flexGrow: 1, flexWrap: { xs: 'nowrap' }, minWidth: { xs: '50%', md: '25%', lg: '8%' } }}>
+        <Box sx={{ display: 'flex', flexDirection: 'row', flexGrow: 1, flexWrap: { xs: 'nowrap' }, minWidth: props.minWidth }}>
             <Tooltip arrow title="Search">
                 <Button
                     sx={{ display: "flex", flexGrow: 1, minWidth: '50%' }}

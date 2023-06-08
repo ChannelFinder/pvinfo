@@ -291,7 +291,7 @@ function ParamSearch(props) {
                 {extraPropARender()}
                 {extraPropBRender()}
                 {aliasOfSearchRender()}
-                <SearchActions />
+                <SearchActions handleClear={props.handleClear} minWidth={{ xs: '50%', md: '25%', lg: '8%' }} />
                 {/* </Box> */}
             </Grid>
         </Fragment>

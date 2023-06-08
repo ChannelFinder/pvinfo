@@ -160,6 +160,7 @@ function Home(props) {
             setFreeformQuery(freeformQuery);
             let resetParams = {}
             searchParams.forEach((val, key) => { if (val !== "") { resetParams[key] = val } });
+            resetParams["standardSearch"] = standardSearch;
             setIsLoading(true);
             queryPVs(resetParams);
         }
@@ -265,6 +266,7 @@ function Home(props) {
         setRecordDesc("");
         setExtraPropAValue("");
         setExtraPropBValue("");
+        setFreeformQuery("");
         // https://stackoverflow.com/a/59845474
         setRecordTypeAutocompleteKey(recordTypeAutocompleteKey - 1);
     }
@@ -319,7 +321,8 @@ function Home(props) {
                             handleClear={handleClear}
                             setIsLoading={setIsLoading}></ParamSearch>
                     ) : (
-                        <FreeSearch freeformQuery={freeformQuery} handleFreeformChange={handleFreeformChange} />
+                        <FreeSearch freeformQuery={freeformQuery} handleFreeformChange={handleFreeformChange}
+                            handleClear={handleClear} />
                     )
                 }
                 <Grid container item xs={12} style={{ display: "flex" }}>
