@@ -1,6 +1,6 @@
-import { createTheme, adaptV4Theme } from '@mui/material/styles';
+import { createTheme } from '@mui/material/styles';
 
-const theme = createTheme(adaptV4Theme({
+const theme = createTheme({
   palette: {
     primary: {
       light: '#335b70',
@@ -38,12 +38,12 @@ const theme = createTheme(adaptV4Theme({
   },
   overrides: {
     MuiTooltip: {
-        tooltip: {
-            fontSize: "1em",
-            textAlign:"center"
-        },
+      tooltip: {
+        fontSize: "1em",
+        textAlign: "center"
+      },
     },
   },
-}));
+});
 
 export default theme;
