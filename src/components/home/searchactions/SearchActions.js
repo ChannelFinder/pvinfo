@@ -37,4 +37,5 @@ function SearchActions(props) {
     )
 }
 
+SearchActions.propTypes = propTypes;
 export default SearchActions;
