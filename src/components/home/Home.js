@@ -167,7 +167,6 @@ function Home(props) {
             queryPVs(resetParams);
         }
         else {
-            console.log("else")
             setPVName("");
             setHostName("");
             setIOCName("");
