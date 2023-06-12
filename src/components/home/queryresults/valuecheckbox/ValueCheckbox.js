@@ -40,7 +40,7 @@ function ValueCheckbox(props) {
     }, [sendJsonMessage, props.currentChecked, props.checked, props.id, props.pvName])
 
     return (
-        <Tooltip arrow title={<div>Monitor PV<br />{props.pvName}</div>}>
+        <Tooltip arrow title={<div>Monitor<br />{props.pvName}</div>}>
             <Checkbox
                 checked={props.checked[props.id]}
                 disabled={props.pvStatus === "Inactive" || props.recordType === "waveform"}

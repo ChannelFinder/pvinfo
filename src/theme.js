@@ -36,12 +36,14 @@ const theme = createTheme({
       '"Segoe UI Symbol"',
     ].join(','),
   },
-  overrides: {
+  components: {
     MuiTooltip: {
-      tooltip: {
-        fontSize: "1em",
-        textAlign: "center"
-      },
+      styleOverrides: {
+        tooltip: {
+          fontSize: "1em",
+          textAlign: "center"
+        }
+      }
     },
   },
 });
