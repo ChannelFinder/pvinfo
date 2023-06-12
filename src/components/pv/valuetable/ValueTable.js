@@ -93,16 +93,40 @@ function ValueTable(props) {
                     setPVMax(message.max);
                 }
                 if ("alarm_low" in message) {
-                    setPVAlarmLow(message.alarm_low);
+                    const alarm_low = message.alarm_low;
+                    if (alarm_low === "NaN" || alarm_low === "Infinity" || alarm_low === "-Infinity") {
+                        setPVAlarmLow("n/a");
+                    }
+                    else {
+                        setPVAlarmLow(alarm_low);
+                    }
                 }
                 if ("alarm_high" in message) {
-                    setPVAlarmHigh(message.alarm_high);
+                    const alarm_high = message.alarm_high;
+                    if (alarm_high === "NaN" || alarm_high === "Infinity" || alarm_high === "-Infinity") {
+                        setPVAlarmHigh("n/a");
+                    }
+                    else {
+                        setPVAlarmHigh(alarm_high);
+                    }
                 }
                 if ("warn_low" in message) {
-                    setPVWarnLow(message.warn_low);
+                    const warn_low = message.warn_low;
+                    if (warn_low === "NaN" || warn_low === "Infinity" || warn_low === "-Infinity") {
+                        setPVWarnLow("n/a");
+                    }
+                    else {
+                        setPVWarnLow(warn_low);
+                    }
                 }
                 if ("warn_high" in message) {
-                    setPVWarnHigh(message.warn_high);
+                    const warn_high = message.warn_high;
+                    if (warn_high === "NaN" || warn_high === "Infinity" || warn_high === "-Infinity") {
+                        setPVWarnHigh("n/a");
+                    }
+                    else {
+                        setPVWarnHigh(warn_high);
+                    }
                 }
                 if ("precision" in message) {
                     setPVPrecision(message.precision);

@@ -195,7 +195,7 @@ function QueryResults(props) {
                 <div>
                     <Typography display="inline" variant="subtitle2">Actions</Typography>
                     {
-                        process.env.REACT_APP_USE_PVWS === "true" ? <Tooltip arrow title="Monitor All PVs">
+                        process.env.REACT_APP_USE_PVWS === "true" ? <Tooltip arrow title="Monitor All">
                                                                     <Checkbox checked={monitorAllChecked} onChange={handleMonitorSelectAll()} sx={{ ml: ".5rem" }}></Checkbox>
                                                                 </Tooltip>
                                                                 : <div></div>
