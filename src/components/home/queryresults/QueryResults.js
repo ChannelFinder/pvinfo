@@ -156,7 +156,7 @@ function QueryResults(props) {
     const renderButtons = (params) => {
         return (
             <div>
-                <Tooltip arrow title={<div>Details<br />{params.row.name}</div>}>
+                <Tooltip arrow title={<div>View<br />{params.row.name}</div>}>
                     <IconButton
                         aria-label="details"
                         color="primary"
@@ -170,7 +170,7 @@ function QueryResults(props) {
                 </Tooltip>
                 <Tooltip arrow title={<div>Plot<br />{params.row.name}</div>}>
                     <IconButton
-                        aria-label="details"
+                        aria-label="plot"
                         color="primary"
                         target="_blank"
                         variant="contained"
