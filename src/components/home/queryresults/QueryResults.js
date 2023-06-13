@@ -9,6 +9,7 @@ import bannerLogo from "../../../assets/home-banner-logo.png";
 import ValueCheckbox from './valuecheckbox/ValueCheckbox';
 import Value from "./value";
 import PropTypes from "prop-types";
+import { Pages } from '@mui/icons-material';
 
 const propTypes = {
     isLoading: PropTypes.bool,
@@ -37,11 +38,12 @@ function QueryResults(props) {
     const [prevBreakpoint, setPrevBreakpoint] = useState();
     const [checked, setChecked] = useState([]);
     const [currentChecked, setCurrentChecked] = useState(new Set());
+    const [socketMessages, setSocketMessages] = useState(new Set());
     const [monitorAllChecked, setMonitorAllChecked] = useState(false);
     const liveMonitorMax = process.env.REACT_APP_LIVE_MONITOR_MAX ? process.env.REACT_APP_LIVE_MONITOR_MAX : 100;
     const liveMonitorWarn = process.env.REACT_APP_LIVE_MONITOR_WARN ? process.env.REACT_APP_LIVE_MONITOR_WARN : 50;
 
-  let { handleErrorMessage, handleOpenErrorAlert, handleSeverity } = props;
+    let { handleErrorMessage, handleOpenErrorAlert, handleSeverity } = props;
 
     const updateCurrentChecked = useCallback((index, checkedStatus) => {
         if (currentChecked.has(index) && checkedStatus) {
@@ -81,7 +83,6 @@ function QueryResults(props) {
         setCurrentChecked(newCurrentChecked);
     }, [currentChecked, updateCurrentChecked])
 
-
     // Event listeners for page change buttons
     useEffect(() => {
         const nextButton = document.querySelector('[title="Go to next page"]');
@@ -108,6 +109,26 @@ function QueryResults(props) {
         };
     }, [pvs, currentChecked, checked, clearMonitoring]);
 
+    // Listener for page size change
+    useEffect(() => {
+        if (monitorAllChecked) {
+            // const rowsString = document.getElementsByClassName('MuiTablePagination-displayedRows')[0].innerHTML;
+            // const [start, end] = rowsString.split('\u2013').map(s => s.trim().replace(" of", ""));
+            // let [firstRow, lastRow] = [parseInt(start) - 1, parseInt(end) - 1];
+            // if (currentChecked.size > pageSize) {
+            //     console.log("smaller")
+            // } else {
+            //     console.log("bigger")
+            //     console.log()
+            // }
+            setTimeout(() => {
+                clearMonitoring();
+                const event = { target: { checked: true } }
+                handleMonitorSelectAll()(event);
+            }, 200)
+        }
+    }, [pageSize])
+
     // Notify user if monitoring over 100 pvs
     useEffect(() => {
         if (currentChecked.size > liveMonitorMax) {
@@ -116,7 +137,7 @@ function QueryResults(props) {
             handleOpenErrorAlert(true);
         }
         else if (currentChecked.size > liveMonitorWarn) {
-            handleErrorMessage(`Warning: Monitoring ${currentChecked.size} PVs`);
+            handleErrorMessage(`Warning: Monitoring ${currentChecked.size - liveMonitorWarn} PVs over the recommended amount. You may experience performance issues.`);
             handleSeverity("warning");
             handleOpenErrorAlert(true);
         }
@@ -136,8 +157,7 @@ function QueryResults(props) {
         setMonitorAllChecked(event.target.checked);
         const rowsString = document.getElementsByClassName('MuiTablePagination-displayedRows')[0].innerHTML;
         const [start, end] = rowsString.split('\u2013').map(s => s.trim().replace(" of", ""));
-        const [firstRow, lastRow] = [parseInt(start) - 1, parseInt(end) - 1];
-
+        let [firstRow, lastRow] = [parseInt(start) - 1, parseInt(end) - 1];
         for (let i = firstRow; i <= lastRow; ++i) {
             updateCurrentChecked(i, event.target.checked);
         }
@@ -182,26 +202,26 @@ function QueryResults(props) {
                 {
                     // if PVWS is on, show checkbox for live monitoring, else nothing
                     process.env.REACT_APP_USE_PVWS === "true" ? <ValueCheckbox pvName={params.row.name} id={params.row.id}
-                                                                    pvStatus={params.row.pvStatus} recordType={params.row.recordType} checked={checked}
-                                                                    currentChecked={currentChecked} updateCurrentChecked={updateCurrentChecked} />
-                                                                : <div></div>
+                        pvStatus={params.row.pvStatus} recordType={params.row.recordType} checked={checked}
+                        currentChecked={currentChecked} updateCurrentChecked={updateCurrentChecked} />
+                        : <div></div>
                 }
             </div>
         );
     }
 
     const renderActionsHeader = () => {
-            return (
-                <div>
-                    <Typography display="inline" variant="subtitle2">Actions</Typography>
-                    {
-                        process.env.REACT_APP_USE_PVWS === "true" ? <Tooltip arrow title="Monitor All PVs">
-                                                                    <Checkbox checked={monitorAllChecked} onChange={handleMonitorSelectAll()} sx={{ ml: ".5rem" }}></Checkbox>
-                                                                </Tooltip>
-                                                                : <div></div>
-                    }
-                </div>
-            )
+        return (
+            <div>
+                <Typography display="inline" variant="subtitle2">Actions</Typography>
+                {
+                    process.env.REACT_APP_USE_PVWS === "true" ? <Tooltip arrow title="Monitor All PVs">
+                        <Checkbox checked={monitorAllChecked} onChange={handleMonitorSelectAll()} sx={{ ml: ".5rem" }}></Checkbox>
+                    </Tooltip>
+                        : <div></div>
+                }
+            </div>
+        )
     }
 
     const renderIOCLink = (params) => {
@@ -399,13 +419,16 @@ function QueryResults(props) {
                 onRowDoubleClick={handleRowDoubleClick}
                 components={{ Toolbar: GridToolbar }}
                 pageSize={pageSize}
-                onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
+                onPageSizeChange={(newPageSize) => {
+                    setPageSize(newPageSize)
+                }}
                 rowsPerPageOptions={tablePageSizeOptions}
                 pagination
                 columnVisibilityModel={columnVisibilityModel}
                 onColumnVisibilityModelChange={(newModel) =>
                     setColumnVisibilityModel(newModel)
                 }
+                on={() => console.log("resize")}
             />
         </ Fragment>
     );
