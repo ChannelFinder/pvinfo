@@ -112,14 +112,13 @@ function QueryResults(props) {
     const waitForRowRenders = (timeout) => {
         return new Promise((resolve, reject) => {
             let elapsedTime = 0;
-            const interval = 100;
+            const interval = 300;
             const rowsString = document.getElementsByClassName('MuiTablePagination-displayedRows')[0].innerHTML;
             const firstRow = parseInt(rowsString.split('\u2013')[0]);
             const lastRowIndex = firstRow + pageSize - 2;
-            console.log(`div[data-id="${lastRowIndex}"]`)
+
             const checkRows = () => {
-                const lastRow = document.querySelector(`div[data-id="${lastRowIndex}"]`);
-                console.log(lastRow)
+                const lastRow = document.querySelector(`div[data-id="${lastRowIndex}"] div[data-field="value"] div`);
                 if (lastRow) {
                     resolve();
                 } else {
