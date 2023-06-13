@@ -10,6 +10,7 @@ import ValueCheckbox from './valuecheckbox/ValueCheckbox';
 import Value from "./value";
 import PropTypes from "prop-types";
 import { Pages } from '@mui/icons-material';
+import { waitFor } from '@testing-library/react';
 
 const propTypes = {
     isLoading: PropTypes.bool,
@@ -38,7 +39,6 @@ function QueryResults(props) {
     const [prevBreakpoint, setPrevBreakpoint] = useState();
     const [checked, setChecked] = useState([]);
     const [currentChecked, setCurrentChecked] = useState(new Set());
-    const [socketMessages, setSocketMessages] = useState(new Set());
     const [monitorAllChecked, setMonitorAllChecked] = useState(false);
     const liveMonitorMax = process.env.REACT_APP_LIVE_MONITOR_MAX ? process.env.REACT_APP_LIVE_MONITOR_MAX : 100;
     const liveMonitorWarn = process.env.REACT_APP_LIVE_MONITOR_WARN ? process.env.REACT_APP_LIVE_MONITOR_WARN : 50;
@@ -109,8 +109,47 @@ function QueryResults(props) {
         };
     }, [pvs, currentChecked, checked, clearMonitoring]);
 
+    const waitForRowRenders = (timeout) => {
+        return new Promise((resolve, reject) => {
+            let elapsedTime = 0;
+            const interval = 100;
+            const rowsString = document.getElementsByClassName('MuiTablePagination-displayedRows')[0].innerHTML;
+            const firstRow = parseInt(rowsString.split('\u2013')[0]);
+            const lastRowIndex = firstRow + pageSize - 2;
+            console.log(`div[data-id="${lastRowIndex}"]`)
+            const checkRows = () => {
+                const lastRow = document.querySelector(`div[data-id="${lastRowIndex}"]`);
+                console.log(lastRow)
+                if (lastRow) {
+                    resolve();
+                } else {
+                    elapsedTime += interval;
+                    if (elapsedTime >= timeout) {
+                        reject(new Error(`Rows were not rendered within the ${timeout} ms. Live monitoring has been turned off.`))
+                    } else {
+                        setTimeout(checkRows, interval);
+                    }
+                }
+            };
+            setTimeout(checkRows, interval)
+        })
+    }
+
     // Listener for page size change
     useEffect(() => {
+        const handleWaitForRows = async () => {
+            try {
+                await waitForRowRenders(3000);
+                clearMonitoring()
+                const event = { target: { checked: true } }
+                handleMonitorSelectAll()(event);
+            } catch (error) {
+                clearMonitoring();
+                console.error(error);
+                return;
+            }
+        }
+
         if (monitorAllChecked) {
             // const rowsString = document.getElementsByClassName('MuiTablePagination-displayedRows')[0].innerHTML;
             // const [start, end] = rowsString.split('\u2013').map(s => s.trim().replace(" of", ""));
@@ -121,11 +160,13 @@ function QueryResults(props) {
             //     console.log("bigger")
             //     console.log()
             // }
-            setTimeout(() => {
-                clearMonitoring();
-                const event = { target: { checked: true } }
-                handleMonitorSelectAll()(event);
-            }, 200)
+
+            // setTimeout(() => {
+            //     clearMonitoring();
+            //     const event = { target: { checked: true } }
+            //     handleMonitorSelectAll()(event);
+            // }, 200)
+            handleWaitForRows();
         }
     }, [pageSize])
 
