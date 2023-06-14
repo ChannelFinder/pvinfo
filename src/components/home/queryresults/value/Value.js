@@ -49,7 +49,7 @@ function Value(props) {
                 setPVValue(text);
             }
             else if (value !== undefined) {
-                if( (Number(value) >= 0.01 && Number(value) < 1000000000) || (Number(value) <= -0.01 && Number(value) > -1000000000) || Number(value) === 0) {
+                if ((Number(value) >= 0.01 && Number(value) < 1000000000) || (Number(value) <= -0.01 && Number(value) > -1000000000) || Number(value) === 0) {
                     setPVValue(Number(value.toFixed(2)));
                 }
                 else {

@@ -9,8 +9,6 @@ import bannerLogo from "../../../assets/home-banner-logo.png";
 import ValueCheckbox from './valuecheckbox/ValueCheckbox';
 import Value from "./value";
 import PropTypes from "prop-types";
-import { Pages } from '@mui/icons-material';
-import { waitFor } from '@testing-library/react';
 
 const propTypes = {
     isLoading: PropTypes.bool,
@@ -83,6 +81,17 @@ function QueryResults(props) {
         setCurrentChecked(newCurrentChecked);
     }, [currentChecked, updateCurrentChecked])
 
+    const clearMonitoringRange = useCallback((first, last) => {
+        let newCurrentChecked = currentChecked;
+
+        for (let i = first; i <= last; ++i) {
+            newCurrentChecked.delete(i);
+            const event = { target: { checked: false } }
+            updateCurrentChecked(i, event.target.checked)
+        }
+        setCurrentChecked(newCurrentChecked);
+    }, [currentChecked, updateCurrentChecked])
+
     // Event listeners for page change buttons
     useEffect(() => {
         const nextButton = document.querySelector('[title="Go to next page"]');
@@ -109,10 +118,27 @@ function QueryResults(props) {
         };
     }, [pvs, currentChecked, checked, clearMonitoring]);
 
-    const waitForRowRenders = (timeout) => {
+    const handleMonitorSelectAll = useCallback((firstRow, lastRow) => (event) => {
+        setMonitorAllChecked(event.target.checked);
+
+        if (!firstRow && !lastRow) {
+            const rowsString = document.getElementsByClassName('MuiTablePagination-displayedRows')[0].innerHTML;
+            const [start, end] = rowsString.split('\u2013').map(s => s.trim().replace(" of", ""));
+            [firstRow, lastRow] = [parseInt(start) - 1, parseInt(end) - 1];
+        }
+        for (let i = firstRow; i <= lastRow; ++i) {
+            updateCurrentChecked(i, event.target.checked);
+        }
+        return
+    }, [updateCurrentChecked])
+
+    // Checks that last row of the table has been rendered every 100ms. Once it has been rendered, check the new boxes and subscribe to
+    // new socket channels.
+    // If the last row hasn't been rendered by the time `timeout` is reached, abort and clear all socket subscriptions and monitor all.
+    const waitForRowRenders = useCallback((timeout) => {
         return new Promise((resolve, reject) => {
             let elapsedTime = 0;
-            const interval = 300;
+            const interval = 100;
             const rowsString = document.getElementsByClassName('MuiTablePagination-displayedRows')[0].innerHTML;
             const firstRow = parseInt(rowsString.split('\u2013')[0]);
             const lastRowIndex = firstRow + pageSize - 2;
@@ -132,16 +158,32 @@ function QueryResults(props) {
             };
             setTimeout(checkRows, interval)
         })
-    }
+    }, [pageSize])
 
-    // Listener for page size change
+    // Listener for page size change. If monitor all, either subscribe to new rows or unsubscribe from old rows.
     useEffect(() => {
         const handleWaitForRows = async () => {
+            let [firstRow, lastRow] = [0, 0];
+            const rowsString = document.getElementsByClassName('MuiTablePagination-displayedRows')[0].innerHTML;
+            const firstPageRow = parseInt(rowsString.split('\u2013')[0]);
+            if (currentChecked.size < pageSize) {
+                const lastRowIndex = firstPageRow + pageSize - 2;
+                firstRow = firstPageRow + currentChecked.size - 1;
+                lastRow = lastRowIndex;
+            } else {
+                [firstRow, lastRow] = [null, null];
+            }
             try {
                 await waitForRowRenders(3000);
-                clearMonitoring()
-                const event = { target: { checked: true } }
-                handleMonitorSelectAll()(event);
+                // clearMonitoring();
+                if (firstRow && lastRow) {
+                    const event = { target: { checked: true } }
+                    handleMonitorSelectAll(firstRow, lastRow)(event);
+                } else {
+                    const clearFirst = firstPageRow + pageSize - 1;
+                    const clearLast = currentChecked.size - 1;
+                    clearMonitoringRange(clearFirst, clearLast)
+                }
             } catch (error) {
                 clearMonitoring();
                 console.error(error);
@@ -150,26 +192,11 @@ function QueryResults(props) {
         }
 
         if (monitorAllChecked) {
-            // const rowsString = document.getElementsByClassName('MuiTablePagination-displayedRows')[0].innerHTML;
-            // const [start, end] = rowsString.split('\u2013').map(s => s.trim().replace(" of", ""));
-            // let [firstRow, lastRow] = [parseInt(start) - 1, parseInt(end) - 1];
-            // if (currentChecked.size > pageSize) {
-            //     console.log("smaller")
-            // } else {
-            //     console.log("bigger")
-            //     console.log()
-            // }
-
-            // setTimeout(() => {
-            //     clearMonitoring();
-            //     const event = { target: { checked: true } }
-            //     handleMonitorSelectAll()(event);
-            // }, 200)
             handleWaitForRows();
         }
-    }, [pageSize])
+    }, [pageSize, clearMonitoring, clearMonitoringRange, currentChecked.size, handleMonitorSelectAll, monitorAllChecked, waitForRowRenders])
 
-    // Notify user if monitoring over 100 pvs
+    // Notify user if monitoring over 100 pvs.
     useEffect(() => {
         if (currentChecked.size > liveMonitorMax) {
             handleErrorMessage(`Error: Number of monitored PVs is limited to ${liveMonitorMax}!`);
@@ -191,17 +218,6 @@ function QueryResults(props) {
 
     const handleRowDoubleClick = (e) => {
         navigate(`/pv/${e.row.name}`);
-    }
-
-    const handleMonitorSelectAll = () => (event) => {
-        setMonitorAllChecked(event.target.checked);
-        const rowsString = document.getElementsByClassName('MuiTablePagination-displayedRows')[0].innerHTML;
-        const [start, end] = rowsString.split('\u2013').map(s => s.trim().replace(" of", ""));
-        let [firstRow, lastRow] = [parseInt(start) - 1, parseInt(end) - 1];
-        for (let i = firstRow; i <= lastRow; ++i) {
-            updateCurrentChecked(i, event.target.checked);
-        }
-        return
     }
 
     const toggleColumnVisibility = (field, state) => {
