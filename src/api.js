@@ -68,7 +68,7 @@ async function queryChannelFinder(params) {
         urlParams = freeformParse(params);
     }
 
-    let requestURI = `${channelFinderURL}?~name=${pvName}${urlParams}`;
+    let requestURI = `${channelFinderURL}/resources/channels?~name=${pvName}${urlParams}`;
 
     let options = {};
     let errorFlag = false;
