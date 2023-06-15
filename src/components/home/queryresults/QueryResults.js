@@ -196,7 +196,7 @@ function QueryResults(props) {
         }
     }, [pageSize, clearMonitoring, clearMonitoringRange, currentChecked.size, handleMonitorSelectAll, monitorAllChecked, waitForRowRenders])
 
-    // Notify user if monitoring over 100 pvs.
+    // Notify user if monitoring over warn or max PVs
     useEffect(() => {
         if (currentChecked.size > liveMonitorMax) {
             handleErrorMessage(`Error: Number of monitored PVs is limited to ${liveMonitorMax}!`);
@@ -484,7 +484,6 @@ function QueryResults(props) {
                 onColumnVisibilityModelChange={(newModel) =>
                     setColumnVisibilityModel(newModel)
                 }
-                on={() => console.log("resize")}
             />
         </ Fragment>
     );
