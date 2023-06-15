@@ -34,8 +34,10 @@ function ValueCheckbox(props) {
 
     // watch for changes in checked, if so send a subscribe message
     useEffect(() => {
-        if(props.checked[props.id] && props.currentChecked.has(props.id)) {
+        if (props.currentChecked.has(props.id)) {
             sendJsonMessage({ "type": "subscribe", "pvs": [props.pvName] });
+        } else {
+            sendJsonMessage({ "type": "clear", "pvs": [props.pvName] });
         }
     }, [sendJsonMessage, props.currentChecked, props.checked, props.id, props.pvName])
 
