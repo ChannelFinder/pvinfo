@@ -1,4 +1,4 @@
-import React, { Fragment, useCallback, useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { Grid, ToggleButton, ToggleButtonGroup, Typography, Tooltip } from '@mui/material';
 import QueryResults from "./queryresults";
 import api from "../../api";
@@ -71,7 +71,7 @@ function Home(props) {
     const handleFreeformChange = (e) => {
         setFreeformQuery(e.target.value);
     }
-    const queryPVs = useCallback((parameters) => {
+    const queryPVs = (parameters) => {
         api.CF_QUERY(parameters)
             .then((data) => {
                 if (data === null) {
@@ -93,7 +93,7 @@ function Home(props) {
                 setIsLoading(false);
                 setCFData(null);
             })
-    }, [props]);
+    };
 
     useEffect(() => {
         // If there are search parameters in the URL, query channel finder and show the PV data
@@ -181,7 +181,7 @@ function Home(props) {
             setCFData(null);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [searchParams, extraPropAName, extraPropBName, queryPVs]);
+    }, [searchParams, extraPropAName, extraPropBName]);
 
     const parseParamSearch = (e) => {
         let params = {}
