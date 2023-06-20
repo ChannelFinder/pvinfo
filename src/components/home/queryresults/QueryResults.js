@@ -140,10 +140,13 @@ function QueryResults(props) {
             let elapsedTime = 0;
             const interval = 100;
             const rowsString = document.getElementsByClassName('MuiTablePagination-displayedRows')[0].innerHTML;
-            const firstRow = parseInt(rowsString.split('\u2013')[0]);
-            const lastRowIndex = firstRow + pageSize - 2;
+            const [start, end] = rowsString.split('\u2013').map(s => s.trim().replace(" of", ""));
+            let [firstRow, lastRow] = [parseInt(start), parseInt(end)];
+            // const lastRowIndex = firstRow + pageSize - 2;
+            const pageNum = (lastRow) / (lastRow - firstRow + 1);
+            const lastRowIndex = (pageNum * pageSize) - 1;
 
-            const checkRows = () => {
+            const checkLastRowRendered = () => {
                 const lastRow = document.querySelector(`div[data-id="${lastRowIndex}"] div[data-field="value"] div`);
                 if (lastRow) {
                     resolve();
@@ -152,38 +155,39 @@ function QueryResults(props) {
                     if (elapsedTime >= timeout) {
                         reject(new Error(`Rows were not rendered within the ${timeout} ms. Live monitoring has been turned off.`))
                     } else {
-                        setTimeout(checkRows, interval);
+                        setTimeout(checkLastRowRendered, interval);
                     }
                 }
             };
-            setTimeout(checkRows, interval)
+            setTimeout(checkLastRowRendered, interval)
         })
     }, [pageSize])
 
     // Listener for page size change. If monitor all, either subscribe to new rows or unsubscribe from old rows.
     useEffect(() => {
         const handleWaitForRows = async () => {
-            let [firstRow, lastRow] = [0, 0];
-            const rowsString = document.getElementsByClassName('MuiTablePagination-displayedRows')[0].innerHTML;
-            const firstPageRow = parseInt(rowsString.split('\u2013')[0]);
-            if (currentChecked.size < pageSize) {
-                const lastRowIndex = firstPageRow + pageSize - 2;
-                firstRow = firstPageRow + currentChecked.size - 1;
-                lastRow = lastRowIndex;
-            } else {
-                [firstRow, lastRow] = [null, null];
-            }
+            // let [firstRow, lastRow] = [0, 0];
+            // const rowsString = document.getElementsByClassName('MuiTablePagination-displayedRows')[0].innerHTML;
+            // const firstPageRow = parseInt(rowsString.split('\u2013')[0]);
+            // if (currentChecked.size < pageSize) {
+            //     const lastRowIndex = firstPageRow + pageSize - 2;
+            //     firstRow = firstPageRow + currentChecked.size - 1;
+            //     lastRow = lastRowIndex;
+            // } else {
+            //     [firstRow, lastRow] = [null, null];
+            // }
             try {
                 await waitForRowRenders(3000);
-                // clearMonitoring();
-                if (firstRow && lastRow) {
-                    const event = { target: { checked: true } }
-                    handleMonitorSelectAll(firstRow, lastRow)(event);
-                } else {
-                    const clearFirst = firstPageRow + pageSize - 1;
-                    const clearLast = currentChecked.size - 1;
-                    clearMonitoringRange(clearFirst, clearLast)
-                }
+                const event = { target: { checked: true } };
+                clearMonitoring();
+                handleMonitorSelectAll()(event);
+                // if (firstRow && lastRow) {
+                //     handleMonitorSelectAll(firstRow, lastRow)(event);
+                // } else {
+                //     const clearFirst = firstPageRow + pageSize - 1;
+                //     const clearLast = currentChecked.size - 1;
+                //     clearMonitoringRange(clearFirst, clearLast)
+                // }
             } catch (error) {
                 clearMonitoring();
                 console.error(error);
@@ -194,7 +198,7 @@ function QueryResults(props) {
         if (monitorAllChecked) {
             handleWaitForRows();
         }
-    }, [pageSize, clearMonitoring, clearMonitoringRange, currentChecked.size, handleMonitorSelectAll, monitorAllChecked, waitForRowRenders])
+    }, [pageSize])
 
     // Notify user if monitoring over warn or max PVs
     useEffect(() => {
