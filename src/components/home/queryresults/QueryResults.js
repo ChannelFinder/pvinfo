@@ -81,32 +81,6 @@ function QueryResults(props) {
         setCurrentChecked(newCurrentChecked);
     }, [currentChecked, updateCurrentChecked])
 
-    // Event listeners for page change buttons
-    useEffect(() => {
-        const nextButton = document.querySelector('[title="Go to next page"]');
-        const prevButton = document.querySelector('[title="Go to previous page"]');
-
-        const handlePageChange = (params) => {
-            clearMonitoring();
-        }
-
-        if (nextButton) {
-            nextButton.addEventListener("click", handlePageChange);
-        }
-
-        if (prevButton) {
-            prevButton.addEventListener("click", handlePageChange);
-        }
-        return () => {
-            if (nextButton) {
-                nextButton.removeEventListener("click", handlePageChange);
-            }
-            if (prevButton) {
-                prevButton.removeEventListener("click", handlePageChange);
-            }
-        };
-    }, [pvs, currentChecked, checked, clearMonitoring]);
-
     const handleMonitorSelectAll = useCallback((firstRow, lastRow) => (event) => {
         setMonitorAllChecked(event.target.checked);
 
@@ -402,6 +376,9 @@ function QueryResults(props) {
                 pageSize={pageSize}
                 onPageSizeChange={(newPageSize) => {
                     setPageSize(newPageSize)
+                    clearMonitoring();
+                }}
+                onPageChange={() => {
                     clearMonitoring();
                 }}
                 rowsPerPageOptions={tablePageSizeOptions}
