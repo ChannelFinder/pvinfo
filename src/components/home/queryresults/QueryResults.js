@@ -81,17 +81,6 @@ function QueryResults(props) {
         setCurrentChecked(newCurrentChecked);
     }, [currentChecked, updateCurrentChecked])
 
-    const clearMonitoringRange = useCallback((first, last) => {
-        let newCurrentChecked = currentChecked;
-
-        for (let i = first; i <= last; ++i) {
-            newCurrentChecked.delete(i);
-            const event = { target: { checked: false } }
-            updateCurrentChecked(i, event.target.checked)
-        }
-        setCurrentChecked(newCurrentChecked);
-    }, [currentChecked, updateCurrentChecked])
-
     // Event listeners for page change buttons
     useEffect(() => {
         const nextButton = document.querySelector('[title="Go to next page"]');
@@ -131,74 +120,6 @@ function QueryResults(props) {
         }
         return
     }, [updateCurrentChecked])
-
-    // Checks that last row of the table has been rendered every 100ms. Once it has been rendered, check the new boxes and subscribe to
-    // new socket channels.
-    // If the last row hasn't been rendered by the time `timeout` is reached, abort and clear all socket subscriptions and monitor all.
-    const waitForRowRenders = useCallback((timeout) => {
-        return new Promise((resolve, reject) => {
-            let elapsedTime = 0;
-            const interval = 100;
-            const rowsString = document.getElementsByClassName('MuiTablePagination-displayedRows')[0].innerHTML;
-            const [start, end] = rowsString.split('\u2013').map(s => s.trim().replace(" of", ""));
-            let [firstRow, lastRow] = [parseInt(start), parseInt(end)];
-            // const lastRowIndex = firstRow + pageSize - 2;
-            const pageNum = (lastRow) / (lastRow - firstRow + 1);
-            const lastRowIndex = (pageNum * pageSize) - 1;
-
-            const checkLastRowRendered = () => {
-                const lastRow = document.querySelector(`div[data-id="${lastRowIndex}"] div[data-field="value"] div`);
-                if (lastRow) {
-                    resolve();
-                } else {
-                    elapsedTime += interval;
-                    if (elapsedTime >= timeout) {
-                        reject(new Error(`Rows were not rendered within the ${timeout} ms. Live monitoring has been turned off.`))
-                    } else {
-                        setTimeout(checkLastRowRendered, interval);
-                    }
-                }
-            };
-            setTimeout(checkLastRowRendered, interval)
-        })
-    }, [pageSize])
-
-    // Listener for page size change. If monitor all, either subscribe to new rows or unsubscribe from old rows.
-    useEffect(() => {
-        const handleWaitForRows = async () => {
-            // let [firstRow, lastRow] = [0, 0];
-            // const rowsString = document.getElementsByClassName('MuiTablePagination-displayedRows')[0].innerHTML;
-            // const firstPageRow = parseInt(rowsString.split('\u2013')[0]);
-            // if (currentChecked.size < pageSize) {
-            //     const lastRowIndex = firstPageRow + pageSize - 2;
-            //     firstRow = firstPageRow + currentChecked.size - 1;
-            //     lastRow = lastRowIndex;
-            // } else {
-            //     [firstRow, lastRow] = [null, null];
-            // }
-            try {
-                await waitForRowRenders(3000);
-                const event = { target: { checked: true } };
-                clearMonitoring();
-                handleMonitorSelectAll()(event);
-                // if (firstRow && lastRow) {
-                //     handleMonitorSelectAll(firstRow, lastRow)(event);
-                // } else {
-                //     const clearFirst = firstPageRow + pageSize - 1;
-                //     const clearLast = currentChecked.size - 1;
-                //     clearMonitoringRange(clearFirst, clearLast)
-                // }
-            } catch (error) {
-                clearMonitoring();
-                console.error(error);
-                return;
-            }
-        }
-
-        if (monitorAllChecked) {
-            handleWaitForRows();
-        }
-    }, [pageSize])
 
     // Notify user if monitoring over warn or max PVs
     useEffect(() => {
@@ -481,6 +402,7 @@ function QueryResults(props) {
                 pageSize={pageSize}
                 onPageSizeChange={(newPageSize) => {
                     setPageSize(newPageSize)
+                    clearMonitoring();
                 }}
                 rowsPerPageOptions={tablePageSizeOptions}
                 pagination
