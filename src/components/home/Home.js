@@ -39,7 +39,9 @@ function Home(props) {
     const [isLoading, setIsLoading] = useState(false);
 
     const handleSearchType = (e, newSearchType) => {
-        setStandardSearch(newSearchType);
+        if (newSearchType !== null) {
+            setStandardSearch(newSearchType);
+        }
     };
     const handlePVNameChange = (e) => {
         setPVName(e.target.value);
