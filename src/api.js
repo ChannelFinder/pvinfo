@@ -4,6 +4,7 @@ const ologWebURL = process.env.NODE_ENV === 'development' ? process.env.REACT_AP
 const aaViewerURL = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_AA_URL_DEV : process.env.REACT_APP_AA_URL;
 const pvwsURL = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_PVWS_URL_DEV : process.env.REACT_APP_PVWS_URL;
 const serverURL = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_BASE_URL_DEV : process.env.REACT_APP_BASE_URL;
+const alarmLogURL = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_AL_URL_DEV : process.env.REACT_APP_AL_URL;
 
 function standardParse(params) {
     let noWildcard = new Set(["pvStatus", "recordType"]);
@@ -136,9 +137,41 @@ async function queryOLOG(pvName) {
     })
 }
 
+async function queryAlarmLog(pvName) {
+    let error = false;
+    let data = {};
+    if (pvName === null) {
+        return;
+    }
+
+    let requestURI = encodeURI(`${alarmLogURL}/search/alarm/pv/${pvName}`);
+    await fetch(requestURI)
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error("error in fetch!");
+            }
+        })
+        .then(responseJson => {
+            data = responseJson;
+        })
+        .catch((error) => {
+            error = true;
+        })
+    return new Promise((resolve, reject) => {
+        if (error) {
+            reject();
+        } else {
+            resolve(data);
+        }
+    })
+}
+
 const api = {
     CF_QUERY: queryChannelFinder,
     CF_URL: channelFinderURL,
+    ALARM_QUERY: queryAlarmLog,
     OLOG_QUERY: queryOLOG,
     OLOG_URL: ologURL,
     OLOG_WEB_URL: ologWebURL,

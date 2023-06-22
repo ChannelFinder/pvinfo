@@ -11,6 +11,7 @@ import KeyValuePair from "./KeyValuePair";
 import OLOGTable from "./ologtable";
 import ValueTable from "./valuetable";
 import PropTypes from "prop-types";
+import AlarmLogTable from "./alarmlogtable/AlarmLogTable";
 
 const propTypes = {
     handleOpenErrorAlert: PropTypes.func,
@@ -167,38 +168,43 @@ function PV(props) {
                             </Typography>
                         </AccordionSummary>
                         <AccordionDetails>
-                            <Grid container>
-                                {
-                                    dataOrder.map((item, i) => {
-                                        return (
-                                            <KeyValuePair key={i} title={dataNamesMapping[item]} value={pvData[item] ? pvData[item].value : ''} url={pvData[item] ? (pvData[item].url ? pvData[item].url : null) : null} />
-                                        )
-                                    })
-                                }
-                                {
-                                    displayAllVars ? (
-                                        Object.keys(pvData).map((key, i) => {
-                                            if (!(key in dataNamesMapping) && !(omitVariables.has(key))) {
-                                                return <KeyValuePair key={i} title={pvData[key].label} value={pvData[key].value} />
-                                            }
-                                            return (null)
+                            <Box sx={{ border: 1, borderColor: 'primary.main', borderRadius: 1 }}>
+                                <Grid container>
+                                    {
+                                        dataOrder.map((item, i) => {
+                                            return (
+                                                <KeyValuePair key={i} title={dataNamesMapping[item]} value={pvData[item] ? pvData[item].value : ''} url={pvData[item] ? (pvData[item].url ? pvData[item].url : null) : null} />
+                                            )
                                         })
-                                    ) : null
-                                }
-                            </Grid>
-                            <Grid container sx={{ mt: -0.1, borderTop: 1, borderColor: 'grey.300' }}>
-                                {
-                                    process.env.REACT_APP_USE_PVWS === "true" ?
-                                        <ValueTable pvData={pvData} pvMonitoring={pvMonitoring}
-                                            isLoading={isLoading} pvName={id} snapshot={snapshot}
-                                            handleOpenErrorAlert={props.handleOpenErrorAlert} handleErrorMessage={props.handleErrorMessage} handleSeverity={props.handleSeverity} />
-                                        : null
-                                }
-                            </Grid>
+                                    }
+                                    {
+                                        displayAllVars ? (
+                                            Object.keys(pvData).map((key, i) => {
+                                                if (!(key in dataNamesMapping) && !(omitVariables.has(key))) {
+                                                    return <KeyValuePair key={i} title={pvData[key].label} value={pvData[key].value} />
+                                                }
+                                                return (null)
+                                            })
+                                        ) : null
+                                    }
+                                </Grid>
+                                <Grid container sx={{ mt: -0.1, borderTop: 1, borderColor: 'grey.300' }}>
+                                    {
+                                        process.env.REACT_APP_USE_PVWS === "true" ?
+                                            <ValueTable pvData={pvData} pvMonitoring={pvMonitoring}
+                                                isLoading={isLoading} pvName={id} snapshot={snapshot}
+                                                handleOpenErrorAlert={props.handleOpenErrorAlert} handleErrorMessage={props.handleErrorMessage} handleSeverity={props.handleSeverity} />
+                                            : null
+                                    }
+                                </Grid>
+                            </Box>
                         </AccordionDetails>
                     </Accordion>
                     {
                         process.env.REACT_APP_USE_OLOG === "true" ? <OLOGTable pvName={id} /> : <br />
+                    }
+                    {
+                        process.env.REACT_APP_USE_AL === "true" ? <AlarmLogTable pvName={id} /> : <br />
                     }
                 </Box>
             </Fragment >
