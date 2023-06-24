@@ -1,17 +1,14 @@
 import React, { Fragment, useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { Box, Button, Checkbox, Grid, Typography, FormControlLabel } from "@mui/material";
-import Accordion from '@mui/material/Accordion';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import AccordionSummary from '@mui/material/AccordionSummary';
+import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Checkbox, Grid, Typography, FormControlLabel } from "@mui/material";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import TimelineIcon from '@mui/icons-material/Timeline';
 import api from "../../api";
 import KeyValuePair from "./KeyValuePair";
-import OLOGTable from "./ologtable";
 import ValueTable from "./valuetable";
-import PropTypes from "prop-types";
+import OLOGTable from "./ologtable";
 import AlarmLogTable from "./alarmlogtable/AlarmLogTable";
+import PropTypes from "prop-types";
 
 const propTypes = {
     handleOpenErrorAlert: PropTypes.func,
@@ -35,7 +32,7 @@ function PV(props) {
     let { handleErrorMessage, handleOpenErrorAlert, handleSeverity } = props;
     const omitVariables = process.env.REACT_APP_DETAILS_PAGE_PROPERTIES_BLOCKLIST ? new Set(process.env.REACT_APP_DETAILS_PAGE_PROPERTIES_BLOCKLIST.split(',').map(item => item.trim())) : new Set();
 
-    const handleDetailChange = () => (event, isExpanded) => {
+    const handleDetailExpandedChange = () => (event, isExpanded) => {
         setDetailsExpanded(isExpanded);
     }
 
@@ -136,32 +133,45 @@ function PV(props) {
 
     if (isLoading) {
         return (
-            <Typography variant="h6">Channel Finder Data Loading...</Typography>
+            <Accordion expanded={false}>
+                <AccordionSummary>
+                    <Typography variant="subtitle2">Channel Finder Data Loading...</Typography>
+                </AccordionSummary>
+            </Accordion>
         );
     }
     else if (cfPVData === null) {
         return (
-            <Typography variant="h6">Channel Finder Data is NULL!</Typography>
+            <Accordion expanded={false}>
+                <AccordionSummary>
+                    <Typography variant="subtitle2" color="red">Channel Finder Data is NULL!</Typography>
+                </AccordionSummary>
+            </Accordion>
         );
     }
     else if (cfPVData === {} || Object.keys(cfPVData).length === 0) {
         return (
-            <Typography variant="h6">PV {id} does not exist</Typography>
+            <Accordion expanded={false}>
+                <AccordionSummary>
+                    <Typography variant="subtitle2" color="red">PV {id} does not exist</Typography>
+                </AccordionSummary>
+            </Accordion>
         );
     }
     else {
         return (
             <Fragment>
-                <Typography variant="h3" sx={{ fontSize: { xs: 32, sm: 48 } }}>{id}</Typography>
-                {
-                    process.env.REACT_APP_USE_AA === "true" ? <Button style={{ marginTop: 10, marginBottom: 10 }} target="_blank" href={pvHTMLString} variant="contained" color="secondary" endIcon={<TimelineIcon />} >Plot This PV</Button> : <div></div>
-                }
-                <br />
+                <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                    <Typography variant="h3" sx={{ fontSize: { xs: 32, sm: 48 } }}>{id}</Typography>
+                    {
+                        process.env.REACT_APP_USE_AA === "true" ? <Button style={{ marginTop: 10, marginBottom: 10 }} target="_blank" href={pvHTMLString} variant="contained" color="secondary" endIcon={<TimelineIcon />} >Plot This PV</Button> : <div></div>
+                    }
+                </Box>
                 {
                     process.env.REACT_APP_USE_PVWS === "true" ? <FormControlLabel control={<Checkbox color="primary" checked={pvMonitoring} onChange={handlePVMonitoringChange}></Checkbox>} label="Enable Live PV Monitoring" /> : <div></div>
                 }
                 <Box sx={{ border: 1, borderColor: 'primary.main', borderRadius: 1 }}>
-                    <Accordion expanded={detailsExpanded} onChange={handleDetailChange()}>
+                    <Accordion expanded={detailsExpanded} onChange={handleDetailExpandedChange()}>
                         <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="details-content" id="details-header">
                             <Typography variant="subtitle2">
                                 PV Details

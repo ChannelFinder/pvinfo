@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Typography, Table, TableCell, TableBody, TableHead, TableRow, TableContainer, Link } from "@mui/material";
-import Accordion from "@mui/material/Accordion";
-import AccordionDetails from "@mui/material/AccordionDetails";
-import AccordionSummary from "@mui/material/AccordionSummary";
+import { Accordion, AccordionDetails, AccordionSummary, Typography, Table, TableCell, TableBody, TableHead, TableRow, TableContainer, Link } from "@mui/material";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import api from "../../../api";
 import PropTypes from "prop-types";
@@ -13,8 +10,13 @@ const propTypes = {
 }
 
 function OLOGTable(props) {
-    const [ologData, setOLOGData] = useState(null); //object
+    const [ologData, setOLOGData] = useState(null);
+    const [ologExpanded, setOlogExpanded] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+
+    const handleOlogExpandedChange = () => (event, isExpanded) => {
+        setOlogExpanded(isExpanded);
+    }
 
     // Get OLOG data for this PV
     useEffect(() => {
@@ -37,17 +39,25 @@ function OLOGTable(props) {
 
     if (isLoading) {
         return (
-            <Typography variant="h6">OLOG Data Loading...</Typography>
+            <Accordion expanded={false}>
+                <AccordionSummary>
+                    <Typography variant="subtitle2">OLOG Data Loading...</Typography>
+                </AccordionSummary>
+            </Accordion>
         );
     }
     else if (ologData === null || ologData === {} || Object.keys(ologData).length === 0 || ologData.hitCount === 0) {
         return (
-            <Typography variant="h6">No OLOG Entries for this PV</Typography>
+            <Accordion expanded={false}>
+                <AccordionSummary>
+                    <Typography variant="subtitle2" color="red">No OLOG Entries for this PV</Typography>
+                </AccordionSummary>
+            </Accordion>
         );
     }
     else {
         return (
-            <Accordion>
+            <Accordion expanded={ologExpanded} onChange={handleOlogExpandedChange()} >
                 <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="olog-content" id="olog-header">
                     <Typography variant="subtitle2">Recent Online Log Entries</Typography>
                 </AccordionSummary>
