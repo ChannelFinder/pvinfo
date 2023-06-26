@@ -50,7 +50,7 @@ function OLOGTable(props) {
         return (
             <Accordion expanded={false}>
                 <AccordionSummary>
-                    <Typography variant="subtitle2" color="red">No OLOG Entries for this PV</Typography>
+                    <Typography variant="subtitle2">No OLOG Entries for this PV</Typography>
                 </AccordionSummary>
             </Accordion>
         );
