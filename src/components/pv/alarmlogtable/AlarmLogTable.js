@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Fragment } from "react";
 import { Accordion, AccordionDetails, AccordionSummary, Box, Chip, Grid, Typography } from "@mui/material";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import AlarmVariable from "./alarmvariable/AlarmVariable";
 import api from "../../../api";
+import colors from "../../../colors";
 import PropTypes from "prop-types";
 
 const propTypes = {
@@ -89,11 +90,19 @@ function AlarmLogTable(props) {
                                                             : null
                                                     }
                                                 </Typography>
-                                                <Typography sx={{ fontWeight: "medium", fontSize: 14, ml: 3 }}>
-                                                    Severity:
-                                                </Typography>
-                                                <Chip label={item.severity ? item.severity : "None"} size="small"
-                                                    sx={{ ml: 1, fontWeight: "medium", fontSize: 12, color: "#FFFFFF", backgroundColor: api.SEV_COLORS[item.severity] ? api.SEV_COLORS[item.severity] : "#424242" }}></Chip>
+                                                {
+                                                    item.severity ?
+                                                        <Fragment>
+                                                            <Typography sx={{ fontWeight: "medium", fontSize: 14, ml: 3 }}>
+                                                                Severity:
+                                                            </Typography>
+                                                            <Chip label={item.severity} size="small"
+                                                                sx={{ ml: 1, fontWeight: "medium", fontSize: 12, color: "#FFFFFF", backgroundColor: colors.SEV_COLORS[item.severity] ? colors.SEV_COLORS[item.severity] : "#424242" }}></Chip>
+                                                        </Fragment>
+                                                        :
+                                                        <Chip label="Configuration Change" size="small"
+                                                            sx={{ ml: 3, fontWeight: "medium", fontSize: 12, color: "#FFFFFF", backgroundColor: "#424242" }}></Chip>
+                                                }
                                             </Box>
                                             <Box id={`alarm-item-${i}-body`} sx={{ display: "flex", flexDirection: "row", justifyContent: "flex-start", gap: 5, flexWrap: "wrap", my: 0.5, py: 1, px: 3, overflow: "auto" }}>
                                                 {

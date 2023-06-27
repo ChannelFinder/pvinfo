@@ -2,6 +2,7 @@ import React, { Fragment, useState, useEffect } from "react";
 import { Typography } from "@mui/material";
 import useWebSocket from 'react-use-websocket';
 import api from "../../../api";
+import colors from "../../../colors";
 import PropTypes from "prop-types";
 import KeyValuePair from "../KeyValuePair";
 
@@ -148,19 +149,19 @@ function ValueTable(props) {
                 }
                 if ("severity" in message && props.pvMonitoring) {
                     if (message.severity === "NONE") {
-                        setAlarmColor(api.SEV_COLORS["OK"]);
+                        setAlarmColor(colors.SEV_COLORS["OK"]);
                     }
                     else if (message.severity === "INVALID") {
-                        setAlarmColor(api.SEV_COLORS["INVALID"]);
+                        setAlarmColor(colors.SEV_COLORS["INVALID"]);
                     }
                     else if (message.severity === "UNDEFINED") {
-                        setAlarmColor(api.SEV_COLORS["UNDEFINED"]);
+                        setAlarmColor(colors.SEV_COLORS["UNDEFINED"]);
                     }
                     else if (message.severity === "MAJOR") {
-                        setAlarmColor(api.SEV_COLORS["MAJOR"]);
+                        setAlarmColor(colors.SEV_COLORS["MAJOR"]);
                     }
                     else if (message.severity === "MINOR") {
-                        setAlarmColor(api.SEV_COLORS["MINOR"]);
+                        setAlarmColor(colors.SEV_COLORS["MINOR"]);
                     }
                     if (!props.snapshot) {
                         setPVSeverity(message.severity);
