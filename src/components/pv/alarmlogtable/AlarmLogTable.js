@@ -9,26 +9,6 @@ const propTypes = {
     pvName: PropTypes.string,
 }
 
-const severityColors = {
-    NONE: "black",
-    OK: "green",
-    INVALID: "#FF00FF",
-    UNDEFINED: "#C800C8",
-    MAJOR: "red",
-    MAJOR_ACK: "#8b0000",
-    MINOR: "#FF9900",
-    INVALID_ACK: "#FFFFFF",
-    UNDEFINED_ACK: "#FFFFFF",
-    MINOR_ACK: "#FFFFFF"
-
-}
-
-const severityBackground = {
-    INVALID_ACK: "#FF00FF",
-    UNDEFINED_ACK: "#C800C8",
-    MINOR_ACK: "#FF9900"
-}
-
 const dateFormat = {
     year: "numeric",
     month: "2-digit",
@@ -113,7 +93,7 @@ function AlarmLogTable(props) {
                                                     Severity:
                                                 </Typography>
                                                 <Chip label={item.severity ? item.severity : "None"} size="small"
-                                                    sx={{ ml: 1, fontWeight: "medium", fontSize: 12, color: severityColors[item.severity] ? severityColors[item.severity] : "black", backgroundColor: severityBackground[item.severity] ? severityBackground[item.severity] : "#EBEBEB" }}></Chip>
+                                                    sx={{ ml: 1, fontWeight: "medium", fontSize: 12, color: "#FFFFFF", backgroundColor: api.SEV_COLORS[item.severity] ? api.SEV_COLORS[item.severity] : "#424242" }}></Chip>
                                             </Box>
                                             <Box id={`alarm-item-${i}-body`} sx={{ display: "flex", flexDirection: "row", justifyContent: "flex-start", gap: 5, flexWrap: "wrap", my: 0.5, py: 1, px: 3, overflow: "auto" }}>
                                                 {

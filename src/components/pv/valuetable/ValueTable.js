@@ -148,19 +148,19 @@ function ValueTable(props) {
                 }
                 if ("severity" in message && props.pvMonitoring) {
                     if (message.severity === "NONE") {
-                        setAlarmColor("green");
+                        setAlarmColor(api.SEV_COLORS["OK"]);
                     }
                     else if (message.severity === "INVALID") {
-                        setAlarmColor("#FF00FF");
+                        setAlarmColor(api.SEV_COLORS["INVALID"]);
                     }
                     else if (message.severity === "UNDEFINED") {
-                        setAlarmColor("#C800C8");
+                        setAlarmColor(api.SEV_COLORS["UNDEFINED"]);
                     }
                     else if (message.severity === "MAJOR") {
-                        setAlarmColor("red");
+                        setAlarmColor(api.SEV_COLORS["MAJOR"]);
                     }
                     else if (message.severity === "MINOR") {
-                        setAlarmColor("#FF9900");
+                        setAlarmColor(api.SEV_COLORS["MINOR"]);
                     }
                     if (!props.snapshot) {
                         setPVSeverity(message.severity);

@@ -74,22 +74,22 @@ function Value(props) {
         if (pvSeverity !== undefined) {
             if (pvSeverity === "INVALID") {
                 return (
-                    <div style={{ color: "#FF00FF" }}>{pvValue} ({pvSeverity})</div>
+                    <div style={{ color: api.SEV_COLORS["INVALID"] }}>{pvValue} ({pvSeverity})</div>
                 );
             }
             else if (pvSeverity === "UNDEFINED") {
                 return (
-                    <div style={{ color: "#C800C8" }}>{pvSeverity}</div>
+                    <div style={{ color: api.SEV_COLORS["UNDEFINED"] }}>{pvSeverity}</div>
                 );
             }
             else if (pvSeverity === "NONE") {
-                textColor = "green";
+                textColor = api.SEV_COLORS["OK"];
             }
             else if (pvSeverity === "MINOR") {
-                textColor = "#FF9900";
+                textColor = api.SEV_COLORS["MINOR"];
             }
             else if (pvSeverity === "MAJOR") {
-                textColor = "red";
+                textColor = api.SEV_COLORS["MAJOR"];
             }
         }
         if (pvUnit !== undefined) {
