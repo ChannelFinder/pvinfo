@@ -5,6 +5,8 @@ const aaViewerURL = process.env.NODE_ENV === 'development' ? process.env.REACT_A
 const pvwsURL = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_PVWS_URL_DEV : process.env.REACT_APP_PVWS_URL;
 const serverURL = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_BASE_URL_DEV : process.env.REACT_APP_BASE_URL;
 const alarmLogURL = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_AL_URL_DEV : process.env.REACT_APP_AL_URL;
+const ologStartDays = process.env.REACT_APP_OLOG_START_TIME_DAYS != '' ? process.env.REACT_APP_OLOG_START_TIME_DAYS : "7"
+const alarmLogStartDays = process.env.REACT_APP_AL_START_TIME_DAYS != '' ? process.env.REACT_APP_AL_START_TIME_DAYS : "7";
 
 function standardParse(params) {
     let noWildcard = new Set(["pvStatus", "recordType"]);
@@ -113,7 +115,7 @@ async function queryOLOG(pvName) {
         return;
     }
 
-    let requestURI = encodeURI(`${ologURL}/logs/search?text=${pvName}`);
+    let requestURI = encodeURI(`${ologURL}/logs/search?text=${pvName}&start=${ologStartDays}days&end=now`);
     await fetch(requestURI)
         .then(response => {
             if (response.ok) {
@@ -144,7 +146,7 @@ async function queryAlarmLog(pvName) {
         return;
     }
 
-    let requestURI = encodeURI(`${alarmLogURL}/search/alarm/pv/${pvName}`);
+    let requestURI = encodeURI(`${alarmLogURL}/search/alarm?pv=${pvName}&start=${alarmLogStartDays}days&end=now`);
     await fetch(requestURI)
         .then(response => {
             if (response.ok) {
