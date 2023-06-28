@@ -1,8 +1,21 @@
-import { Fragment } from "react";
+import { Fragment, useEffect } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { Grid, Link, Typography } from "@mui/material";
+import PropTypes from 'prop-types';
+
+const propTypes = {
+    title: PropTypes.string,
+    value: PropTypes.string,
+    setPrecisionRendered: PropTypes.func,
+}
 
 function KeyValuePair(props) {
+    useEffect(() => {
+        if (props.title === 'Precision') {
+            props.setPrecisionRendered(true);
+        }
+    }, [props])
+
     let style = { px: 2, py: 1, borderBottom: 1, borderColor: 'grey.300' }
 
     return (
@@ -23,4 +36,5 @@ function KeyValuePair(props) {
     );
 }
 
+KeyValuePair.propTypes = propTypes;
 export default KeyValuePair;

@@ -52,7 +52,7 @@ function OLOGTable(props) {
                 <AccordionSummary>
                     <Typography variant="subtitle2">No Online Log Entries</Typography>
                     {
-                        process.env.REACT_APP_OLOG_START_TIME_DAYS != '' ?
+                        process.env.REACT_APP_OLOG_START_TIME_DAYS !== '' ?
                             <Typography variant="subtitle2">&nbsp;within {process.env.REACT_APP_OLOG_START_TIME_DAYS} days</Typography>
                             : null
                     }

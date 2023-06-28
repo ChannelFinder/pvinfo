@@ -5,10 +5,10 @@ const aaViewerURL = process.env.NODE_ENV === 'development' ? process.env.REACT_A
 const pvwsURL = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_PVWS_URL_DEV : process.env.REACT_APP_PVWS_URL;
 const serverURL = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_BASE_URL_DEV : process.env.REACT_APP_BASE_URL;
 const alarmLogURL = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_AL_URL_DEV : process.env.REACT_APP_AL_URL;
-const ologStartDays = process.env.REACT_APP_OLOG_START_TIME_DAYS != '' ?
+const ologStartDays = process.env.REACT_APP_OLOG_START_TIME_DAYS !== '' ?
     `&start=${process.env.REACT_APP_OLOG_START_TIME_DAYS}days`
     : "";
-const alarmLogStartDays = process.env.REACT_APP_AL_START_TIME_DAYS != '' ?
+const alarmLogStartDays = process.env.REACT_APP_AL_START_TIME_DAYS !== '' ?
     `&start=${process.env.REACT_APP_AL_START_TIME_DAYS}days`
     : "";
 
@@ -151,7 +151,6 @@ async function queryAlarmLog(pvName) {
     }
 
     let requestURI = encodeURI(`${alarmLogURL}/search/alarm?pv=${pvName}${alarmLogStartDays}&end=now`);
-    console.log(requestURI)
     await fetch(requestURI)
         .then(response => {
             if (response.ok) {

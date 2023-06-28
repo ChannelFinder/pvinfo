@@ -1,5 +1,5 @@
 import React, { useState, useEffect, Fragment } from "react";
-import { Accordion, AccordionDetails, AccordionSummary, Box, Chip, Grid, Typography } from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary, Box, Chip, Typography } from "@mui/material";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import AlarmVariable from "./alarmvariable/AlarmVariable";
 import api from "../../../api";
@@ -63,7 +63,7 @@ function AlarmLogTable(props) {
                 <AccordionSummary>
                     <Typography variant="subtitle2">No Alarm Log Entries</Typography>
                     {
-                        process.env.REACT_APP_AL_START_TIME_DAYS != '' ?
+                        process.env.REACT_APP_AL_START_TIME_DAYS !== '' ?
                             <Typography variant="subtitle2">&nbsp;within {process.env.REACT_APP_AL_START_TIME_DAYS} days</Typography>
                             : null
                     }

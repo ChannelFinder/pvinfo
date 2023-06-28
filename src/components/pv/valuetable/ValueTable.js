@@ -32,6 +32,7 @@ function ValueTable(props) {
     const [pvTimestamp, setPVTimestamp] = useState(null);
     const [alarmColor, setAlarmColor] = useState("");
     const [snapshot, setSnapshot] = useState(props.snapshot);
+    const [precisionRendered, setPrecisionRendered] = useState(false);
 
     const socketUrl = api.PVWS_URL;
     const { sendJsonMessage, lastJsonMessage } = useWebSocket(socketUrl, {
@@ -51,7 +52,8 @@ function ValueTable(props) {
     }, [props.snapshot])
 
     useEffect(() => {
-        if (props.pvMonitoring || snapshot) {
+        console.log(precisionRendered);
+        if ((props.pvMonitoring || snapshot) && precisionRendered) {
             if (props.pvData === null || props.isLoading) {
                 return;
             }
@@ -66,22 +68,25 @@ function ValueTable(props) {
                 handleOpenErrorAlert(true);
             }
             else if (props.pvData.pvStatus.value === "Active") {
+                console.log("subscribing")
                 sendJsonMessage({ "type": "subscribe", "pvs": [props.pvName] });
             }
         }
         else {
+            console.log("clear")
             sendJsonMessage({ "type": "clear", "pvs": [props.pvName] });
             if (props.snapshot && !props.pvMonitoring) return;
             setPVValue(null);
             setPVSeverity(null);
             setPVTimestamp(null);
         }
-    }, [props.pvMonitoring, props.snapshot, snapshot, props.isLoading, props.pvData, props.pvName, handleErrorMessage, handleOpenErrorAlert, sendJsonMessage, handleSeverity]);
+    }, [precisionRendered, props.pvMonitoring, props.snapshot, snapshot, props.isLoading, props.pvData, props.pvName, handleErrorMessage, handleOpenErrorAlert, sendJsonMessage, handleSeverity]);
 
     useEffect(() => {
         if (lastJsonMessage !== null) {
             if (!props.pvMonitoring && !snapshot) return;
             const message = lastJsonMessage;
+            console.log(message)
             if (message.type === "update") {
                 // pv, severity, value, text, units, precision, labels
                 if ("units" in message) {
@@ -212,7 +217,7 @@ function ValueTable(props) {
                 <KeyValuePair title="Warn High Value" value={pvWarnHigh} />
                 <KeyValuePair title="Lower Limit" value={pvMin} />
                 <KeyValuePair title="Upper Limit" value={pvMax} />
-                <KeyValuePair title="Precision" value={pvPrecision} />
+                <KeyValuePair title="Precision" value={pvPrecision} setPrecisionRendered={setPrecisionRendered} />
             </Fragment>
         );
     }
