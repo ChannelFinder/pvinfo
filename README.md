@@ -5,7 +5,12 @@
 
 Web interface to the EPICS [Channel Finder](https://github.com/ChannelFinder/ChannelFinderService) database. This interface allows users to query for PVs by wildcard name searches as well as querying by PV meta-data such as IOC name, record type, etc.
 
-PV Info also integrates with several other EPICS services. The [PV Web Socket](https://github.com/ornl-epics/pvws) service is used to show live PV data. There are buttons for each PV in PV Info which link to an external archive web viewer to allow users to quickly view past PV history. Currently this is configured to work with the [Archiver Appliance Web Viewer](https://github.com/slacmshankar/epicsarchiverap) but other archive web viewers can easily be used since this is simply an external link to another web page. Lastly, there is an integration with the [Phoebus OLOG service](https://github.com/Olog/phoebus-olog) to display any log entries that contain the specific PV name on the PV "details" page. Only the Channel Finder integration is required to use PV Info.
+PV Info also integrates with several other EPICS services but is important to note, only the Channel Finder integration is required to use PV Info.
+- The [PV Web Socket](https://github.com/ornl-epics/pvws) service is used to show live PV data.
+- The [Phoebus OLOG service](https://github.com/Olog/phoebus-olog) allows you to display any log entries that contain the specific PV name on the PV "details" page.
+- The [Phoebus Alarm Logger service](https://github.com/ControlSystemStudio/phoebus/tree/master/services/alarm-logger) allows you to display the alarm history for a specific PV on it's "details" page.
+- There are buttons for each PV in PV Info which link to an external archive web viewer to allow users to quickly view past PV history. Currently this is configured to work with the [Archiver Appliance Web Viewer](https://github.com/slacmshankar/epicsarchiverap) but other archive web viewers can easily be used since this is simply an external link to another web page.
+
 
 ![PV Info Arch](docs/arch.png?raw=true "PV Info Arch")
 
@@ -28,11 +33,13 @@ There are many React environment variables avaiable to configure PV Info for you
 - `REACT_APP_PVWS_URL`
 - `REACT_APP_AA_URL`
 - `REACT_APP_OLOG_URL`
+- `REACT_APP_AL_URL`
 
 The only required service is Channel Finder. To turn off PV Web Socket, Archiver Web Viewer, or OLOG:
 - `REACT_APP_USE_PVWS=false`
 - `REACT_APP_USE_AA=false`
 - `REACT_APP_USE_OLOG=false`
+- `REACT_APP_USE_AL=false`
 
 Other interesting variables are the channel finder properties that you can configure to show as searchable on the homepage:
 - `REACT_APP_CF_RECORD_TYPE`
