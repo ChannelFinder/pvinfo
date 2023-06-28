@@ -61,7 +61,12 @@ function AlarmLogTable(props) {
         return (
             <Accordion expanded={false}>
                 <AccordionSummary>
-                    <Typography variant="subtitle2">No Alarm Log Entries for this PV</Typography>
+                    <Typography variant="subtitle2">No Alarm Log Entries</Typography>
+                    {
+                        process.env.REACT_APP_AL_START_TIME_DAYS != '' ?
+                            <Typography variant="subtitle2">&nbsp;within {process.env.REACT_APP_AL_START_TIME_DAYS} days</Typography>
+                            : null
+                    }
                 </AccordionSummary>
             </Accordion>
         );

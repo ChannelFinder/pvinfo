@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Accordion, AccordionDetails, AccordionSummary, Typography, Table, TableCell, TableBody, TableHead, TableRow, TableContainer, Link } from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary, Paper, Typography, Table, TableCell, TableBody, TableHead, TableRow, TableContainer, Link } from "@mui/material";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import api from "../../../api";
 import PropTypes from "prop-types";
@@ -50,7 +50,12 @@ function OLOGTable(props) {
         return (
             <Accordion expanded={false}>
                 <AccordionSummary>
-                    <Typography variant="subtitle2">No OLOG Entries for this PV</Typography>
+                    <Typography variant="subtitle2">No Online Log Entries</Typography>
+                    {
+                        process.env.REACT_APP_OLOG_START_TIME_DAYS != '' ?
+                            <Typography variant="subtitle2">&nbsp;within {process.env.REACT_APP_OLOG_START_TIME_DAYS} days</Typography>
+                            : null
+                    }
                 </AccordionSummary>
             </Accordion>
         );
@@ -59,11 +64,11 @@ function OLOGTable(props) {
         return (
             <Accordion expanded={ologExpanded} onChange={handleOlogExpandedChange()} >
                 <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="olog-content" id="olog-header">
-                    <Typography variant="subtitle2">Recent Online Log Entries</Typography>
+                    <Typography variant="subtitle2">Online Log Entries</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
-                    <TableContainer>
-                        <Table sx={{ border: 1, borderColor: 'primary.main', borderRadius: 1 }}>
+                    <TableContainer component={Paper} sx={{ border: 1, borderColor: 'primary.main', borderRadius: 1, overflow: "hidden", boxShadow: 0 }}>
+                        <Table>
                             <TableHead>
                                 <TableRow>
                                     <TableCell>Date Time</TableCell>
