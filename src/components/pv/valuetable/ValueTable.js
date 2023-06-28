@@ -52,7 +52,6 @@ function ValueTable(props) {
     }, [props.snapshot])
 
     useEffect(() => {
-        console.log(precisionRendered);
         if ((props.pvMonitoring || snapshot) && precisionRendered) {
             if (props.pvData === null || props.isLoading) {
                 return;
@@ -68,12 +67,10 @@ function ValueTable(props) {
                 handleOpenErrorAlert(true);
             }
             else if (props.pvData.pvStatus.value === "Active") {
-                console.log("subscribing")
                 sendJsonMessage({ "type": "subscribe", "pvs": [props.pvName] });
             }
         }
         else {
-            console.log("clear")
             sendJsonMessage({ "type": "clear", "pvs": [props.pvName] });
             if (props.snapshot && !props.pvMonitoring) return;
             setPVValue(null);
@@ -86,7 +83,6 @@ function ValueTable(props) {
         if (lastJsonMessage !== null) {
             if (!props.pvMonitoring && !snapshot) return;
             const message = lastJsonMessage;
-            console.log(message)
             if (message.type === "update") {
                 // pv, severity, value, text, units, precision, labels
                 if ("units" in message) {
