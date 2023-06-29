@@ -170,7 +170,7 @@ function PV(props) {
                 {
                     process.env.REACT_APP_USE_PVWS === "true" ? <FormControlLabel control={<Checkbox color="primary" checked={pvMonitoring} onChange={handlePVMonitoringChange}></Checkbox>} label="Enable Live PV Monitoring" /> : <div></div>
                 }
-                <Box sx={{ border: 1, borderColor: 'primary.main', borderRadius: 1 }}>
+                <Box sx={{ border: 3, borderColor: 'primary.main', borderRadius: 1 }}>
                     <Accordion expanded={detailsExpanded} onChange={handleDetailExpandedChange()}>
                         <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="details-content" id="details-header">
                             <Typography variant="subtitle2">

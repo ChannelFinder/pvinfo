@@ -6,10 +6,10 @@ const pvwsURL = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_P
 const serverURL = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_BASE_URL_DEV : process.env.REACT_APP_BASE_URL;
 const alarmLogURL = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_AL_URL_DEV : process.env.REACT_APP_AL_URL;
 const ologStartDays = process.env.REACT_APP_OLOG_START_TIME_DAYS !== '' ?
-    `&start=${process.env.REACT_APP_OLOG_START_TIME_DAYS}days`
+    `&start=${process.env.REACT_APP_OLOG_START_TIME_DAYS}days&end=now`
     : "";
 const alarmLogStartDays = process.env.REACT_APP_AL_START_TIME_DAYS !== '' ?
-    `&start=${process.env.REACT_APP_AL_START_TIME_DAYS}days`
+    `&start=${process.env.REACT_APP_AL_START_TIME_DAYS}days&end=now`
     : "";
 
 function standardParse(params) {
@@ -119,7 +119,7 @@ async function queryOLOG(pvName) {
         return;
     }
 
-    let requestURI = encodeURI(`${ologURL}/logs/search?text=${pvName}${ologStartDays}&end=now`);
+    let requestURI = encodeURI(`${ologURL}/logs/search?text=${pvName}${ologStartDays}`);
     await fetch(requestURI)
         .then(response => {
             if (response.ok) {
@@ -150,7 +150,7 @@ async function queryAlarmLog(pvName) {
         return;
     }
 
-    let requestURI = encodeURI(`${alarmLogURL}/search/alarm?pv=${pvName}${alarmLogStartDays}&end=now`);
+    let requestURI = encodeURI(`${alarmLogURL}/search/alarm?pv=${pvName}${alarmLogStartDays}`);
     await fetch(requestURI)
         .then(response => {
             if (response.ok) {

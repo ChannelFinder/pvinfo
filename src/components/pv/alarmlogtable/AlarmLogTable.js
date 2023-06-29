@@ -52,7 +52,7 @@ function AlarmLogTable(props) {
         return (
             <Accordion expanded={false}>
                 <AccordionSummary>
-                    <Typography variant="subtitle2">Alarm Log Data Loading...</Typography>
+                    <Typography variant="subtitle2">Alarm Log Entries Loading...</Typography>
                 </AccordionSummary>
             </Accordion>
         );
@@ -75,7 +75,7 @@ function AlarmLogTable(props) {
         return (
             <Accordion expanded={alarmLogExpanded} onChange={handleAlarmLogExpandedChange()}>
                 <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="alarmLog-content" id="alarmLog-header">
-                    <Typography variant="subtitle2">Alarm Log Data</Typography>
+                    <Typography variant="subtitle2">Alarm Log Entries</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
                     <Box sx={{ border: 1, borderColor: 'primary.main', borderRadius: 1 }}>
@@ -85,20 +85,10 @@ function AlarmLogTable(props) {
                                     return (
                                         <Box key={i} id={`alarm-item-${i}`} sx={{ display: "flex", flexDirection: "column", py: 1, borderBottom: 2, borderColor: 'grey.300', '&:last-child': { border: 0 } }}>
                                             <Box id={`alarm-item-${i}-header`} sx={{ display: "flex", flexDirection: "row", alignItems: "center", py: 2, px: 2 }}>
-                                                <Typography sx={{ fontWeight: "medium", fontSize: 14 }}>
-                                                    Message Time:
-                                                </Typography>
-                                                <Typography sx={{ fontSize: 14, ml: 1 }}>
-                                                    {
-                                                        item.message_time ?
-                                                            new Date(item.message_time).toLocaleString("en-US", dateFormat)
-                                                            : null
-                                                    }
-                                                </Typography>
                                                 {
                                                     item.severity ?
                                                         <Fragment>
-                                                            <Typography sx={{ fontWeight: "medium", fontSize: 14, ml: 3 }}>
+                                                            <Typography sx={{ fontWeight: "medium", fontSize: 14 }}>
                                                                 Severity:
                                                             </Typography>
                                                             <Chip label={item.severity} size="small"
@@ -106,18 +96,37 @@ function AlarmLogTable(props) {
                                                         </Fragment>
                                                         :
                                                         <Chip label="Configuration Change" size="small"
-                                                            sx={{ ml: 3, fontWeight: "medium", fontSize: 12, color: "#FFFFFF", backgroundColor: "#424242" }}></Chip>
+                                                            sx={{ fontWeight: "medium", fontSize: 12, color: "#FFFFFF", backgroundColor: "#424242" }}></Chip>
                                                 }
+                                                {/* {
+                                                    item.value ?
+                                                        <Fragment>
+                                                            <Typography sx={{ fontWeight: "medium", fontSize: 14, ml: 3 }}>
+                                                                Value:
+                                                            </Typography>
+                                                            <Typography sx={{ fontSize: 14, ml: 1 }}>
+                                                                {item.value}
+                                                            </Typography>
+                                                        </Fragment>
+                                                        :
+                                                        <div></div>
+                                                } */}
                                             </Box>
                                             <Box id={`alarm-item-${i}-body`} sx={{ display: "flex", flexDirection: "row", justifyContent: "flex-start", gap: 5, flexWrap: "wrap", my: 0.5, py: 1, px: 3, overflow: "auto" }}>
                                                 {
-                                                    item.pv ?
-                                                        <AlarmVariable title="PV" value={item.pv} />
+                                                    item.config ?
+                                                        <AlarmVariable title="Config" value={item.config} />
                                                         : null
                                                 }
                                                 {/* {
                                                     item.severity ?
-                                                        <AlarmVariable title="Severity" value={item.severity} color={severityColors[item.severity] ? severityColors[item.severity] : "black"} />
+                                                        <Box sx={{ display: "flex", flexDirection: "column" }}>
+                                                            <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
+                                                                Severity
+                                                            </Typography>
+                                                            <Chip label={item.severity} size="small"
+                                                                    sx={{ fontWeight: "medium", fontSize: 12, color: "#FFFFFF", backgroundColor: colors.SEV_COLORS[item.severity] ? colors.SEV_COLORS[item.severity] : "#424242" }}></Chip>
+                                                        </Box>
                                                         : null
                                                 } */}
                                                 {
@@ -126,18 +135,29 @@ function AlarmLogTable(props) {
                                                         : null
                                                 }
                                                 {
+                                                    item.time ?
+                                                        <AlarmVariable title="Time" value={new Date(item.time).toLocaleString("en-US", dateFormat)} />
+                                                        : null
+                                                }
+                                                {
+                                                    item.message_time ?
+                                                        <AlarmVariable title="Message Time" value={new Date(item.message_time).toLocaleString("en-US", dateFormat)} />
+                                                        : null
+                                                }
+                                                {
+                                                    item.current_severity ?
+                                                        <AlarmVariable title="Current Severity" value={item.current_severity} color={colors.SEV_COLORS[item.current_severity] ? colors.SEV_COLORS[item.current_severity] : "black"} />
+                                                        : null
+                                                }
+                                                {
+                                                    item.current_message ?
+                                                        <AlarmVariable title="Current Message" value={item.current_message} />
+                                                        : null
+                                                }
+
+                                                {
                                                     item.value ?
                                                         <AlarmVariable title="Value" value={item.value} />
-                                                        : null
-                                                }
-                                                {
-                                                    item.time ?
-                                                        <AlarmVariable title="Time" value={item.time} />
-                                                        : null
-                                                }
-                                                {
-                                                    item.config ?
-                                                        <AlarmVariable title="Config" value={item.config} />
                                                         : null
                                                 }
                                                 {
