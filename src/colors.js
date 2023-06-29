@@ -29,10 +29,10 @@ const severityColors = {
     MAJOR: majorCol,
     INVALID: invalidCol,
     UNDEFINED: undefinedCol,
-    MINOR_ACK: modBrightness(minorCol, -50),
+    MINOR_ACK: modBrightness(minorCol, 50),
     MAJOR_ACK: modBrightness(majorCol, -50),
-    INVALID_ACK: modBrightness(invalidCol, -30),
-    UNDEFINED_ACK: modBrightness(undefinedCol, -50),
+    INVALID_ACK: modBrightness(invalidCol, 75),
+    UNDEFINED_ACK: modBrightness(undefinedCol, 50),
 };
 
 const colors = {
