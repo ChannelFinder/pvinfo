@@ -12,7 +12,7 @@ PV Info also integrates with several other EPICS services but is important to no
 - There are buttons for each PV in PV Info which link to an external archive web viewer to allow users to quickly view past PV history. Currently this is configured to work with the [Archiver Appliance Web Viewer](https://github.com/slacmshankar/epicsarchiverap) but other archive web viewers can easily be used since this is simply an external link to another web page.
 
 
-![PV Info Arch](docs/arch.png?raw=true "PV Info Arch")
+![PV Info Arch](docs/arch.svg?raw=true "PV Info Arch")
 
 This repository is under active development and is currently in production at the Advanced Light Source (ALS). Effort has been made to make PV Info non-ALS specific and configurable for any site using Channel Finder but things might have been missed. So please report any bugs you might find, any new features which could be useful, and any feedback on configuring/installing/using PV Info.
 
