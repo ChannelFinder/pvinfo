@@ -75,7 +75,7 @@ function AlarmConfigTable(props) {
                 <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="alarmLog-content" id="alarmLog-header">
                     <Typography sx={{ fontSize: 18, fontWeight: "medium" }}>Alarm Configuration Changes</Typography>
                 </AccordionSummary>
-                <AccordionDetails sx={{ px: 0 }}>
+                <AccordionDetails sx={{ p: 0 }}>
                     <CustomTableContainer component={Box}>
                         <Table stickyHeader={true}>
                             <TableHead>

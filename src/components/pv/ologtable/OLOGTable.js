@@ -67,7 +67,7 @@ function OLOGTable(props) {
                 <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="olog-content" id="olog-header">
                     <Typography sx={{ fontSize: 18, fontWeight: "medium" }}>Online Log Entries</Typography>
                 </AccordionSummary>
-                <AccordionDetails sx={{ px: 0 }}>
+                <AccordionDetails sx={{ p: 0 }}>
                     <CustomTableContainer component={Box} >
                         <Table stickyHeader={true}>
                             <TableHead>

@@ -5,7 +5,6 @@ import { styled } from '@mui/material/styles';
 const CustomTableContainer = styled(TableContainer)(({ theme }) => ({
     [`&.MuiTableContainer-root`]: {
         borderTop: '1px solid #D1D5DB',
-        borderBottom: '1px solid #D1D5DB',
         maxHeight: 700
     }
 }))
