@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Accordion, AccordionDetails, AccordionSummary, Paper, Typography, Table, TableCell, TableBody, TableHead, TableRow, TableContainer, Link } from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary, Box, Typography, Table, TableCell, TableBody, TableHead, TableRow, TableContainer, Link } from "@mui/material";
+import { CustomTableContainer, TableBodyCell, TableHeaderCell } from "../customtablecells/CustomTable";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import api from "../../../api";
 import PropTypes from "prop-types";
@@ -20,7 +21,7 @@ function OLOGTable(props) {
 
     // Get OLOG data for this PV
     useEffect(() => {
-        api.OLOG_QUERY(props.pvName)
+        api.OLOG_QUERY(props.pvName, '/logs/search?text=')
             .then((data) => {
                 if (data !== null && data.hitCount !== 0) {
                     setOLOGData(data);
@@ -41,7 +42,7 @@ function OLOGTable(props) {
         return (
             <Accordion expanded={false}>
                 <AccordionSummary>
-                    <Typography variant="subtitle2">OLOG Data Loading...</Typography>
+                    <Typography sx={{ fontSize: 18, fontWeight: "medium" }}>OLOG Data Loading...</Typography>
                 </AccordionSummary>
             </Accordion>
         );
@@ -50,10 +51,10 @@ function OLOGTable(props) {
         return (
             <Accordion expanded={false}>
                 <AccordionSummary>
-                    <Typography variant="subtitle2">No Online Log Entries</Typography>
+                    <Typography sx={{ fontSize: 18, fontWeight: "medium" }}>No Online Log Entries</Typography>
                     {
                         process.env.REACT_APP_OLOG_START_TIME_DAYS !== '' ?
-                            <Typography variant="subtitle2">&nbsp;within {process.env.REACT_APP_OLOG_START_TIME_DAYS} days</Typography>
+                            <Typography variant="subtitle2">&nbsp;Within {process.env.REACT_APP_OLOG_START_TIME_DAYS} Days</Typography>
                             : null
                     }
                 </AccordionSummary>
@@ -64,18 +65,18 @@ function OLOGTable(props) {
         return (
             <Accordion expanded={ologExpanded} onChange={handleOlogExpandedChange()} >
                 <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="olog-content" id="olog-header">
-                    <Typography variant="subtitle2">Online Log Entries</Typography>
+                    <Typography sx={{ fontSize: 18, fontWeight: "medium" }}>Online Log Entries</Typography>
                 </AccordionSummary>
-                <AccordionDetails>
-                    <TableContainer component={Paper} sx={{ border: 1, borderColor: 'primary.main', borderRadius: 1, overflow: "hidden", boxShadow: 0 }}>
-                        <Table>
+                <AccordionDetails sx={{ px: 0 }}>
+                    <CustomTableContainer component={Box} >
+                        <Table stickyHeader={true}>
                             <TableHead>
                                 <TableRow>
-                                    <TableCell>Date Time</TableCell>
-                                    <TableCell>Category</TableCell>
-                                    <TableCell>Level</TableCell>
-                                    <TableCell>Entry</TableCell>
-                                    <TableCell>Author</TableCell>
+                                    <TableHeaderCell>Date Time</TableHeaderCell>
+                                    <TableHeaderCell>Category</TableHeaderCell>
+                                    <TableHeaderCell>Level</TableHeaderCell>
+                                    <TableHeaderCell>Entry</TableHeaderCell>
+                                    <TableHeaderCell>Author</TableHeaderCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -84,8 +85,8 @@ function OLOGTable(props) {
                                         key={row.id}
                                         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                     >
-                                        <TableCell><Link href={`${api.OLOG_WEB_URL}/logs/${row.id}`} target="_blank" underline="always">{new Date(row.createdDate).toLocaleString()}</Link></TableCell>
-                                        <TableCell>
+                                        <TableBodyCell><Link href={`${api.OLOG_WEB_URL}/logs/${row.id}`} target="_blank" underline="always">{new Date(row.createdDate).toLocaleString()}</Link></TableBodyCell>
+                                        <TableBodyCell>
                                             {
                                                 row.tags.map(function (tag, index) {
                                                     if (index === row.tags.length - 1) {
@@ -96,15 +97,15 @@ function OLOGTable(props) {
                                                     }
                                                 })
                                             }
-                                        </TableCell>
-                                        <TableCell>{row.level}</TableCell>
-                                        <TableCell><strong><u>{row.title}</u></strong> <br /> {row.description}</TableCell>
-                                        <TableCell> {row.owner}</TableCell>
+                                        </TableBodyCell>
+                                        <TableBodyCell>{row.level}</TableBodyCell>
+                                        <TableBodyCell><strong><u>{row.title}</u></strong> <br /> {row.description}</TableBodyCell>
+                                        <TableBodyCell> {row.owner}</TableBodyCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
                         </Table>
-                    </TableContainer>
+                    </CustomTableContainer>
                 </AccordionDetails>
             </Accordion>
         );

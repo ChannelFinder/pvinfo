@@ -8,6 +8,7 @@ import KeyValuePair from "./KeyValuePair";
 import ValueTable from "./valuetable";
 import OLOGTable from "./ologtable";
 import AlarmLogTable from "./alarmlogtable/AlarmLogTable";
+import AlarmConfigTable from "./alarmconfigtable/AlarmConfigTable";
 import PropTypes from "prop-types";
 
 const propTypes = {
@@ -135,7 +136,7 @@ function PV(props) {
         return (
             <Accordion expanded={false}>
                 <AccordionSummary>
-                    <Typography variant="subtitle2">Channel Finder Data Loading...</Typography>
+                    <Typography sx={{ fontSize: 18, fontWeight: "medium" }}>Channel Finder Data Loading...</Typography>
                 </AccordionSummary>
             </Accordion>
         );
@@ -144,7 +145,7 @@ function PV(props) {
         return (
             <Accordion expanded={false}>
                 <AccordionSummary>
-                    <Typography variant="subtitle2" color="red">Channel Finder Data is NULL!</Typography>
+                    <Typography sx={{ fontSize: 18, fontWeight: "medium" }} color="red">Channel Finder Data is NULL!</Typography>
                 </AccordionSummary>
             </Accordion>
         );
@@ -153,7 +154,7 @@ function PV(props) {
         return (
             <Accordion expanded={false}>
                 <AccordionSummary>
-                    <Typography variant="subtitle2" color="red">PV {id} does not exist</Typography>
+                    <Typography sx={{ fontSize: 18, fontWeight: "medium" }} color="red">PV {id} does not exist</Typography>
                 </AccordionSummary>
             </Accordion>
         );
@@ -170,15 +171,15 @@ function PV(props) {
                 {
                     process.env.REACT_APP_USE_PVWS === "true" ? <FormControlLabel control={<Checkbox color="primary" checked={pvMonitoring} onChange={handlePVMonitoringChange}></Checkbox>} label="Enable Live PV Monitoring" /> : <div></div>
                 }
-                <Box sx={{ border: 3, borderColor: 'primary.main', borderRadius: 1 }}>
+                <Box sx={{ border: 1, borderColor: '#D1D5DB', borderRadius: 1, boxShadow: 2, mb: 2, overflow: "hidden" }}>
                     <Accordion expanded={detailsExpanded} onChange={handleDetailExpandedChange()}>
                         <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="details-content" id="details-header">
-                            <Typography variant="subtitle2">
+                            <Typography sx={{ fontSize: 18, fontWeight: "medium" }}>
                                 PV Details
                             </Typography>
                         </AccordionSummary>
-                        <AccordionDetails>
-                            <Box sx={{ border: 1, borderColor: 'primary.main', borderRadius: 1, overflow: "hidden" }}>
+                        <AccordionDetails sx={{ p: 0 }}>
+                            <Box sx={{ borderTop: 1, borderBottom: 1, borderColor: "#D1D5DB", backgroundColor: "#F3F4F6", overflow: "hidden" }}>
                                 <Grid container>
                                     {
                                         dataOrder.map((item, i) => {
@@ -198,7 +199,7 @@ function PV(props) {
                                         ) : null
                                     }
                                 </Grid>
-                                <Grid container sx={{ mt: -0.1, borderTop: 1, borderColor: 'grey.300' }}>
+                                <Grid container sx={{ mt: -0.1, mb: -0.1, borderTop: 1, borderColor: 'grey.300' }}>
                                     {
                                         process.env.REACT_APP_USE_PVWS === "true" ?
                                             <ValueTable pvData={pvData} pvMonitoring={pvMonitoring}
@@ -211,10 +212,13 @@ function PV(props) {
                         </AccordionDetails>
                     </Accordion>
                     {
-                        process.env.REACT_APP_USE_OLOG === "true" ? <OLOGTable pvName={id} /> : <br />
+                        process.env.REACT_APP_USE_OLOG === "true" ? <OLOGTable pvName={id} /> : null
                     }
                     {
-                        process.env.REACT_APP_USE_AL === "true" ? <AlarmLogTable pvName={id} /> : <br />
+                        process.env.REACT_APP_USE_AL === "true" ? <AlarmLogTable pvName={id} /> : null
+                    }
+                    {
+                        process.env.REACT_APP_USE_AL === "true" ? <AlarmConfigTable pvName={id} /> : null
                     }
                 </Box>
             </Fragment >

@@ -1,7 +1,7 @@
-import React, { useState, useEffect, Fragment } from "react";
-import { Accordion, AccordionDetails, AccordionSummary, Box, Chip, Typography } from "@mui/material";
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import AlarmVariable from "./alarmvariable/AlarmVariable";
+import React, { useState, useEffect } from "react";
+import { Accordion, AccordionDetails, AccordionSummary, Box, Chip, Table, TableBody, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
+import { CustomTableContainer, TableBodyCell, TableHeaderCell } from "../customtablecells/CustomTable";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import api from "../../../api";
 import colors from "../../../colors";
 import PropTypes from "prop-types";
@@ -30,7 +30,7 @@ function AlarmLogTable(props) {
     }
 
     useEffect(() => {
-        api.ALARM_QUERY(props.pvName)
+        api.ALARM_QUERY(props.pvName, '&severity=*?*')
             .then((data) => {
                 if (data !== null && data.hitCount !== 0) {
                     setAlarmLogData(data);
@@ -47,12 +47,11 @@ function AlarmLogTable(props) {
             })
     }, [props.pvName]);
 
-
     if (isLoading) {
         return (
             <Accordion expanded={false}>
                 <AccordionSummary>
-                    <Typography variant="subtitle2">Alarm Log Entries Loading...</Typography>
+                    <Typography sx={{ fontSize: 18, fontWeight: "medium" }}>Alarm Log Entries Loading...</Typography>
                 </AccordionSummary>
             </Accordion>
         );
@@ -61,10 +60,10 @@ function AlarmLogTable(props) {
         return (
             <Accordion expanded={false}>
                 <AccordionSummary>
-                    <Typography variant="subtitle2">No Alarm Log Entries</Typography>
+                    <Typography sx={{ fontSize: 18, fontWeight: "medium" }}>No Alarm Log Entries</Typography>
                     {
                         process.env.REACT_APP_AL_START_TIME_DAYS !== '' ?
-                            <Typography variant="subtitle2">&nbsp;within {process.env.REACT_APP_AL_START_TIME_DAYS} days</Typography>
+                            <Typography sx={{ fontSize: 18, fontWeight: "medium" }}>&nbsp;Within {process.env.REACT_APP_AL_START_TIME_DAYS} Days</Typography>
                             : null
                     }
                 </AccordionSummary>
@@ -75,10 +74,51 @@ function AlarmLogTable(props) {
         return (
             <Accordion expanded={alarmLogExpanded} onChange={handleAlarmLogExpandedChange()}>
                 <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="alarmLog-content" id="alarmLog-header">
-                    <Typography variant="subtitle2">Alarm Log Entries</Typography>
+                    <Typography sx={{ fontSize: 18, fontWeight: "medium" }}>Alarm Log Entries</Typography>
                 </AccordionSummary>
-                <AccordionDetails>
-                    <Box sx={{ border: 1, borderColor: 'primary.main', borderRadius: 1 }}>
+                <AccordionDetails sx={{ px: 0 }}>
+                    <CustomTableContainer component={Box} sx={{ borderTop: 1 }}>
+                        <Table stickyHeader={true}>
+                            <TableHead>
+                                <TableRow>
+                                    <TableHeaderCell>Severity</TableHeaderCell>
+                                    <TableHeaderCell>Config</TableHeaderCell>
+                                    <TableHeaderCell>Message</TableHeaderCell>
+                                    <TableHeaderCell>Value</TableHeaderCell>
+                                    <TableHeaderCell>Time</TableHeaderCell>
+                                    <TableHeaderCell>Message Time</TableHeaderCell>
+                                    <TableHeaderCell>Current Severity</TableHeaderCell>
+                                    <TableHeaderCell>Current Message</TableHeaderCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {
+                                    alarmLogData.map((item, i) => {
+                                        return (
+                                            <TableRow key={i}>
+                                                <TableBodyCell >
+                                                    {
+                                                        item.severity ?
+                                                            <Chip label={item.severity} size="small"
+                                                                sx={{ ml: 1, fontWeight: "medium", fontSize: 12, color: "#FFFFFF", backgroundColor: colors.SEV_COLORS[item.severity] ? colors.SEV_COLORS[item.severity] : "#424242" }}></Chip>
+                                                            : null
+                                                    }
+                                                </TableBodyCell>
+                                                <TableBodyCell>{item.config}</TableBodyCell>
+                                                <TableBodyCell>{item.message}</TableBodyCell>
+                                                <TableBodyCell>{item.value}</TableBodyCell>
+                                                <TableBodyCell>{new Date(item.time).toLocaleString("en-US", dateFormat)}</TableBodyCell>
+                                                <TableBodyCell>{new Date(item.message_time).toLocaleString("en-US", dateFormat)}</TableBodyCell>
+                                                <TableBodyCell sx={{ color: colors.SEV_COLORS[item.current_severity] ? colors.SEV_COLORS[item.current_severity] : "#000" }}>{item.current_severity}</TableBodyCell>
+                                                <TableBodyCell>{item.current_message}</TableBodyCell>
+                                            </TableRow>
+                                        )
+                                    })
+                                }
+                            </TableBody>
+                        </Table>
+                    </CustomTableContainer>
+                    {/* <Box sx={{ border: 1, borderColor: 'primary.main', borderRadius: 1 }}>
                         <Box sx={{ display: "flex", flexDirection: "column" }}>
                             {
                                 alarmLogData.map((item, i) => {
@@ -98,19 +138,6 @@ function AlarmLogTable(props) {
                                                         <Chip label="Configuration Change" size="small"
                                                             sx={{ fontWeight: "medium", fontSize: 12, color: "#FFFFFF", backgroundColor: "#424242" }}></Chip>
                                                 }
-                                                {/* {
-                                                    item.value ?
-                                                        <Fragment>
-                                                            <Typography sx={{ fontWeight: "medium", fontSize: 14, ml: 3 }}>
-                                                                Value:
-                                                            </Typography>
-                                                            <Typography sx={{ fontSize: 14, ml: 1 }}>
-                                                                {item.value}
-                                                            </Typography>
-                                                        </Fragment>
-                                                        :
-                                                        <div></div>
-                                                } */}
                                             </Box>
                                             <Box id={`alarm-item-${i}-body`} sx={{ display: "flex", flexDirection: "row", justifyContent: "flex-start", gap: 5, flexWrap: "wrap", my: 0.5, py: 1, px: 3, overflow: "auto" }}>
                                                 {
@@ -118,17 +145,6 @@ function AlarmLogTable(props) {
                                                         <AlarmVariable title="Config" value={item.config} />
                                                         : null
                                                 }
-                                                {/* {
-                                                    item.severity ?
-                                                        <Box sx={{ display: "flex", flexDirection: "column" }}>
-                                                            <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
-                                                                Severity
-                                                            </Typography>
-                                                            <Chip label={item.severity} size="small"
-                                                                    sx={{ fontWeight: "medium", fontSize: 12, color: "#FFFFFF", backgroundColor: colors.SEV_COLORS[item.severity] ? colors.SEV_COLORS[item.severity] : "#424242" }}></Chip>
-                                                        </Box>
-                                                        : null
-                                                } */}
                                                 {
                                                     item.message ?
                                                         <AlarmVariable title="Message" value={item.message} />
@@ -182,9 +198,9 @@ function AlarmLogTable(props) {
                             }
 
                         </Box>
-                    </Box>
+                    </Box> */}
                 </AccordionDetails>
-            </Accordion>
+            </Accordion >
         );
     }
 

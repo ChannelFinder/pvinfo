@@ -16,7 +16,7 @@ function KeyValuePair(props) {
         }
     }, [props])
 
-    let style = { px: 2, py: 1, borderBottom: 1, borderColor: 'grey.300' }
+    let style = { px: 2, py: 1, borderBottom: 1, borderColor: '#D1D5DB' }
 
     return (
         <Fragment>

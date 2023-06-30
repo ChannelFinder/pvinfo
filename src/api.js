@@ -143,14 +143,15 @@ async function queryOLOG(pvName) {
     })
 }
 
-async function queryAlarmLog(pvName) {
+async function queryAlarmLog(pvName, extraParams) {
     let error = false;
     let data = {};
     if (pvName === null) {
         return;
     }
 
-    let requestURI = encodeURI(`${alarmLogURL}/search/alarm?pv=${pvName}${alarmLogStartDays}`);
+    let requestURI = encodeURI(`${alarmLogURL}/search/alarm?pv=${pvName}${alarmLogStartDays}${extraParams}`);
+    console.log(requestURI)
     await fetch(requestURI)
         .then(response => {
             if (response.ok) {
