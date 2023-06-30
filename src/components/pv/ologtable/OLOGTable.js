@@ -21,7 +21,7 @@ function OLOGTable(props) {
 
     // Get OLOG data for this PV
     useEffect(() => {
-        api.OLOG_QUERY(props.pvName, '/logs/search?text=')
+        api.OLOG_QUERY(props.pvName)
             .then((data) => {
                 if (data !== null && data.hitCount !== 0) {
                     setOLOGData(data);

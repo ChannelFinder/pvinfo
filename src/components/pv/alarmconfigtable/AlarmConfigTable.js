@@ -90,7 +90,10 @@ function AlarmConfigTable(props) {
                             <TableBody>
                                 {
                                     alarmConfigData.map((item, i) => {
-                                        const prettyConfigMsg = JSON.stringify(JSON.parse(item.config_msg), null, 2);
+                                        let prettyConfigMsg = "";
+                                        if(item.config_msg) {
+                                            prettyConfigMsg = JSON.stringify(JSON.parse(item.config_msg), null, 2);
+                                        }
                                         return (
                                             <TableRow key={i}>
                                                 <TableCell>{item.config}</TableCell>

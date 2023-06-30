@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 
 const propTypes = {
     title: PropTypes.string,
-    value: PropTypes.string,
+    value: PropTypes.any,
     setPrecisionRendered: PropTypes.func,
 }
 
@@ -20,7 +20,7 @@ function KeyValuePair(props) {
 
     return (
         <Fragment>
-            <Grid item xs={6} sm={2} sx={style}>
+            <Grid item xs={6} sm={2} sx={style} style={{backgroundColor: "#F3F4F6"}}>
                 <Typography variant="subtitle2">{props.title}</Typography>
             </Grid>
             <Grid item xs={6} sm={4} sx={style}>

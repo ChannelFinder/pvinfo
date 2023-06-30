@@ -179,7 +179,7 @@ function PV(props) {
                             </Typography>
                         </AccordionSummary>
                         <AccordionDetails sx={{ p: 0 }}>
-                            <Box sx={{ borderTop: 1, borderBottom: 1, borderColor: "#D1D5DB", backgroundColor: "#F3F4F6", overflow: "hidden" }}>
+                            <Box sx={{ borderTop: 1, borderBottom: 1, borderColor: "#D1D5DB", overflow: "hidden" }}>
                                 <Grid container>
                                     {
                                         dataOrder.map((item, i) => {
