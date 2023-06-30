@@ -1,6 +1,6 @@
 import { TableContainer } from "@mui/material";
 import TableCell, { tableCellClasses } from "@mui/material/TableCell";
-import { createTheme, styled } from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
 
 const CustomTableContainer = styled(TableContainer)(({ theme }) => ({
     [`&.MuiTableContainer-root`]: {

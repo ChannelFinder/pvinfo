@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Accordion, AccordionDetails, AccordionSummary, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
-import { CustomTableContainer, TableBodyCell, TableHeaderCell } from "../customtablecells/CustomTable";
+import { Accordion, AccordionDetails, AccordionSummary, Box, Table, TableBody, TableCell, TableHead, TableRow, Typography } from "@mui/material";
+import { CustomTableContainer, TableHeaderCell } from "../customtablecells/CustomTable";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import api from "../../../api";
 import PropTypes from "prop-types";
