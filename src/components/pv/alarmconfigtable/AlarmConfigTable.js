@@ -23,13 +23,14 @@ function AlarmConfigTable(props) {
     const [alarmConfigData, setAlarmConfigData] = useState(null);
     const [alarmConfigExpanded, setAlarmConfigExpanded] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+    const [noConfigMessage, setNoConfigMessage] = useState("No Alarm Configuration Entries");
 
     const handleAlarmConfigExpandedChange = () => (event, isExpanded) => {
         setAlarmConfigExpanded(isExpanded);
     }
 
     useEffect(() => {
-        api.ALARM_QUERY(props.pvName, '&user=*?*')
+        api.LOG_QUERY(api.LOG_ENUM.ALARM_LOG, props.pvName, '&user=*?*')
             .then((data) => {
                 if (data !== null && data.hitCount !== 0) {
                     setAlarmConfigData(data);
@@ -37,12 +38,15 @@ function AlarmConfigTable(props) {
                 }
                 else {
                     setIsLoading(false);
-                    console.log("Null data from OLOG api");
+                    setNoConfigMessage("No Alarm Configuration Entries");
+                    console.log("Null data from Alarm Log api for alarm configurations");
                 }
             })
             .catch((err) => {
+                setIsLoading(false);
+                setNoConfigMessage("Error Fetching Alarm Config Entries");
                 console.log(err);
-                console.log("error in fetch of olog entries");
+                console.log("error in fetch of alarm configuration entries");
             })
     }, [props.pvName]);
 
@@ -59,7 +63,7 @@ function AlarmConfigTable(props) {
         return (
             <Accordion expanded={false}>
                 <AccordionSummary>
-                    <Typography sx={{ fontSize: 18, fontWeight: "medium" }}>No Alarm Configuration Entries</Typography>
+                    <Typography sx={{ fontSize: 18, fontWeight: "medium" }}>{noConfigMessage}</Typography>
                     {
                         process.env.REACT_APP_AL_START_TIME_DAYS !== '' ?
                             <Typography sx={{ fontSize: 18, fontWeight: "medium" }}>&nbsp;Within {process.env.REACT_APP_AL_START_TIME_DAYS} Days</Typography>
@@ -91,7 +95,7 @@ function AlarmConfigTable(props) {
                                 {
                                     alarmConfigData.map((item, i) => {
                                         let prettyConfigMsg = "";
-                                        if(item.config_msg) {
+                                        if (item.config_msg) {
                                             prettyConfigMsg = JSON.stringify(JSON.parse(item.config_msg), null, 2);
                                         }
                                         return (

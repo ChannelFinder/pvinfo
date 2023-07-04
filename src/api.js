@@ -112,46 +112,22 @@ async function queryChannelFinder(params) {
     })
 }
 
-async function queryOLOG(pvName) {
+async function queryLog(logType, pvName, extraParams) {
     let error = false;
     let data = {};
     if (pvName === null) {
         return;
     }
-
-    let requestURI = encodeURI(`${ologURL}/logs/search?text=${pvName}${ologStartDays}`);
-    await fetch(requestURI)
-        .then(response => {
-            if (response.ok) {
-                return response.json();
-            } else {
-                throw new Error("error in fetch!");
-            }
-        })
-        .then(responseJson => {
-            data = responseJson;
-        })
-        .catch((error) => {
-            error = true;
-        })
-    return new Promise((resolve, reject) => {
-        if (error === true) {
+    let requestURI = ""
+    if (logType === logEnum.ONLINE_LOG) {
+        requestURI = encodeURI(`${ologURL}/logs/search?text=${pvName}${ologStartDays}`);
+    } else if (logType === logEnum.ALARM_LOG) {
+        requestURI = encodeURI(`${alarmLogURL}/search/alarm?pv=${pvName}${alarmLogStartDays}${extraParams}`);
+    } else {
+        return new Promise((resolve, reject) => {
             reject();
-        } else {
-            resolve(data);
-        }
-    })
-}
-
-async function queryAlarmLog(pvName, extraParams) {
-    let error = false;
-    let data = {};
-    if (pvName === null) {
-        return;
+        })
     }
-
-    let requestURI = encodeURI(`${alarmLogURL}/search/alarm?pv=${pvName}${alarmLogStartDays}${extraParams}`);
-    console.log(requestURI)
     await fetch(requestURI)
         .then(response => {
             if (response.ok) {
@@ -175,16 +151,21 @@ async function queryAlarmLog(pvName, extraParams) {
     })
 }
 
+const logEnum = {
+    ONLINE_LOG: "online_log",
+    ALARM_LOG: "alarm_log"
+}
+
 const api = {
     CF_QUERY: queryChannelFinder,
     CF_URL: channelFinderURL,
-    ALARM_QUERY: queryAlarmLog,
-    OLOG_QUERY: queryOLOG,
+    LOG_QUERY: queryLog,
     OLOG_URL: ologURL,
     OLOG_WEB_URL: ologWebURL,
     AA_VIEWER: aaViewerURL,
     PVWS_URL: pvwsURL,
     SERVER_URL: serverURL,
+    LOG_ENUM: logEnum
 }
 
 export default api;

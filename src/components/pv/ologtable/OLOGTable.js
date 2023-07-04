@@ -14,6 +14,7 @@ function OLOGTable(props) {
     const [ologData, setOLOGData] = useState(null);
     const [ologExpanded, setOlogExpanded] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+    const [noOlogMessage, setNoOlogMessage] = useState("No Online Log Entries");
 
     const handleOlogExpandedChange = () => (event, isExpanded) => {
         setOlogExpanded(isExpanded);
@@ -21,7 +22,7 @@ function OLOGTable(props) {
 
     // Get OLOG data for this PV
     useEffect(() => {
-        api.OLOG_QUERY(props.pvName)
+        api.LOG_QUERY(api.LOG_ENUM.ONLINE_LOG, props.pvName)
             .then((data) => {
                 if (data !== null && data.hitCount !== 0) {
                     setOLOGData(data);
@@ -29,10 +30,13 @@ function OLOGTable(props) {
                 }
                 else {
                     setIsLoading(false);
+                    setNoOlogMessage("No Online Log Entries");
                     console.log("Null data from OLOG api");
                 }
             })
             .catch((err) => {
+                setIsLoading(false);
+                setNoOlogMessage("Error Fetching Online Log Entries");
                 console.log(err);
                 console.log("error in fetch of olog entries");
             })
@@ -51,7 +55,7 @@ function OLOGTable(props) {
         return (
             <Accordion expanded={false}>
                 <AccordionSummary>
-                    <Typography sx={{ fontSize: 18, fontWeight: "medium" }}>No Online Log Entries</Typography>
+                    <Typography sx={{ fontSize: 18, fontWeight: "medium" }}>{noOlogMessage}</Typography>
                     {
                         process.env.REACT_APP_OLOG_START_TIME_DAYS !== '' ?
                             <Typography variant="subtitle2">&nbsp;Within {process.env.REACT_APP_OLOG_START_TIME_DAYS} Days</Typography>

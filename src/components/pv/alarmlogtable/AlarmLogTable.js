@@ -24,13 +24,14 @@ function AlarmLogTable(props) {
     const [alarmLogData, setAlarmLogData] = useState(null);
     const [alarmLogExpanded, setAlarmLogExpanded] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+    const [noAlarmMessage, setNoAlarmMessage] = useState("No Alarm Log Entries");
 
     const handleAlarmLogExpandedChange = () => (event, isExpanded) => {
         setAlarmLogExpanded(isExpanded);
     }
 
     useEffect(() => {
-        api.ALARM_QUERY(props.pvName, '&severity=*?*')
+        api.LOG_QUERY(api.LOG_ENUM.ALARM_LOG, props.pvName, '&severity=*?*')
             .then((data) => {
                 if (data !== null && data.hitCount !== 0) {
                     setAlarmLogData(data);
@@ -38,12 +39,15 @@ function AlarmLogTable(props) {
                 }
                 else {
                     setIsLoading(false);
-                    console.log("Null data from OLOG api");
+                    setNoAlarmMessage("No Alarm Log Entries");
+                    console.log("Null data from Alarm Log api for alarm logs");
                 }
             })
             .catch((err) => {
+                setIsLoading(false);
+                setNoAlarmMessage("Error Fetching Alarm Log Entries");
                 console.log(err);
-                console.log("error in fetch of olog entries");
+                console.log("error in fetch of alarm log entries");
             })
     }, [props.pvName]);
 
@@ -60,7 +64,7 @@ function AlarmLogTable(props) {
         return (
             <Accordion expanded={false}>
                 <AccordionSummary>
-                    <Typography sx={{ fontSize: 18, fontWeight: "medium" }}>No Alarm Log Entries</Typography>
+                    <Typography sx={{ fontSize: 18, fontWeight: "medium" }}>{noAlarmMessage}</Typography>
                     {
                         process.env.REACT_APP_AL_START_TIME_DAYS !== '' ?
                             <Typography sx={{ fontSize: 18, fontWeight: "medium" }}>&nbsp;Within {process.env.REACT_APP_AL_START_TIME_DAYS} Days</Typography>
