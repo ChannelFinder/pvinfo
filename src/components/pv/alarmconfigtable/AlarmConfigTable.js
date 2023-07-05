@@ -115,46 +115,6 @@ function AlarmConfigTable(props) {
                             </TableBody>
                         </Table>
                     </CustomTableContainer>
-                    {/* <Box sx={{ border: 1, borderColor: 'primary.main', borderRadius: 1 }}>
-                        <Box sx={{ display: "flex", flexDirection: "column" }}>
-                            {
-                                alarmConfigData.map((item, i) => {
-                                    return (
-                                        <Box key={i} id={`alarm-item-${i}`} sx={{ display: "flex", flexDirection: "column", py: 1, borderBottom: 2, borderColor: 'grey.300', '&:last-child': { border: 0 } }}>
-                                            <Box id={`alarm-item-${i}-body`} sx={{ display: "flex", flexDirection: "row", justifyContent: "flex-start", gap: 5, flexWrap: "wrap", my: 0.5, py: 1, px: 3, overflow: "auto" }}>
-                                                {
-                                                    item.config ?
-                                                        <AlarmVariable title="Config" value={item.config} />
-                                                        : null
-                                                }
-                                                {
-                                                    item.message_time ?
-                                                        <AlarmVariable title="Message Time" value={new Date(item.message_time).toLocaleString("en-US", dateFormat)} />
-                                                        : null
-                                                }
-                                                {
-                                                    item.user ?
-                                                        <AlarmVariable title="User" value={item.user} />
-                                                        : null
-                                                }
-                                                {
-                                                    item.host ?
-                                                        <AlarmVariable title="Host" value={item.host} />
-                                                        : null
-                                                }
-                                                {
-                                                    item.config_msg ?
-                                                        <AlarmVariable title="Config Message" value={item.config_msg} />
-                                                        : null
-                                                }
-                                            </Box>
-                                        </Box>
-                                    )
-                                })
-                            }
-
-                        </Box>
-                    </Box> */}
                 </AccordionDetails>
             </Accordion>
         );
