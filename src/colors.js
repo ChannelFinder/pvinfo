@@ -4,6 +4,8 @@ const majorCol = "#" + process.env.REACT_APP_MAJOR_SEVERITY_COLOR;
 const invalidCol = "#" + process.env.REACT_APP_INVALID_SEVERITY_COLOR;
 const undefinedCol = "#" + process.env.REACT_APP_UNDEFINED_SEVERITY_COLOR;
 
+
+// modBrightness function sourced from https://natclark.com/tutorials/javascript-lighten-darken-hex-color/
 const modBrightness = (hexColor, magnitude) => {
     hexColor = hexColor.replace(`#`, ``);
     if (hexColor.length === 6) {
