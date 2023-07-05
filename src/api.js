@@ -8,8 +8,14 @@ const alarmLogURL = process.env.NODE_ENV === 'development' ? process.env.REACT_A
 const ologStartDays = process.env.REACT_APP_OLOG_START_TIME_DAYS !== '' ?
     `&start=${process.env.REACT_APP_OLOG_START_TIME_DAYS}days&end=now`
     : "";
+const ologMaxResults = process.env.REACT_APP_OLOG_MAX_RESULTS !== '' ?
+    `&size=${process.env.REACT_APP_OLOG_MAX_RESULTS}`
+    : "";
 const alarmLogStartDays = process.env.REACT_APP_AL_START_TIME_DAYS !== '' ?
     `&start=${process.env.REACT_APP_AL_START_TIME_DAYS}days&end=now`
+    : "";
+const alarmLogMaxResults = process.env.REACT_APP_AL_MAX_RESULTS !== '' ?
+    `&size=${process.env.REACT_APP_AL_MAX_RESULTS}`
     : "";
 
 function standardParse(params) {
@@ -120,9 +126,9 @@ async function queryLog(logType, pvName, extraParams) {
     }
     let requestURI = ""
     if (logType === logEnum.ONLINE_LOG) {
-        requestURI = encodeURI(`${ologURL}/logs/search?text=${pvName}${ologStartDays}`);
+        requestURI = encodeURI(`${ologURL}/logs/search?text=${pvName}${ologStartDays}${ologMaxResults}`);
     } else if (logType === logEnum.ALARM_LOG) {
-        requestURI = encodeURI(`${alarmLogURL}/search/alarm?pv=${pvName}${alarmLogStartDays}${extraParams}`);
+        requestURI = encodeURI(`${alarmLogURL}/search/alarm?pv=${pvName}${alarmLogStartDays}${alarmLogMaxResults}${extraParams}`);
     } else {
         return new Promise((resolve, reject) => {
             reject();
