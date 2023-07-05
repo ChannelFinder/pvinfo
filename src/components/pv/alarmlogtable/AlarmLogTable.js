@@ -98,6 +98,9 @@ function AlarmLogTable(props) {
                             <TableBody>
                                 {
                                     alarmLogData.map((item, i) => {
+                                        const time = item.time ? new Date(item.time).toLocaleString("en-US", dateFormat) : "";
+                                        const message_time = item.message_time ? new Date(item.message_time).toLocaleString("en-US", dateFormat) : "";
+
                                         return (
                                             <TableRow key={i}>
                                                 <TableBodyCell >
@@ -111,8 +114,8 @@ function AlarmLogTable(props) {
                                                 <TableBodyCell>{item.config}</TableBodyCell>
                                                 <TableBodyCell>{item.message}</TableBodyCell>
                                                 <TableBodyCell>{item.value}</TableBodyCell>
-                                                <TableBodyCell>{new Date(item.time).toLocaleString("en-US", dateFormat)}</TableBodyCell>
-                                                <TableBodyCell>{new Date(item.message_time).toLocaleString("en-US", dateFormat)}</TableBodyCell>
+                                                <TableBodyCell>{time}</TableBodyCell>
+                                                <TableBodyCell>{message_time}</TableBodyCell>
                                                 <TableBodyCell sx={{ color: colors.SEV_COLORS[item.current_severity] ? colors.SEV_COLORS[item.current_severity] : "#000" }}>{item.current_severity}</TableBodyCell>
                                                 <TableBodyCell>{item.current_message}</TableBodyCell>
                                             </TableRow>

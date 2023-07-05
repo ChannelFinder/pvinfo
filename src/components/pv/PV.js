@@ -162,7 +162,7 @@ function PV(props) {
     else {
         return (
             <Fragment>
-                <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, justifyContent: "space-between" }}>
                     <Typography variant="h3" sx={{ fontSize: { xs: 32, sm: 48 } }}>{id}</Typography>
                     {
                         process.env.REACT_APP_USE_AA === "true" ? <Button style={{ marginTop: 10, marginBottom: 10 }} target="_blank" href={pvHTMLString} variant="contained" color="secondary" endIcon={<TimelineIcon />} >Plot This PV</Button> : <div></div>

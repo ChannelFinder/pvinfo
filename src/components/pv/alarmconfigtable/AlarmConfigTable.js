@@ -98,10 +98,11 @@ function AlarmConfigTable(props) {
                                         if (item.config_msg) {
                                             prettyConfigMsg = JSON.stringify(JSON.parse(item.config_msg), null, 2);
                                         }
+                                        const message_time = item.message_time ? new Date(item.message_time).toLocaleString("en-US", dateFormat) : "";
                                         return (
                                             <TableRow key={i}>
                                                 <TableCell>{item.config}</TableCell>
-                                                <TableCell>{new Date(item.message_time).toLocaleString("en-US", dateFormat)}</TableCell>
+                                                <TableCell>{message_time}</TableCell>
                                                 <TableCell>{item.user}</TableCell>
                                                 <TableCell>{item.host}</TableCell>
                                                 <TableCell>
