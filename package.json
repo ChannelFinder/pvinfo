@@ -22,7 +22,11 @@
     "web-vitals": "^2.1.4"
   },
   "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "react-scripts": "^5.0.0"
+  },
+  "resolutions": {
+    "optionator": "^0.9.3"
   },
   "scripts": {
     "start": "react-scripts start",
