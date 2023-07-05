@@ -4,6 +4,19 @@ const ologWebURL = process.env.NODE_ENV === 'development' ? process.env.REACT_AP
 const aaViewerURL = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_AA_URL_DEV : process.env.REACT_APP_AA_URL;
 const pvwsURL = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_PVWS_URL_DEV : process.env.REACT_APP_PVWS_URL;
 const serverURL = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_BASE_URL_DEV : process.env.REACT_APP_BASE_URL;
+const alarmLogURL = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_AL_URL_DEV : process.env.REACT_APP_AL_URL;
+const ologStartDays = process.env.REACT_APP_OLOG_START_TIME_DAYS !== '' ?
+    `&start=${process.env.REACT_APP_OLOG_START_TIME_DAYS}days&end=now`
+    : "";
+const ologMaxResults = process.env.REACT_APP_OLOG_MAX_RESULTS !== '' ?
+    `&size=${process.env.REACT_APP_OLOG_MAX_RESULTS}`
+    : "";
+const alarmLogStartDays = process.env.REACT_APP_AL_START_TIME_DAYS !== '' ?
+    `&start=${process.env.REACT_APP_AL_START_TIME_DAYS}days&end=now`
+    : "";
+const alarmLogMaxResults = process.env.REACT_APP_AL_MAX_RESULTS !== '' ?
+    `&size=${process.env.REACT_APP_AL_MAX_RESULTS}`
+    : "";
 
 function standardParse(params) {
     let noWildcard = new Set(["pvStatus", "recordType"]);
@@ -105,14 +118,22 @@ async function queryChannelFinder(params) {
     })
 }
 
-async function queryOLOG(pvName) {
+async function queryLog(logType, pvName, extraParams) {
     let error = false;
     let data = {};
     if (pvName === null) {
         return;
     }
-
-    let requestURI = encodeURI(`${ologURL}/logs/search?text=${pvName}`);
+    let requestURI = ""
+    if (logType === logEnum.ONLINE_LOG) {
+        requestURI = encodeURI(`${ologURL}/logs/search?text=${pvName}${ologStartDays}${ologMaxResults}`);
+    } else if (logType === logEnum.ALARM_LOG) {
+        requestURI = encodeURI(`${alarmLogURL}/search/alarm?pv=${pvName}${alarmLogStartDays}${alarmLogMaxResults}${extraParams}`);
+    } else {
+        return new Promise((resolve, reject) => {
+            reject();
+        })
+    }
     await fetch(requestURI)
         .then(response => {
             if (response.ok) {
@@ -128,7 +149,7 @@ async function queryOLOG(pvName) {
             error = true;
         })
     return new Promise((resolve, reject) => {
-        if (error === true) {
+        if (error) {
             reject();
         } else {
             resolve(data);
@@ -136,15 +157,21 @@ async function queryOLOG(pvName) {
     })
 }
 
+const logEnum = {
+    ONLINE_LOG: "online_log",
+    ALARM_LOG: "alarm_log"
+}
+
 const api = {
     CF_QUERY: queryChannelFinder,
     CF_URL: channelFinderURL,
-    OLOG_QUERY: queryOLOG,
+    LOG_QUERY: queryLog,
     OLOG_URL: ologURL,
     OLOG_WEB_URL: ologWebURL,
     AA_VIEWER: aaViewerURL,
     PVWS_URL: pvwsURL,
     SERVER_URL: serverURL,
+    LOG_ENUM: logEnum
 }
 
 export default api;

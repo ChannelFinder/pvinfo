@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import useWebSocket from 'react-use-websocket';
 import api from '../../../../api';
+import colors from '../../../../colors';
 import PropTypes from "prop-types";
 
 const propTypes = {
@@ -74,22 +75,22 @@ function Value(props) {
         if (pvSeverity !== undefined) {
             if (pvSeverity === "INVALID") {
                 return (
-                    <div style={{ color: "#FF00FF" }}>{pvValue} ({pvSeverity})</div>
+                    <div style={{ color: colors.SEV_COLORS["INVALID"] }}>{pvValue} ({pvSeverity})</div>
                 );
             }
             else if (pvSeverity === "UNDEFINED") {
                 return (
-                    <div style={{ color: "#C800C8" }}>{pvSeverity}</div>
+                    <div style={{ color: colors.SEV_COLORS["UNDEFINED"] }}>{pvSeverity}</div>
                 );
             }
             else if (pvSeverity === "NONE") {
-                textColor = "green";
+                textColor = colors.SEV_COLORS["OK"];
             }
             else if (pvSeverity === "MINOR") {
-                textColor = "#FF9900";
+                textColor = colors.SEV_COLORS["MINOR"];
             }
             else if (pvSeverity === "MAJOR") {
-                textColor = "red";
+                textColor = colors.SEV_COLORS["MAJOR"];
             }
         }
         if (pvUnit !== undefined) {

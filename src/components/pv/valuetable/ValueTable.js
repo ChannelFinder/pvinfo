@@ -2,6 +2,7 @@ import React, { Fragment, useState, useEffect } from "react";
 import { Typography } from "@mui/material";
 import useWebSocket from 'react-use-websocket';
 import api from "../../../api";
+import colors from "../../../colors";
 import PropTypes from "prop-types";
 import KeyValuePair from "../KeyValuePair";
 
@@ -31,6 +32,7 @@ function ValueTable(props) {
     const [pvTimestamp, setPVTimestamp] = useState(null);
     const [alarmColor, setAlarmColor] = useState("");
     const [snapshot, setSnapshot] = useState(props.snapshot);
+    const [precisionRendered, setPrecisionRendered] = useState(false);
 
     const socketUrl = api.PVWS_URL;
     const { sendJsonMessage, lastJsonMessage } = useWebSocket(socketUrl, {
@@ -50,7 +52,7 @@ function ValueTable(props) {
     }, [props.snapshot])
 
     useEffect(() => {
-        if (props.pvMonitoring || snapshot) {
+        if ((props.pvMonitoring || snapshot) && precisionRendered) {
             if (props.pvData === null || props.isLoading) {
                 return;
             }
@@ -75,7 +77,7 @@ function ValueTable(props) {
             setPVSeverity(null);
             setPVTimestamp(null);
         }
-    }, [props.pvMonitoring, props.snapshot, snapshot, props.isLoading, props.pvData, props.pvName, handleErrorMessage, handleOpenErrorAlert, sendJsonMessage, handleSeverity]);
+    }, [precisionRendered, props.pvMonitoring, props.snapshot, snapshot, props.isLoading, props.pvData, props.pvName, handleErrorMessage, handleOpenErrorAlert, sendJsonMessage, handleSeverity]);
 
     useEffect(() => {
         if (lastJsonMessage !== null) {
@@ -148,19 +150,19 @@ function ValueTable(props) {
                 }
                 if ("severity" in message && props.pvMonitoring) {
                     if (message.severity === "NONE") {
-                        setAlarmColor("green");
+                        setAlarmColor(colors.SEV_COLORS["OK"]);
                     }
                     else if (message.severity === "INVALID") {
-                        setAlarmColor("#FF00FF");
+                        setAlarmColor(colors.SEV_COLORS["INVALID"]);
                     }
                     else if (message.severity === "UNDEFINED") {
-                        setAlarmColor("#C800C8");
+                        setAlarmColor(colors.SEV_COLORS["UNDEFINED"]);
                     }
                     else if (message.severity === "MAJOR") {
-                        setAlarmColor("red");
+                        setAlarmColor(colors.SEV_COLORS["MAJOR"]);
                     }
                     else if (message.severity === "MINOR") {
-                        setAlarmColor("#FF9900");
+                        setAlarmColor(colors.SEV_COLORS["MINOR"]);
                     }
                     if (!props.snapshot) {
                         setPVSeverity(message.severity);
@@ -211,7 +213,7 @@ function ValueTable(props) {
                 <KeyValuePair title="Warn High Value" value={pvWarnHigh} />
                 <KeyValuePair title="Lower Limit" value={pvMin} />
                 <KeyValuePair title="Upper Limit" value={pvMax} />
-                <KeyValuePair title="Precision" value={pvPrecision} />
+                <KeyValuePair title="Precision" value={pvPrecision} setPrecisionRendered={setPrecisionRendered} />
             </Fragment>
         );
     }

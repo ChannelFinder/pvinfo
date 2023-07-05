@@ -1,11 +1,14 @@
 import React, { Fragment, useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { Box, Button, Checkbox, Grid, Typography, FormControlLabel } from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Checkbox, Grid, Typography, FormControlLabel } from "@mui/material";
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import TimelineIcon from '@mui/icons-material/Timeline';
 import api from "../../api";
 import KeyValuePair from "./KeyValuePair";
-import OLOGTable from "./ologtable";
 import ValueTable from "./valuetable";
+import OLOGTable from "./ologtable";
+import AlarmLogTable from "./alarmlogtable/AlarmLogTable";
+import AlarmConfigTable from "./alarmconfigtable/AlarmConfigTable";
 import PropTypes from "prop-types";
 
 const propTypes = {
@@ -25,9 +28,14 @@ function PV(props) {
     const [displayAllVars, setDisplayAllVars] = useState(false);
     const [dataNamesMapping, setDataNamesMapping] = useState({});
     const [dataOrder, setDataOrder] = useState([])
+    const [detailsExpanded, setDetailsExpanded] = useState(true);
 
     let { handleErrorMessage, handleOpenErrorAlert, handleSeverity } = props;
     const omitVariables = process.env.REACT_APP_DETAILS_PAGE_PROPERTIES_BLOCKLIST ? new Set(process.env.REACT_APP_DETAILS_PAGE_PROPERTIES_BLOCKLIST.split(',').map(item => item.trim())) : new Set();
+
+    const handleDetailExpandedChange = () => (event, isExpanded) => {
+        setDetailsExpanded(isExpanded);
+    }
 
     // Parse environment variable REACT_APP_DETAILS_PAGE_PROPERTIES to determine what variables to display
     useEffect(() => {
@@ -102,7 +110,7 @@ function PV(props) {
     }, [cfPVData, dataNamesMapping]);
 
     useEffect(() => {
-        if(isLoading || pvData === null) {
+        if (isLoading || pvData === null) {
             return;
         }
         if (Object.keys(pvData).length !== 0) {
@@ -126,63 +134,93 @@ function PV(props) {
 
     if (isLoading) {
         return (
-            <Typography variant="h6">Channel Finder Data Loading...</Typography>
+            <Accordion expanded={false}>
+                <AccordionSummary>
+                    <Typography sx={{ fontSize: 18, fontWeight: "medium" }}>Channel Finder Data Loading...</Typography>
+                </AccordionSummary>
+            </Accordion>
         );
     }
     else if (cfPVData === null) {
         return (
-            <Typography variant="h6">Channel Finder Data is NULL!</Typography>
+            <Accordion expanded={false}>
+                <AccordionSummary>
+                    <Typography sx={{ fontSize: 18, fontWeight: "medium" }} color="red">Channel Finder Data is NULL!</Typography>
+                </AccordionSummary>
+            </Accordion>
         );
     }
     else if (cfPVData === {} || Object.keys(cfPVData).length === 0) {
         return (
-            <Typography variant="h6">PV {id} does not exist</Typography>
+            <Accordion expanded={false}>
+                <AccordionSummary>
+                    <Typography sx={{ fontSize: 18, fontWeight: "medium" }} color="red">PV {id} does not exist</Typography>
+                </AccordionSummary>
+            </Accordion>
         );
     }
     else {
         return (
             <Fragment>
-                <Typography variant="h3" sx={{ fontSize: { xs: 32, sm: 48 } }}>{id}</Typography>
-                {
-                    process.env.REACT_APP_USE_AA === "true" ? <Button style={{ marginTop: 10, marginBottom: 10 }} target="_blank" href={pvHTMLString} variant="contained" color="secondary" endIcon={<TimelineIcon />} >Plot This PV</Button> : <div></div>
-                }
-                <br />
+                <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, justifyContent: "space-between" }}>
+                    <Typography variant="h3" sx={{ fontSize: { xs: 32, sm: 48 } }}>{id}</Typography>
+                    {
+                        process.env.REACT_APP_USE_AA === "true" ? <Button style={{ marginTop: 10, marginBottom: 10 }} target="_blank" href={pvHTMLString} variant="contained" color="secondary" endIcon={<TimelineIcon />} >Plot This PV</Button> : <div></div>
+                    }
+                </Box>
                 {
                     process.env.REACT_APP_USE_PVWS === "true" ? <FormControlLabel control={<Checkbox color="primary" checked={pvMonitoring} onChange={handlePVMonitoringChange}></Checkbox>} label="Enable Live PV Monitoring" /> : <div></div>
                 }
-                <Box sx={{ border: 5, borderColor: 'primary.main' }}>
-                    <Grid container>
-                        {
-                            dataOrder.map((item, i) => {
-                                return (
-                                    <KeyValuePair key={i} title={dataNamesMapping[item]} value={pvData[item] ? pvData[item].value : ''} url={pvData[item] ? (pvData[item].url ? pvData[item].url : null) : null} />
-                                )
-                            })
-                        }
-                        {
-                            displayAllVars ? (
-                                Object.keys(pvData).map((key, i) => {
-                                    if (!(key in dataNamesMapping) && !(omitVariables.has(key))) {
-                                        return <KeyValuePair key={i} title={pvData[key].label} value={pvData[key].value} />
+                <Box sx={{ border: 1, borderColor: '#D1D5DB', borderRadius: 1, boxShadow: 2, mb: 2, overflow: "hidden" }}>
+                    <Accordion expanded={detailsExpanded} onChange={handleDetailExpandedChange()}>
+                        <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="details-content" id="details-header">
+                            <Typography sx={{ fontSize: 18, fontWeight: "medium" }}>
+                                PV Details
+                            </Typography>
+                        </AccordionSummary>
+                        <AccordionDetails sx={{ p: 0 }}>
+                            <Box sx={{ borderTop: 1, borderBottom: 1, borderColor: "#D1D5DB", overflow: "hidden" }}>
+                                <Grid container>
+                                    {
+                                        dataOrder.map((item, i) => {
+                                            return (
+                                                <KeyValuePair key={i} title={dataNamesMapping[item]} value={pvData[item] ? pvData[item].value : ''} url={pvData[item] ? (pvData[item].url ? pvData[item].url : null) : null} />
+                                            )
+                                        })
                                     }
-                                    return (null)
-                                })
-                            ) : null
-                        }
-                    </Grid>
-                    <Grid container sx={{ mt: -0.1, borderTop: 1, borderColor: 'grey.300' }}>
-                        {
-                            process.env.REACT_APP_USE_PVWS === "true" ?
-                                <ValueTable pvData={pvData} pvMonitoring={pvMonitoring}
-                                    isLoading={isLoading} pvName={id} snapshot={snapshot}
-                                    handleOpenErrorAlert={props.handleOpenErrorAlert} handleErrorMessage={props.handleErrorMessage} handleSeverity={props.handleSeverity} />
-                                : null
-                        }
-                    </Grid>
+                                    {
+                                        displayAllVars ? (
+                                            Object.keys(pvData).map((key, i) => {
+                                                if (!(key in dataNamesMapping) && !(omitVariables.has(key))) {
+                                                    return <KeyValuePair key={i} title={pvData[key].label} value={pvData[key].value} />
+                                                }
+                                                return (null)
+                                            })
+                                        ) : null
+                                    }
+                                </Grid>
+                                <Grid container sx={{ mt: -0.1, mb: -0.1, borderTop: 1, borderColor: 'grey.300' }}>
+                                    {
+                                        process.env.REACT_APP_USE_PVWS === "true" ?
+                                            <ValueTable pvData={pvData} pvMonitoring={pvMonitoring}
+                                                isLoading={isLoading} pvName={id} snapshot={snapshot}
+                                                handleOpenErrorAlert={props.handleOpenErrorAlert} handleErrorMessage={props.handleErrorMessage} handleSeverity={props.handleSeverity} />
+                                            : null
+                                    }
+                                </Grid>
+                            </Box>
+                        </AccordionDetails>
+                    </Accordion>
+                    {
+                        process.env.REACT_APP_USE_OLOG === "true" ? <OLOGTable pvName={id} /> : null
+                    }
+                    {
+                        process.env.REACT_APP_USE_AL === "true" ? <AlarmLogTable pvName={id} /> : null
+                    }
+                    {
+                        process.env.REACT_APP_USE_AL === "true" ? <AlarmConfigTable pvName={id} /> : null
+                    }
                 </Box>
-                {
-                    process.env.REACT_APP_USE_OLOG === "true" ? <OLOGTable pvName={id} /> : <br />
-                }
             </Fragment >
         );
     }
