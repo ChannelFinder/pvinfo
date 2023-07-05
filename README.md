@@ -5,13 +5,13 @@
 
 Web interface to the EPICS [Channel Finder](https://github.com/ChannelFinder/ChannelFinderService) database. This interface allows users to query for PVs by wildcard name searches as well as querying by PV meta-data such as IOC name, record type, etc.
 
-PV Info also integrates with several other EPICS services but is important to note, only the Channel Finder integration is required to use PV Info.
-- The [PV Web Socket](https://github.com/ornl-epics/pvws) service is used to show live PV data.
-- The [Phoebus OLOG service](https://github.com/Olog/phoebus-olog) allows you to display any log entries that contain the specific PV name on the PV "details" page.
-- The [Phoebus Alarm Logger service](https://github.com/ControlSystemStudio/phoebus/tree/master/services/alarm-logger) allows you to display the alarm history for a specific PV on it's "details" page.
-- There are buttons for each PV in PV Info which link to an external archive web viewer to allow users to quickly view past PV history. Currently this is configured to work with the [Archiver Appliance Web Viewer](https://github.com/slacmshankar/epicsarchiverap) but other archive web viewers can easily be used since this is simply an external link to another web page.
+PV Info also integrates with several other EPICS high level services:
+- [PV Web Socket](https://github.com/ornl-epics/pvws) is used to show live PV data including the value, alarm status/severity, alarm limits, etc.
+- [Phoebus OLOG](https://github.com/Olog/phoebus-olog) allows you to display any log entries that contain the specific PV name on the PV "details" page.
+- [Phoebus Alarm Logger](https://github.com/ControlSystemStudio/phoebus/tree/master/services/alarm-logger) displays the alarm history for a specific PV on it's "details" page.
+- [Archiver Appliance Web Viewer](https://github.com/slacmshankar/epicsarchiverap) is used to show the archived history of PVs. Since this is simply an external link in PV Info to the archiver web viewer, other archive engines and their own web viewers can easily be used.
 
-
+It is important to note that **only the Channel Finder integration is required to use PV Info**.
 ![PV Info Arch](docs/arch.svg?raw=true "PV Info Arch")
 
 This repository is under active development and is currently in production at the Advanced Light Source (ALS). Effort has been made to make PV Info non-ALS specific and configurable for any site using Channel Finder but things might have been missed. So please report any bugs you might find, any new features which could be useful, and any feedback on configuring/installing/using PV Info.
