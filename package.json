@@ -24,6 +24,9 @@
   "devDependencies": {
     "react-scripts": "^5.0.0"
   },
+  "resolutions": {
+    "optionator": "^0.9.3"
+  },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
