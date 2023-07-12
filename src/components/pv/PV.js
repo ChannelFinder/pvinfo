@@ -22,7 +22,7 @@ function PV(props) {
     const [cfPVData, setCFPVData] = useState(null); //object
     const [pvData, setPVData] = useState({});
     const [pvMonitoring, setPVMonitoring] = useState(false);
-    const [snapshot, setSnapshot] = useState(false);
+    const [snapshot, setSnapshot] = useState(true);
     const [isLoading, setIsLoading] = useState(true);
     const pvHTMLString = encodeURI(`${api.AA_VIEWER}?pv=${id}`);
     const [displayAllVars, setDisplayAllVars] = useState(false);
@@ -116,6 +116,7 @@ function PV(props) {
         if (Object.keys(pvData).length !== 0) {
             if (process.env.REACT_APP_DEFAULT_LIVE_MONITORING === "true") {
                 setPVMonitoring(true);
+                setSnapshot(false);
             } else {
                 setSnapshot(true);
             }

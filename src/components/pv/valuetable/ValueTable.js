@@ -6,7 +6,6 @@ import colors from "../../../colors";
 import PropTypes from "prop-types";
 import KeyValuePair from "../KeyValuePair";
 
-
 const propTypes = {
     pvMonitoring: PropTypes.bool,
     snapshot: PropTypes.bool,
@@ -31,8 +30,8 @@ function ValueTable(props) {
     const [pvWarnHigh, setPVWarnHigh] = useState(null);
     const [pvTimestamp, setPVTimestamp] = useState(null);
     const [alarmColor, setAlarmColor] = useState("");
-    const [snapshot, setSnapshot] = useState(props.snapshot);
-    const [precisionRendered, setPrecisionRendered] = useState(false);
+    const [snapshot, setSnapshot] = useState(true);
+    const [subscribed, setSubscribed] = useState(false);
 
     const socketUrl = api.PVWS_URL;
     const { sendJsonMessage, lastJsonMessage } = useWebSocket(socketUrl, {
@@ -52,8 +51,8 @@ function ValueTable(props) {
     }, [props.snapshot])
 
     useEffect(() => {
-        if ((props.pvMonitoring || snapshot) && precisionRendered) {
-            if (props.pvData === null || props.isLoading) {
+        if (props.pvMonitoring || snapshot) {
+            if (props.pvData === null || Object.keys(props.pvData).length === 0 || props.isLoading) {
                 return;
             }
             else if (props.pvData.pvStatus.value === "Inactive") {
@@ -67,17 +66,22 @@ function ValueTable(props) {
                 handleOpenErrorAlert(true);
             }
             else if (props.pvData.pvStatus.value === "Active") {
-                sendJsonMessage({ "type": "subscribe", "pvs": [props.pvName] });
+                if (!subscribed) {
+                    sendJsonMessage({ "type": "subscribe", "pvs": [props.pvName] });
+                    setSubscribed(true);
+                }
             }
         }
         else {
-            sendJsonMessage({ "type": "clear", "pvs": [props.pvName] });
-            if (props.snapshot && !props.pvMonitoring) return;
+            if (subscribed) {
+                sendJsonMessage({ "type": "clear", "pvs": [props.pvName] });
+                setSubscribed(false);
+            }
             setPVValue(null);
             setPVSeverity(null);
             setPVTimestamp(null);
         }
-    }, [precisionRendered, props.pvMonitoring, props.snapshot, snapshot, props.isLoading, props.pvData, props.pvName, handleErrorMessage, handleOpenErrorAlert, sendJsonMessage, handleSeverity]);
+    }, [props.pvMonitoring, snapshot, props.isLoading, props.pvData, props.pvName, handleErrorMessage, handleOpenErrorAlert, subscribed, sendJsonMessage, handleSeverity]);
 
     useEffect(() => {
         if (lastJsonMessage !== null) {
@@ -172,7 +176,9 @@ function ValueTable(props) {
                     if (!props.snapshot) {
                         setPVValue(message.text);
                     }
-                    setSnapshot(false);
+                    if (snapshot) {
+                        setSnapshot(false);
+                    }
 
                 }
                 else if ("value" in message) {
@@ -186,7 +192,9 @@ function ValueTable(props) {
                             setPVValue((Number(message.value) >= 0.01 || Number(message.value) === 0) ? Number(message.value) : Number(message.value).toExponential());
                         }
                     }
-                    setSnapshot(false);
+                    if (snapshot) {
+                        setSnapshot(false);
+                    }
                 }
             }
             else {
@@ -213,7 +221,7 @@ function ValueTable(props) {
                 <KeyValuePair title="Warn High Value" value={pvWarnHigh} />
                 <KeyValuePair title="Lower Limit" value={pvMin} />
                 <KeyValuePair title="Upper Limit" value={pvMax} />
-                <KeyValuePair title="Precision" value={pvPrecision} setPrecisionRendered={setPrecisionRendered} />
+                <KeyValuePair title="Precision" value={pvPrecision} />
             </Fragment>
         );
     }
