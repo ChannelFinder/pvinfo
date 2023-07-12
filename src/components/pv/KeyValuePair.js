@@ -6,21 +6,14 @@ import PropTypes from 'prop-types';
 const propTypes = {
     title: PropTypes.string,
     value: PropTypes.any,
-    setPrecisionRendered: PropTypes.func,
 }
 
 function KeyValuePair(props) {
-    useEffect(() => {
-        if (props.title === 'Precision') {
-            props.setPrecisionRendered(true);
-        }
-    }, [props])
-
     let style = { px: 2, py: 1, borderBottom: 1, borderColor: '#D1D5DB' }
 
     return (
         <Fragment>
-            <Grid item xs={6} sm={2} sx={style} style={{backgroundColor: "#F3F4F6"}}>
+            <Grid item xs={6} sm={2} sx={style} style={{ backgroundColor: "#F3F4F6" }}>
                 <Typography variant="subtitle2">{props.title}</Typography>
             </Grid>
             <Grid item xs={6} sm={4} sx={style}>
