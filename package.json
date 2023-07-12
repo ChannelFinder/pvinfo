@@ -1,6 +1,6 @@
 {
-  "name": "pvinfo_devel",
-  "homepage": "https://controls.als.lbl.gov/pvinfo_devel",
+  "name": "pvinfo",
+  "homepage": "https://yourdomainhere/pvinfo",
   "version": "1.0.0",
   "private": true,
   "dependencies": {

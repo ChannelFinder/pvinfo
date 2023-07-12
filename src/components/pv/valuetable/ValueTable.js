@@ -81,7 +81,7 @@ function ValueTable(props) {
             setPVSeverity(null);
             setPVTimestamp(null);
         }
-    }, [props.pvMonitoring, snapshot, props.isLoading, props.pvData, props.pvName, handleErrorMessage, handleOpenErrorAlert, sendJsonMessage, handleSeverity]);
+    }, [props.pvMonitoring, snapshot, props.isLoading, props.pvData, props.pvName, handleErrorMessage, handleOpenErrorAlert, subscribed, sendJsonMessage, handleSeverity]);
 
     useEffect(() => {
         if (lastJsonMessage !== null) {
