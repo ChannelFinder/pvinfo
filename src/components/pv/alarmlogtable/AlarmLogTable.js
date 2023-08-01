@@ -98,6 +98,9 @@ function AlarmLogTable(props) {
                             <TableBody>
                                 {
                                     alarmLogData.map((item, i) => {
+                                        if (!item) {
+                                            return;
+                                        }
                                         const time = item.time ? new Date(item.time).toLocaleString("en-US", dateFormat) : "";
                                         const message_time = item.message_time ? new Date(item.message_time).toLocaleString("en-US", dateFormat) : "";
 
