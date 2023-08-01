@@ -95,7 +95,7 @@ function AlarmConfigTable(props) {
                                 {
                                     alarmConfigData.map((item, i) => {
                                         if (!item) {
-                                            return;
+                                            return null;
                                         }
                                         let prettyConfigMsg = "";
                                         if (item.config_msg) {
