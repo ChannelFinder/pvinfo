@@ -94,6 +94,9 @@ function AlarmConfigTable(props) {
                             <TableBody>
                                 {
                                     alarmConfigData.map((item, i) => {
+                                        if (!item) {
+                                            return null;
+                                        }
                                         let prettyConfigMsg = "";
                                         if (item.config_msg) {
                                             prettyConfigMsg = JSON.stringify(JSON.parse(item.config_msg), null, 2);
