@@ -74,7 +74,6 @@ function Header () {
                           <ListItemText primary="Help" />
                         </ListItemButton>
                     </List>
-                    <Divider />
                 </div>
             </Drawer>
         </Hidden>
