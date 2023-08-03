@@ -54,11 +54,14 @@ Update the "homepage" variable in [package.json](package.json).
 
 https://github.com/ChannelFinder/pvinfo/blob/master/package.json#L3
 
+You can also use the `PUBLIC_URL` environment variable to override the homepage string, for instance during npm run
+build: `PUBLIC_URL=http://myhomepage/pvinfo npm run build`
+
 
 ### Logos and Colors
 
 - Update [src/theme.js](src/theme.js) with the colors and fonts you want
-- Place your own logos in src/assets
+- Place your own logo in src/assets
 
 
 ## Initial Setup and Running Locally

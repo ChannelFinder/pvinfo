@@ -1,13 +1,13 @@
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
-import { Grid, Typography, Checkbox, Link, IconButton, Tooltip, Hidden } from '@mui/material';
+import { Typography, Checkbox, Link, IconButton, Tooltip } from '@mui/material';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import { useNavigate, Link as RouterLink } from "react-router-dom";
 import TimelineIcon from '@mui/icons-material/Timeline';
 import ReadMoreIcon from '@mui/icons-material/ReadMore';
 import api from "../../../api";
-import bannerLogo from "../../../assets/home-banner-logo.png";
 import ValueCheckbox from './valuecheckbox/ValueCheckbox';
 import Value from "./value";
+import Logo from "./logo";
 import PropTypes from "prop-types";
 
 const propTypes = {
@@ -333,22 +333,14 @@ function QueryResults(props) {
         return (
             <Fragment>
                 <Typography variant="h6">Data Loading...</Typography>
-                <Hidden lgDown>
-                    <Grid container justifyContent="center" >
-                        <img src={bannerLogo} style={{ position: "absolute", "marginBottom": "20px", "bottom": 0, width: "25%" }} alt="Banner Logo" />
-                    </Grid>
-                </Hidden>
+                <Logo />
             </Fragment>
         );
     }
     else if (props.cfData === null) {
         return (
             <Fragment>
-                <Hidden lgDown>
-                    <Grid container justifyContent="center" >
-                        <img src={bannerLogo} style={{ position: "absolute", "marginBottom": "20px", "bottom": 0, width: "25%" }} alt="Banner Logo" />
-                    </Grid>
-                </Hidden>
+                <Logo />
             </Fragment>
         );
     }
@@ -356,11 +348,7 @@ function QueryResults(props) {
         return (
             <Fragment>
                 <Typography>No PVs match your query</Typography>
-                <Hidden lgDown>
-                    <Grid container justifyContent="center" >
-                        <img src={bannerLogo} style={{ position: "absolute", "marginBottom": "20px", "bottom": 0, width: "25%" }} alt="Banner Logo" />
-                    </Grid>
-                </Hidden>
+                <Logo />
             </Fragment>
         );
     }

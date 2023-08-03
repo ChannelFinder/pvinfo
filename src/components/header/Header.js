@@ -2,12 +2,14 @@ import React, {useState} from "react";
 import './Header.css';
 import { NavLink } from 'react-router-dom';
 import { AppBar, Toolbar, Typography, Grid, Drawer, Hidden, Divider } from '@mui/material';
-import { List, ListItem, ListItemText } from '@mui/material';
+import { List, ListItemText, ListItemIcon, ListItemButton } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
-import { makeStyles } from 'tss-react/mui';
+import HomeIcon from '@mui/icons-material/Home';
+import AppsIcon from '@mui/icons-material/Apps';
+import SsidChartIcon from '@mui/icons-material/SsidChart';
+import HelpIcon from '@mui/icons-material/Help';
 import MenuIcon from '@mui/icons-material/Menu';
-import logoBanner from "../../assets/mobile-menu-logo.png";
-
+import { makeStyles } from 'tss-react/mui';
 
 const useStyles = makeStyles()((theme) => ({
   root: {
@@ -45,23 +47,32 @@ function Header () {
             <Drawer variant="temporary" open={drawerOpen} onClose={handleMenuToggle} anchor="left">
                 <div>
                     <div className={classes.toolbar} />
-                    <img src={logoBanner} style={{ height: 60, width: 302 }} alt="Banner Logo" />
                     <Divider />
                     <List>
-                        <ListItem button key="PVs" component={NavLink} to="/" onClick={handleMenuToggle}>
-                            <ListItemText primary="PVs"/>
-                        </ListItem>
-                        <ListItem button key="IOCs" component={NavLink} to="/ioc" onClick={handleMenuToggle}>
-                            <ListItemText primary="IOCs"/>
-                        </ListItem>
-                        {process.env.REACT_APP_USE_AA.toLowerCase() === "true" &&
-                          <ListItem button key="Plotting" component={NavLink} to="/plot" onClick={handleMenuToggle}>
-                              <ListItemText primary="Plotting"/>
-                          </ListItem>
-                        }
-                        <ListItem button key="Help" component={NavLink} to="/help" onClick={handleMenuToggle}>
-                            <ListItemText primary="Help"/>
-                        </ListItem>
+                        <ListItemButton key="Home" component={NavLink} to="/" onClick={handleMenuToggle} divider color="primary">
+                          <ListItemIcon>
+                            <HomeIcon color="primary" />
+                          </ListItemIcon>
+                          <ListItemText primary="Home" />
+                        </ListItemButton>
+                        <ListItemButton key="IOCs" component={NavLink} to="/ioc" onClick={handleMenuToggle} divider color="primary">
+                          <ListItemIcon>
+                            <AppsIcon color="primary" />
+                          </ListItemIcon>
+                          <ListItemText primary="IOCs" />
+                        </ListItemButton>
+                        <ListItemButton key="Plotting" component={NavLink} to="/plot" onClick={handleMenuToggle} divider color="primary">
+                          <ListItemIcon>
+                            <SsidChartIcon color="primary" />
+                          </ListItemIcon>
+                          <ListItemText primary="Plotting" />
+                        </ListItemButton>
+                        <ListItemButton key="Help" component={NavLink} to="/help" onClick={handleMenuToggle} divider color="primary">
+                          <ListItemIcon>
+                            <HelpIcon color="primary" />
+                          </ListItemIcon>
+                          <ListItemText primary="Help" />
+                        </ListItemButton>
                     </List>
                     <Divider />
                 </div>
