@@ -102,3 +102,9 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^ index.html [QSA,L]
 ```
 https://stackoverflow.com/questions/27928372/react-router-urls-dont-work-when-refreshing-or-writing-manually/46035346#46035346
+
+## Screenshots
+
+![Monitor All](docs/monitor-all.png?raw=true "Monitor All")
+
+See more screenshots here: [example.md](docs/example.md)
