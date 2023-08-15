@@ -62,6 +62,7 @@ build: `PUBLIC_URL=http://myhomepage/pvinfo npm run build`
 
 - Update [src/theme.js](src/theme.js) with the colors and fonts you want
 - Place your own logo in src/assets
+- Place your own favicons in [public](public)
 
 
 ## Initial Setup and Running Locally
