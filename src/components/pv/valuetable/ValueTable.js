@@ -60,7 +60,7 @@ function ValueTable(props) {
                 handleSeverity("error");
                 handleOpenErrorAlert(true);
             }
-            else if (props.pvData.recordType.value === "waveform") {
+            else if (props.pvData.recordType?.value === "waveform") {
                 handleErrorMessage("Can't show live PV values - Waveform record type not supported");
                 handleSeverity("error");
                 handleOpenErrorAlert(true);
