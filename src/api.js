@@ -1,4 +1,6 @@
 const channelFinderURL = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_CF_URL_DEV : process.env.REACT_APP_CF_URL;
+const cfPropertiesURL = channelFinderURL + process.env.REACT_APP_CF_PROPS_PATH;
+const cfTagsURL = channelFinderURL + process.env.REACT_APP_CF_TAGS_PATH
 const ologURL = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_OLOG_URL_DEV : process.env.REACT_APP_OLOG_URL;
 const ologWebURL = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_OLOG_WEB_CLIENT_URL_DEV : process.env.REACT_APP_OLOG_WEB_CLIENT_URL;
 const aaViewerURL = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_AA_URL_DEV : process.env.REACT_APP_AA_URL;
@@ -55,7 +57,11 @@ function freeformParse(params) {
     let addOn = "";
     for (let key in params) {
         if (key === 'pvName' || key === 'standardSearch') continue;
-        addOn = addOn.concat(`&${key}=${params[key]}`);
+        if (key.includes('tag')) {
+            addOn = addOn.concat(`&~tag=${params[key]}`)
+        } else {
+            addOn = addOn.concat(`&${key}=${params[key]}`);
+        }
     }
     return addOn;
 }
@@ -145,7 +151,7 @@ async function queryLog(logType, pvName, extraParams) {
         .then(responseJson => {
             data = responseJson;
         })
-        .catch((error) => {
+        .catch(() => {
             error = true;
         })
     return new Promise((resolve, reject) => {
@@ -157,21 +163,103 @@ async function queryLog(logType, pvName, extraParams) {
     })
 }
 
+async function getProperties() {
+    let error = false;
+    let data = {};
+    let requestURI = cfPropertiesURL
+
+    await fetch(requestURI)
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error("Error in properties fetch!");
+            }
+        })
+        .then(responseJson => {
+            data = responseJson;
+        })
+        .catch((error) => {
+            error = true;
+        })
+    return new Promise((resolve, reject) => {
+        if (error) {
+            reject();
+        } else {
+            let props = new Array(data.length)
+            for (let i = 0; i < data.length; ++i) {
+                props[i] = data[i].name
+            }
+            resolve(props);
+        }
+    })
+}
+
+async function getQueryHelpers(helperType) {
+    let error = false;
+    let data = {};
+    let requestURI = ""
+
+    if (helperType === queryHelperEnum.PROPERTIES) {
+        requestURI = cfPropertiesURL
+    } else if (helperType === queryHelperEnum.TAGS) {
+        requestURI = cfTagsURL
+    } else {
+        return new Promise((resolve, reject) => {
+            reject();
+        })
+    }
+
+    await fetch(requestURI)
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error(`Error in ${helperType} fetch!`);
+            }
+        })
+        .then(responseJson => {
+            data = responseJson;
+        })
+        .catch(() => {
+            error = true;
+        })
+    return new Promise((resolve, reject) => {
+        if (error) {
+            reject();
+        } else {
+            let props = new Array(data.length)
+            for (let i = 0; i < data.length; ++i) {
+                props[i] = data[i].name
+            }
+            resolve(props);
+        }
+    })
+}
+
 const logEnum = {
     ONLINE_LOG: "online_log",
     ALARM_LOG: "alarm_log"
+}
+
+const queryHelperEnum = {
+    PROPERTIES: "properties",
+    TAGS: "tags"
 }
 
 const api = {
     CF_QUERY: queryChannelFinder,
     CF_URL: channelFinderURL,
     LOG_QUERY: queryLog,
+    PROPS_QUERY: getProperties,
+    HELPERS_QUERY: getQueryHelpers,
     OLOG_URL: ologURL,
     OLOG_WEB_URL: ologWebURL,
     AA_VIEWER: aaViewerURL,
     PVWS_URL: pvwsURL,
     SERVER_URL: serverURL,
-    LOG_ENUM: logEnum
+    LOG_ENUM: logEnum,
+    QUERY_HELPERS: queryHelperEnum,
 }
 
 export default api;

@@ -1,14 +1,38 @@
-import { Grid, TextField, Tooltip } from '@mui/material'
+import { Grid, Box, IconButton, InputAdornment, Popover, TextField, Tooltip, Typography } from '@mui/material'
+import AddIcon from '@mui/icons-material/Add';
 import SearchActions from '../searchactions/SearchActions';
 import PropTypes from "prop-types";
+import { useRef, useState } from 'react';
 
 const propTypes = {
     freeformQuery: PropTypes.string,
+    setFreeformQuery: PropTypes.func,
     handleFreeformChange: PropTypes.func,
-    handleClear: PropTypes.func
+    handleClear: PropTypes.func,
+    searchProperties: PropTypes.array,
+    searchTags: PropTypes.array
 }
 
 function FreeSearch(props) {
+    const [anchorEl, setAnchorEl] = useState(null);
+    const textFieldRef = useRef();
+
+    const handleOpenProps = () => {
+        setAnchorEl(textFieldRef.current);
+    }
+
+    const handleCloseProps = () => {
+        setAnchorEl(null);
+    }
+
+    const handleSelectProp = (value) => {
+        let prefix = props.freeformQuery === "" ? "* " : " "
+        props.setFreeformQuery(props.freeformQuery + prefix + value + "=");
+    }
+
+    const open = Boolean(anchorEl);
+    const id = open ? 'properties-popover' : undefined;
+
     return (
         <Grid item container xs={12} sx={{ display: 'flex', flexWrap: { xs: 'wrap', lg: 'nowrap' } }}>
             <Tooltip arrow title={<div>Space delimited string<br />PV name (with * and ?)<br />Followed by property=value pairs</div>}>
@@ -17,14 +41,65 @@ function FreeSearch(props) {
                     id="freeSearch"
                     label="Search Query"
                     name="freeSearch"
+                    ref={textFieldRef}
                     autoComplete="off"
                     value={props.freeformQuery}
+                    // onChange={handleInputChange}
                     placeholder="Search Query"
                     type="search"
                     variant="outlined"
                     onChange={props.handleFreeformChange}
+                    InputProps={{
+                        endAdornment: (
+                            <InputAdornment position="end">
+                                <IconButton onClick={(event) => handleOpenProps(event, "props")}
+                                    disableRipple
+                                    sx={{ '&:hover': { backgroundColor: 'white', color: 'black' } }}
+                                >
+                                    <AddIcon />
+                                </IconButton>
+                            </InputAdornment>
+                        )
+                    }}
                 />
             </Tooltip>
+            <Popover
+                id={id}
+                open={open}
+                anchorEl={anchorEl}
+                onClose={handleCloseProps}
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'right'
+                }}
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right'
+                }}
+            >
+                <Box sx={{ display: 'flex', flexDirection: 'row' }}>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', borderRight: 1, borderColor: 'grey.300' }}>
+                        <Box sx={{ p: 1, borderBottom: 1, borderColor: 'grey.300' }}>
+                            <Typography sx={{ fontWeight: 'medium' }}>Properties</Typography>
+                        </Box>
+                        <Box sx={{ overflow: 'auto', maxHeight: 200, display: 'flex', flexDirection: 'column' }}>
+                            {props.searchProperties.map((property, index) => (
+                                <Typography key={index} onClick={() => handleSelectProp(property)} sx={{ p: 1, '&:hover': { backgroundColor: 'grey.200', cursor: 'default' } }}>{property}</Typography>
+                            ))}
+                        </Box>
+                    </Box>
+                    <Box sx={{ minWidth: 80, display: 'flex', flexDirection: 'column' }}>
+                        <Box sx={{ p: 1, borderBottom: 1, borderColor: 'grey.300' }}>
+                            <Typography sx={{ fontWeight: 'medium' }}>Tags</Typography>
+                        </Box>
+                        <Box sx={{ overflow: 'auto', maxHeight: 200, display: 'flex', flexDirection: 'column' }}>
+                            {props.searchTags.map((tag, index) => (
+                                <Typography key={index} onClick={() => handleSelectProp(tag)} sx={{ p: 1, '&:hover': { backgroundColor: 'grey.200', cursor: 'default' } }}>{tag}</Typography>
+                            ))}
+                        </Box>
+                    </Box>
+                </Box>
+            </Popover>
             <SearchActions handleClear={props.handleClear} minWidth={{ xs: '40%', md: '25%' }} />
         </Grid>
     )
