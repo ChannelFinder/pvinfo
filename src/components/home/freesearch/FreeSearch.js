@@ -17,17 +17,20 @@ function FreeSearch(props) {
     const [anchorEl, setAnchorEl] = useState(null);
     const textFieldRef = useRef();
 
-    const handleOpenProps = () => {
+    const handleOpenAtts = () => {
         setAnchorEl(textFieldRef.current);
     }
 
-    const handleCloseProps = () => {
+    const handleCloseAtts = () => {
         setAnchorEl(null);
     }
 
-    const handleSelectProp = (value) => {
-        let prefix = props.freeformQuery === "" ? "* " : " "
-        props.setFreeformQuery(props.freeformQuery + prefix + value + "=");
+    const handleSelectAtt = (value, isProp) => {
+        let prefix = props.freeformQuery.length === 0 ? "* "
+            : props.freeformQuery.slice(-1) === " " ? ""
+                : " "
+        let suffix = isProp ? "=" : "";
+        props.setFreeformQuery(props.freeformQuery + prefix + value + suffix);
     }
 
     const open = Boolean(anchorEl);
@@ -52,7 +55,7 @@ function FreeSearch(props) {
                     InputProps={{
                         endAdornment: (
                             <InputAdornment position="end">
-                                <IconButton onClick={(event) => handleOpenProps(event, "props")}
+                                <IconButton onClick={(event) => handleOpenAtts(event, "props")}
                                     disableRipple
                                     sx={{ '&:hover': { backgroundColor: 'white', color: 'black' } }}
                                 >
@@ -67,7 +70,7 @@ function FreeSearch(props) {
                 id={id}
                 open={open}
                 anchorEl={anchorEl}
-                onClose={handleCloseProps}
+                onClose={handleCloseAtts}
                 anchorOrigin={{
                     vertical: 'bottom',
                     horizontal: 'right'
@@ -84,7 +87,7 @@ function FreeSearch(props) {
                         </Box>
                         <Box sx={{ overflow: 'auto', maxHeight: 200, display: 'flex', flexDirection: 'column' }}>
                             {props.searchProperties.map((property, index) => (
-                                <Typography key={index} onClick={() => handleSelectProp(property)} sx={{ p: 1, '&:hover': { backgroundColor: 'grey.200', cursor: 'default' } }}>{property}</Typography>
+                                <Typography key={index} onClick={() => handleSelectAtt(property, true)} sx={{ p: 1, '&:hover': { backgroundColor: 'grey.200', cursor: 'default' } }}>{property}</Typography>
                             ))}
                         </Box>
                     </Box>
@@ -94,7 +97,7 @@ function FreeSearch(props) {
                         </Box>
                         <Box sx={{ overflow: 'auto', maxHeight: 200, display: 'flex', flexDirection: 'column' }}>
                             {props.searchTags.map((tag, index) => (
-                                <Typography key={index} onClick={() => handleSelectProp(tag)} sx={{ p: 1, '&:hover': { backgroundColor: 'grey.200', cursor: 'default' } }}>{tag}</Typography>
+                                <Typography key={index} onClick={() => handleSelectAtt(tag, false)} sx={{ p: 1, '&:hover': { backgroundColor: 'grey.200', cursor: 'default' } }}>{tag}</Typography>
                             ))}
                         </Box>
                     </Box>
