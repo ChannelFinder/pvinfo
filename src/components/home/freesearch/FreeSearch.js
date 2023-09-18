@@ -38,7 +38,7 @@ function FreeSearch(props) {
 
     return (
         <Grid item container xs={12} sx={{ display: 'flex', flexWrap: { xs: 'wrap', lg: 'nowrap' } }}>
-            <Tooltip arrow title={<div>Space delimited string<br />PV name (with * and ?)<br />Followed by property=value pairs</div>}>
+            <Tooltip arrow title={<div>Space delimited string<br />PV name (with * and ?)<br />Followed by property=value pairs<br />Followed by tag names</div>}>
                 <TextField
                     sx={{ display: "flex", flexGrow: 1, minWidth: { xs: '60%', md: '75%' }, textOverflow: 'ellipsis' }}
                     id="freeSearch"
