@@ -18,8 +18,13 @@ function KeyValuePair(props) {
             </Grid>
             <Grid item xs={6} sm={4} sx={style}>
                 <Typography variant="body2" style={{ color: props.textColor }}>
-                    {Array.isArray(props.value) ? (
-                        props.value.join(', ')
+                    {Array.isArray(props.value) && props.title === "Tags" ? (
+                        props.value.map((item, i) => (
+                            <Fragment key={i}>
+                                <Link component={RouterLink} to={`/?pvName=*&tag1=${item}&standardSearch=false`} underline="hover">{item}</Link>
+                                {i < props.value.length - 1 && ", "}
+                            </Fragment>
+                        ))
                     ) : props.url ? (
                         <Link component={RouterLink} to={props.url} underline="hover">{props.value}</Link>
                     ) : (

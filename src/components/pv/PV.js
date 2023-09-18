@@ -196,10 +196,7 @@ function PV(props) {
                                     {
                                         displayAllVars ? (
                                             Object.keys(pvData).map((key, i) => {
-                                                if (!(key in dataNamesMapping) && !(omitVariables.has(key))) {
-                                                    if (key === "tags") {
-                                                        return <KeyValuePair key={i} title={"Tags"} value={pvData[key]} />
-                                                    }
+                                                if (!(key in dataNamesMapping) && !(omitVariables.has(key)) && !(key === "tags")) {
                                                     return <KeyValuePair key={i} title={pvData[key].label} value={pvData[key].value} />
                                                 }
                                                 return (null)
@@ -207,6 +204,11 @@ function PV(props) {
                                         ) : null
                                     }
                                 </Grid>
+                                {pvData.tags?.length > 0 ? (
+                                    <Grid container sx={{ mt: -0.1, mb: -0.1, borderTop: 1, borderColor: 'grey.300' }}>
+                                        <KeyValuePair key="key" title="Tags" value={pvData.tags} />
+                                    </Grid>
+                                ) : (null)}
                                 <Grid container sx={{ mt: -0.1, mb: -0.1, borderTop: 1, borderColor: 'grey.300' }}>
                                     {
                                         process.env.REACT_APP_USE_PVWS === "true" ?
