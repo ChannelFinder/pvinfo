@@ -55,7 +55,11 @@ function freeformParse(params) {
     let addOn = "";
     for (let key in params) {
         if (key === 'pvName' || key === 'standardSearch') continue;
-        addOn = addOn.concat(`&${key}=${params[key]}`);
+        if (key.includes('tag')) {
+            addOn = addOn.concat(`&~tag=${params[key]}`)
+        } else {
+            addOn = addOn.concat(`&${key}=${params[key]}`);
+        }
     }
     return addOn;
 }
@@ -145,7 +149,7 @@ async function queryLog(logType, pvName, extraParams) {
         .then(responseJson => {
             data = responseJson;
         })
-        .catch((error) => {
+        .catch(() => {
             error = true;
         })
     return new Promise((resolve, reject) => {
@@ -157,21 +161,70 @@ async function queryLog(logType, pvName, extraParams) {
     })
 }
 
+async function getQueryHelpers(helperType) {
+    let error = false;
+    let data = {};
+    let requestURI = ""
+
+    if (helperType === queryHelperEnum.PROPERTIES) {
+        requestURI = `${channelFinderURL}/resources/properties`
+    } else if (helperType === queryHelperEnum.TAGS) {
+        requestURI = `${channelFinderURL}/resources/tags`
+    } else {
+        return new Promise((resolve, reject) => {
+            reject();
+        })
+    }
+
+    await fetch(requestURI)
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error(`Error in ${helperType} fetch!`);
+            }
+        })
+        .then(responseJson => {
+            data = responseJson;
+        })
+        .catch(() => {
+            error = true;
+        })
+    return new Promise((resolve, reject) => {
+        if (error) {
+            reject();
+        } else {
+            let props = new Array(data.length)
+            for (let i = 0; i < data.length; ++i) {
+                props[i] = data[i].name
+            }
+            resolve(props);
+        }
+    })
+}
+
 const logEnum = {
     ONLINE_LOG: "online_log",
     ALARM_LOG: "alarm_log"
+}
+
+const queryHelperEnum = {
+    PROPERTIES: "properties",
+    TAGS: "tags"
 }
 
 const api = {
     CF_QUERY: queryChannelFinder,
     CF_URL: channelFinderURL,
     LOG_QUERY: queryLog,
+    HELPERS_QUERY: getQueryHelpers,
     OLOG_URL: ologURL,
     OLOG_WEB_URL: ologWebURL,
     AA_VIEWER: aaViewerURL,
     PVWS_URL: pvwsURL,
     SERVER_URL: serverURL,
-    LOG_ENUM: logEnum
+    LOG_ENUM: logEnum,
+    QUERY_HELPERS: queryHelperEnum,
 }
 
 export default api;

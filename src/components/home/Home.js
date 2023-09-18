@@ -36,6 +36,8 @@ function Home(props) {
 
     const [extraPropAValue, setExtraPropAValue] = useState(searchParams.get(extraPropAName) || "");
     const [extraPropBValue, setExtraPropBValue] = useState(searchParams.get(extraPropBName) || "");
+    const [searchProperties, setSearchProperties] = useState([]);
+    const [searchTags, setSearchTags] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
 
     const handleSearchType = (e, newSearchType) => {
@@ -98,6 +100,32 @@ function Home(props) {
     };
 
     useEffect(() => {
+        api.HELPERS_QUERY(api.QUERY_HELPERS.PROPERTIES)
+            .then((data) => {
+                setSearchProperties(data);
+            })
+            .catch((err) => {
+                console.log("Error fetching search properties");
+                console.log(err);
+                props.handleErrorMessage("Error in EPICS Channel Finder Properties Query");
+                props.handleSeverity("warning");
+                props.handleOpenErrorAlert(true);
+            })
+
+        api.HELPERS_QUERY(api.QUERY_HELPERS.TAGS)
+            .then((data) => {
+                setSearchTags(data);
+            })
+            .catch((err) => {
+                console.log("Error fetching search tags");
+                console.log(err);
+                props.handleErrorMessage("Error in EPICS Channel Finder Tags Query");
+                props.handleSeverity("warning");
+                props.handleOpenErrorAlert(true);
+            })
+    }, [props])
+
+    useEffect(() => {
         // If there are search parameters in the URL, query channel finder and show the PV data
         let params = {}
         searchParams.forEach((val, key) => { if (val !== "") { params[key] = val } });
@@ -137,6 +165,7 @@ function Home(props) {
             if ("pvStatus" in params) {
                 setPVStatus(params["pvStatus"]);
                 freeformQuery = freeformQuery.concat(` pvStatus=${params["pvStatus"]}`);
+                delete params["pvStatus"]
             } else {
                 setPVStatus("*");
             }
@@ -158,7 +187,11 @@ function Home(props) {
             if (!standardSearch) {
                 for (let key in params) {
                     const value = params[key];
-                    freeformQuery = freeformQuery.concat(` ${key}=${value}`);
+                    if (key.includes('tag')) {
+                        freeformQuery = freeformQuery.concat(` ${value}`);
+                    } else {
+                        freeformQuery = freeformQuery.concat(` ${key}=${value}`);
+                    }
                 }
             }
             setFreeformQuery(freeformQuery);
@@ -212,6 +245,7 @@ function Home(props) {
     const parseFreeformSearch = (e) => {
         const keyValuePairs = e.target.freeSearch.value.split(' ');
         let params = {};
+        let numTags = 1;
 
         for (let pair of keyValuePairs) {
             const [key, value] = pair.split('=');
@@ -219,6 +253,9 @@ function Home(props) {
                 params['pvName'] = key;
             } else if (value !== undefined) {
                 params[key] = value;
+            } else {
+                params[`tag${numTags}`] = key;
+                ++numTags;
             }
         }
         return params;
@@ -327,8 +364,8 @@ function Home(props) {
                             handleClear={handleClear}
                             setIsLoading={setIsLoading}></ParamSearch>
                     ) : (
-                        <FreeSearch freeformQuery={freeformQuery} handleFreeformChange={handleFreeformChange}
-                            handleClear={handleClear} />
+                        <FreeSearch freeformQuery={freeformQuery} setFreeformQuery={setFreeformQuery} handleFreeformChange={handleFreeformChange}
+                            handleClear={handleClear} searchProperties={searchProperties} searchTags={searchTags} />
                     )
                 }
                 <Grid container item xs={12} style={{ display: "flex" }}>
