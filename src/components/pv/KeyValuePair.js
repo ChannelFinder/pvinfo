@@ -18,7 +18,9 @@ function KeyValuePair(props) {
             </Grid>
             <Grid item xs={6} sm={4} sx={style}>
                 <Typography variant="body2" style={{ color: props.textColor }}>
-                    {props.url ? (
+                    {Array.isArray(props.value) ? (
+                        props.value.join(', ')
+                    ) : props.url ? (
                         <Link component={RouterLink} to={props.url} underline="hover">{props.value}</Link>
                     ) : (
                         <Fragment>{props.value}</Fragment>

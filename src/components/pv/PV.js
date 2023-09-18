@@ -106,6 +106,10 @@ function PV(props) {
                 pvObject[prop.name].url = `/?iocName=${prop.value}`
             }
         });
+        pvObject.tags = []
+        cfPVData.tags.forEach((tag) => {
+            pvObject.tags.push(tag.name)
+        });
         setPVData(pvObject);
     }, [cfPVData, dataNamesMapping]);
 
@@ -193,6 +197,9 @@ function PV(props) {
                                         displayAllVars ? (
                                             Object.keys(pvData).map((key, i) => {
                                                 if (!(key in dataNamesMapping) && !(omitVariables.has(key))) {
+                                                    if (key === "tags") {
+                                                        return <KeyValuePair key={i} title={"Tags"} value={pvData[key]} />
+                                                    }
                                                     return <KeyValuePair key={i} title={pvData[key].label} value={pvData[key].value} />
                                                 }
                                                 return (null)
