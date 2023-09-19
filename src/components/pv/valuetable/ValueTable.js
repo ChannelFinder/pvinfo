@@ -55,7 +55,7 @@ function ValueTable(props) {
             if (props.pvData === null || Object.keys(props.pvData).length === 0 || props.isLoading) {
                 return;
             }
-            else if (props.pvData.pvStatus.value === "Inactive") {
+            else if (props.pvData.pvStatus?.value === "Inactive") {
                 handleErrorMessage("Can't show live PV values - PV is in Inactive state!");
                 handleSeverity("error");
                 handleOpenErrorAlert(true);
@@ -65,7 +65,7 @@ function ValueTable(props) {
                 handleSeverity("error");
                 handleOpenErrorAlert(true);
             }
-            else if (props.pvData.pvStatus.value === "Active") {
+            else if (props.pvData.pvStatus?.value === "Active") {
                 if (!subscribed) {
                     sendJsonMessage({ "type": "subscribe", "pvs": [props.pvName] });
                     setSubscribed(true);
