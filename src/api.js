@@ -18,6 +18,29 @@ const alarmLogMaxResults = process.env.REACT_APP_AL_MAX_RESULTS !== '' ?
     `&size=${process.env.REACT_APP_AL_MAX_RESULTS}`
     : "";
 
+function handleParams(params) {
+    let urlParams = { "pvName": "*", "params": "" }
+
+    if ("pvName" in params && params.pvName !== "") {
+        if (params.pvName.charAt(0) === "=") {
+            urlParams.pvName = params.pvName.substring(1);
+        }
+        else if (params.pvName.charAt(0) !== "*" && params.pvName.charAt(params.pvName.length - 1) !== "*") {
+            urlParams.pvName = `*${params.pvName}*`;
+        }
+        else {
+            urlParams.pvName = params.pvName;
+        }
+    }
+    if (params['standardSearch']) {
+        urlParams.params = standardParse(params);
+    } else {
+        urlParams.params = freeformParse(params);
+    }
+
+    return urlParams;
+}
+
 function standardParse(params) {
     let noWildcard = new Set(["pvStatus", "recordType"]);
     if (process.env.REACT_APP_EXTRA_PROP && process.env.REACT_APP_EXTRA_PROP_DROPDOWN_LABELS) {
@@ -65,28 +88,12 @@ function freeformParse(params) {
 }
 
 async function queryChannelFinder(params) {
+
+    let urlParams = handleParams(params);
+
+    let requestURI = `${channelFinderURL}/resources/channels?~name=${urlParams.pvName}${urlParams.params}`;
+
     let data = {};
-    let urlParams = "";
-    let pvName = "*";
-    if ("pvName" in params && params.pvName !== "") {
-        if (params.pvName.charAt(0) === "=") {
-            pvName = params.pvName.substring(1);
-        }
-        else if (params.pvName.charAt(0) !== "*" && params.pvName.charAt(params.pvName.length - 1) !== "*") {
-            pvName = `*${params.pvName}*`;
-        }
-        else {
-            pvName = params.pvName;
-        }
-    }
-    if (params['standardSearch']) {
-        urlParams = standardParse(params);
-    } else {
-        urlParams = freeformParse(params);
-    }
-
-    let requestURI = `${channelFinderURL}/resources/channels?~name=${pvName}${urlParams}`;
-
     let options = {};
     let errorFlag = false;
     let error = "";
@@ -203,6 +210,38 @@ async function getQueryHelpers(helperType) {
     })
 }
 
+async function getCount(params = {}) {
+    let urlParams = handleParams(params)
+
+    let requestURI = `${channelFinderURL}/resources/channels/count?~name=${urlParams.pvName}${urlParams.params}`;
+
+    let data = {};
+    let error = "";
+    let errorFlag = false
+    await fetch(requestURI)
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error("error in fetch!");
+            }
+        })
+        .then(responseJson => {
+            data = responseJson;
+        })
+        .catch((err) => {
+            error = err;
+            errorFlag = true;
+        })
+    return new Promise((resolve, reject) => {
+        if (errorFlag === true) {
+            reject(error);
+        } else {
+            resolve(data);
+        }
+    })
+}
+
 const logEnum = {
     ONLINE_LOG: "online_log",
     ALARM_LOG: "alarm_log"
@@ -215,16 +254,17 @@ const queryHelperEnum = {
 
 const api = {
     CF_QUERY: queryChannelFinder,
-    CF_URL: channelFinderURL,
     LOG_QUERY: queryLog,
     HELPERS_QUERY: getQueryHelpers,
+    COUNT_QUERY: getCount,
+    CF_URL: channelFinderURL,
     OLOG_URL: ologURL,
     OLOG_WEB_URL: ologWebURL,
     AA_VIEWER: aaViewerURL,
     PVWS_URL: pvwsURL,
     SERVER_URL: serverURL,
     LOG_ENUM: logEnum,
-    QUERY_HELPERS: queryHelperEnum,
+    HELPERS_ENUM: queryHelperEnum,
 }
 
 export default api;
