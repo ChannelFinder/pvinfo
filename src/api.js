@@ -236,9 +236,9 @@ async function getOLOGInfo() {
     return await standardQuery(ologURL);
 }
 
-async function getPVWSInfo() {
+async function getPVWSInfo(path) {
     if (pvwsHTTPURL === "") return;
-    const requestURI = pvwsHTTPURL + 'info';
+    const requestURI = pvwsHTTPURL + path;
     return await standardQuery(requestURI);
 }
 

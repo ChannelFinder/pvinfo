@@ -12,7 +12,9 @@ function Services() {
     const [alConnected, setALConnected] = useState(false);
     const [oliData, setOLIData] = useState({});
     const [ologConnected, setOLOGConnected] = useState(false);
-    const [pvwsiData, setPVWSIData] = useState({});
+    const [pvwsInfo, setPVWSInfo] = useState({});
+    const [pvwsSummary, setPVWSSummary] = useState(false);
+    const [pvsMonitored, setPVsMonitored] = useState(0);
     const [pvwsConnected, setPVWSConnected] = useState(false);
 
     const { sendJsonMessage, lastJsonMessage } = useWebSocket(api.PVWS_URL, {
@@ -39,7 +41,7 @@ function Services() {
 
     const queryCount = useCallback((parameters) => {
         fetchData(api.COUNT_QUERY, setPVCount, null, "Count Endpoint", parameters)
-    }, [setPVCount])
+    }, [setPVCount]);
 
     const queryCF = useCallback(() => {
         fetchData(api.CFI_QUERY, setCFIData, setCFConnected, "CF Info");
@@ -53,18 +55,23 @@ function Services() {
         fetchData(api.OLI_QUERY, setOLIData, setOLOGConnected, "OLOG Info");
     }, [setOLIData, setOLOGConnected]);
 
-    const queryPVWS = useCallback(() => {
-        fetchData(api.PVWSI_QUERY, setPVWSIData, null, "PVWS Info");
-    }, [setPVWSIData, setPVWSConnected]);
+    const queryPVWSInfo = useCallback(() => {
+        fetchData(api.PVWSI_QUERY, setPVWSInfo, null, "PVWS Info", "info");
+    }, [setPVWSInfo]);
+
+    const queryPVWSSummary = useCallback(() => {
+        fetchData(api.PVWSI_QUERY, setPVWSSummary, null, "PVWS Summary", "summary");
+    }, [setPVWSSummary]);
 
     useEffect(() => {
         queryCount({});
         queryCF();
         queryAL();
         queryOLOG();
-        queryPVWS();
+        queryPVWSInfo();
+        queryPVWSSummary()
         sendJsonMessage({ "type": "echo", "body": "Hello, PVWS!" })
-    }, [queryCount, queryCF, queryAL, queryOLOG, queryPVWS, sendJsonMessage])
+    }, [queryCount, queryCF, queryAL, queryOLOG, queryPVWSInfo, queryPVWSSummary, sendJsonMessage])
 
     useEffect(() => {
         if (lastJsonMessage !== null) {
@@ -77,6 +84,17 @@ function Services() {
             setPVWSConnected(false);
         }
     }, [lastJsonMessage])
+
+    useEffect(() => {
+        const sockets = pvwsSummary?.sockets;
+        let count = 0;
+        if (sockets?.length > 0) {
+            for (let i = 0; i < sockets.length; ++i) {
+                count = count + sockets[i].pvs
+            }
+            setPVsMonitored(count);
+        }
+    }, [pvwsSummary])
 
     return (
         <Fragment>
@@ -104,10 +122,12 @@ function Services() {
                                 "Elastic Version": oliData?.elastic?.version
                             }}
                         />
-                        <Service servName="PV Web Socket" connected={pvwsConnected}
+                        <Service servName="PV Web Socket" connected={pvwsConnected} sockets={pvwsSummary?.sockets}
                             data={{
-                                "Start Time": pvwsiData?.start_time,
-                                "JRE": pvwsiData?.jre
+                                "Start Time": pvwsInfo?.start_time,
+                                "JRE": pvwsInfo?.jre,
+                                "Total Clients": pvwsSummary?.sockets?.length,
+                                "Currently Monitored PVs": pvsMonitored
                             }}
                         />
                     </Grid>
