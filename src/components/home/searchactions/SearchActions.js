@@ -17,6 +17,7 @@ function SearchActions(props) {
                     sx={{ display: "flex", flexGrow: 1, minWidth: '50%' }}
                     aria-label="search"
                     variant="contained"
+                    disableElevation={true}
                     color="info"
                     type="submit"
                 >
@@ -27,6 +28,7 @@ function SearchActions(props) {
                 <Button aria-label="clear"
                     sx={{ display: "flex", flexGrow: 1, minWidth: '50%' }}
                     variant="contained"
+                    disableElevation={true}
                     color="secondary"
                     onClick={props.handleClear}
                 >

@@ -126,9 +126,6 @@ function Home(props) {
             .catch((err) => {
                 console.log("Error fetching search properties");
                 console.log(err);
-                props.handleErrorMessage("Error in EPICS Channel Finder Properties Query");
-                props.handleSeverity("warning");
-                props.handleOpenErrorAlert(true);
             })
 
         api.HELPERS_QUERY(api.HELPERS_ENUM.TAGS)
@@ -138,9 +135,6 @@ function Home(props) {
             .catch((err) => {
                 console.log("Error fetching search tags");
                 console.log(err);
-                props.handleErrorMessage("Error in EPICS Channel Finder Tags Query");
-                props.handleSeverity("warning");
-                props.handleOpenErrorAlert(true);
             })
     }, [props])
 
@@ -348,7 +342,7 @@ function Home(props) {
                             </ToggleButton>
                         </ToggleButtonGroup>
                     </Tooltip>
-                    <Typography sx={{ ml: 4, fontWeight: 'medium', color: 'grey.600' }}>PV Count: {pvCount}</Typography>
+                    <Typography sx={{ ml: 4, fontWeight: 'medium', color: 'grey.600' }}>Results: {pvCount ? pvCount : "null"}</Typography>
                 </Box>
                 {
                     standardSearch ? (

@@ -3,6 +3,7 @@ const ologURL = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_O
 const ologWebURL = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_OLOG_WEB_CLIENT_URL_DEV : process.env.REACT_APP_OLOG_WEB_CLIENT_URL;
 const aaViewerURL = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_AA_URL_DEV : process.env.REACT_APP_AA_URL;
 const pvwsURL = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_PVWS_URL_DEV : process.env.REACT_APP_PVWS_URL;
+const pvwsHTTPURL = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_PVWS_HTTP_URL_DEV : process.env.REACT_APP_PVWS_HTTP_URL;
 const serverURL = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_BASE_URL_DEV : process.env.REACT_APP_BASE_URL;
 const alarmLogURL = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_AL_URL_DEV : process.env.REACT_APP_AL_URL;
 const ologStartDays = process.env.REACT_APP_OLOG_START_TIME_DAYS !== '' ?
@@ -93,10 +94,10 @@ async function queryChannelFinder(params) {
 
     let requestURI = `${channelFinderURL}/resources/channels?~name=${urlParams.pvName}${urlParams.params}`;
 
-    let data = {};
+    // let data = {};
     let options = {};
-    let errorFlag = false;
-    let error = "";
+    // let errorFlag = false;
+    // let error = "";
     options = { method: 'GET' }
     if (process.env.REACT_APP_SEND_CREDENTIALS === "true") {
         if (process.env.NODE_ENV !== 'development') {
@@ -105,33 +106,35 @@ async function queryChannelFinder(params) {
         }
     }
 
-    await fetch(requestURI, options)
-        .then(response => {
-            if (response.ok) {
-                return response.json();
-            } else {
-                throw new Error("error in fetch!");
-            }
-        })
-        .then(responseJson => {
-            data = responseJson;
-        })
-        .catch((err) => {
-            error = err;
-            errorFlag = true;
-        })
-    return new Promise((resolve, reject) => {
-        if (errorFlag === true) {
-            reject(error);
-        } else {
-            resolve(data);
-        }
-    })
+    return await standardQuery(requestURI, options);
+
+    // await fetch(requestURI, options)
+    //     .then(response => {
+    //         if (response.ok) {
+    //             return response.json();
+    //         } else {
+    //             throw new Error("error in fetch!");
+    //         }
+    //     })
+    //     .then(responseJson => {
+    //         data = responseJson;
+    //     })
+    //     .catch((err) => {
+    //         error = err;
+    //         errorFlag = true;
+    //     })
+    // return new Promise((resolve, reject) => {
+    //     if (errorFlag === true) {
+    //         reject(error);
+    //     } else {
+    //         resolve(data);
+    //     }
+    // })
 }
 
 async function queryLog(logType, pvName, extraParams) {
-    let error = false;
-    let data = {};
+    // let error = false;
+    // let data = {};
     if (pvName === null) {
         return;
     }
@@ -145,27 +148,29 @@ async function queryLog(logType, pvName, extraParams) {
             reject();
         })
     }
-    await fetch(requestURI)
-        .then(response => {
-            if (response.ok) {
-                return response.json();
-            } else {
-                throw new Error("error in fetch!");
-            }
-        })
-        .then(responseJson => {
-            data = responseJson;
-        })
-        .catch(() => {
-            error = true;
-        })
-    return new Promise((resolve, reject) => {
-        if (error) {
-            reject();
-        } else {
-            resolve(data);
-        }
-    })
+
+    return await standardQuery(requestURI);
+    // await fetch(requestURI)
+    //     .then(response => {
+    //         if (response.ok) {
+    //             return response.json();
+    //         } else {
+    //             throw new Error("error in fetch!");
+    //         }
+    //     })
+    //     .then(responseJson => {
+    //         data = responseJson;
+    //     })
+    //     .catch(() => {
+    //         error = true;
+    //     })
+    // return new Promise((resolve, reject) => {
+    //     if (error) {
+    //         reject();
+    //     } else {
+    //         resolve(data);
+    //     }
+    // })
 }
 
 async function getQueryHelpers(helperType) {
@@ -215,10 +220,33 @@ async function getCount(params = {}) {
 
     let requestURI = `${channelFinderURL}/resources/channels/count?~name=${urlParams.pvName}${urlParams.params}`;
 
+    return await standardQuery(requestURI);
+}
+
+async function getCFInfo() {
+    return await standardQuery(channelFinderURL);
+}
+
+async function getALInfo() {
+    const requestURI = alarmLogURL + "/"
+    return await standardQuery(requestURI);
+}
+
+async function getOLOGInfo() {
+    return await standardQuery(ologURL);
+}
+
+async function getPVWSInfo() {
+    if (pvwsHTTPURL === "") return;
+    const requestURI = pvwsHTTPURL + 'info';
+    return await standardQuery(requestURI);
+}
+
+async function standardQuery(requestURI, options = null) {
     let data = {};
     let error = "";
     let errorFlag = false
-    await fetch(requestURI)
+    await fetch(requestURI, options)
         .then(response => {
             if (response.ok) {
                 return response.json();
@@ -257,6 +285,10 @@ const api = {
     LOG_QUERY: queryLog,
     HELPERS_QUERY: getQueryHelpers,
     COUNT_QUERY: getCount,
+    CFI_QUERY: getCFInfo,
+    ALI_QUERY: getALInfo,
+    OLI_QUERY: getOLOGInfo,
+    PVWSI_QUERY: getPVWSInfo,
     CF_URL: channelFinderURL,
     OLOG_URL: ologURL,
     OLOG_WEB_URL: ologWebURL,
