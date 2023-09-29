@@ -89,15 +89,10 @@ function freeformParse(params) {
 }
 
 async function queryChannelFinder(params) {
-
     let urlParams = handleParams(params);
-
     let requestURI = `${channelFinderURL}/resources/channels?~name=${urlParams.pvName}${urlParams.params}`;
-
-    // let data = {};
     let options = {};
-    // let errorFlag = false;
-    // let error = "";
+
     options = { method: 'GET' }
     if (process.env.REACT_APP_SEND_CREDENTIALS === "true") {
         if (process.env.NODE_ENV !== 'development') {
@@ -105,39 +100,14 @@ async function queryChannelFinder(params) {
             options['credentials'] = 'include';
         }
     }
-
     return await standardQuery(requestURI, options);
-
-    // await fetch(requestURI, options)
-    //     .then(response => {
-    //         if (response.ok) {
-    //             return response.json();
-    //         } else {
-    //             throw new Error("error in fetch!");
-    //         }
-    //     })
-    //     .then(responseJson => {
-    //         data = responseJson;
-    //     })
-    //     .catch((err) => {
-    //         error = err;
-    //         errorFlag = true;
-    //     })
-    // return new Promise((resolve, reject) => {
-    //     if (errorFlag === true) {
-    //         reject(error);
-    //     } else {
-    //         resolve(data);
-    //     }
-    // })
 }
 
 async function queryLog(logType, pvName, extraParams) {
-    // let error = false;
-    // let data = {};
     if (pvName === null) {
         return;
     }
+
     let requestURI = ""
     if (logType === logEnum.ONLINE_LOG) {
         requestURI = encodeURI(`${ologURL}/logs/search?text=${pvName}${ologStartDays}${ologMaxResults}`);
@@ -148,34 +118,10 @@ async function queryLog(logType, pvName, extraParams) {
             reject();
         })
     }
-
     return await standardQuery(requestURI);
-    // await fetch(requestURI)
-    //     .then(response => {
-    //         if (response.ok) {
-    //             return response.json();
-    //         } else {
-    //             throw new Error("error in fetch!");
-    //         }
-    //     })
-    //     .then(responseJson => {
-    //         data = responseJson;
-    //     })
-    //     .catch(() => {
-    //         error = true;
-    //     })
-    // return new Promise((resolve, reject) => {
-    //     if (error) {
-    //         reject();
-    //     } else {
-    //         resolve(data);
-    //     }
-    // })
 }
 
 async function getQueryHelpers(helperType) {
-    let error = false;
-    let data = {};
     let requestURI = ""
 
     if (helperType === queryHelperEnum.PROPERTIES) {
@@ -188,36 +134,19 @@ async function getQueryHelpers(helperType) {
         })
     }
 
-    await fetch(requestURI)
-        .then(response => {
-            if (response.ok) {
-                return response.json();
-            } else {
-                throw new Error(`Error in ${helperType} fetch!`);
-            }
-        })
-        .then(responseJson => {
-            data = responseJson;
-        })
-        .catch(() => {
-            error = true;
-        })
-    return new Promise((resolve, reject) => {
-        if (error) {
-            reject();
-        } else {
-            let props = new Array(data.length)
-            for (let i = 0; i < data.length; ++i) {
-                props[i] = data[i].name
-            }
-            resolve(props);
+    function handleData(data) {
+        let props = new Array(data.length)
+        for (let i = 0; i < data.length; ++i) {
+            props[i] = data[i].name
         }
-    })
+        return props;
+    }
+
+    return await standardQuery(requestURI, null, handleData)
 }
 
 async function getCount(params = {}) {
     let urlParams = handleParams(params)
-
     let requestURI = `${channelFinderURL}/resources/channels/count?~name=${urlParams.pvName}${urlParams.params}`;
 
     return await standardQuery(requestURI);
@@ -242,10 +171,11 @@ async function getPVWSInfo(path) {
     return await standardQuery(requestURI);
 }
 
-async function standardQuery(requestURI, options = null) {
+async function standardQuery(requestURI, options = null, handleData = null) {
     let data = {};
     let error = "";
     let errorFlag = false
+
     await fetch(requestURI, options)
         .then(response => {
             if (response.ok) {
@@ -265,7 +195,12 @@ async function standardQuery(requestURI, options = null) {
         if (errorFlag === true) {
             reject(error);
         } else {
-            resolve(data);
+            if (handleData) {
+                resolve(handleData(data));
+            }
+            else {
+                resolve(data);
+            }
         }
     })
 }
