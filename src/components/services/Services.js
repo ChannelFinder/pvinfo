@@ -99,7 +99,10 @@ function Services() {
     return (
         <Fragment>
             <Box sx={{ display: "flex", flexDirection: "column" }}>
-                <Typography variant="h4" sx={{ mb: 4, fontWeight: "medium" }}>Services</Typography>
+                <Box sx={{ mb: 3, display: "flex", flexDirection: { xs: "column", sm: "row" }, alignItems: { xs: "start", sm: "end" }, justifyContent: "space-between" }}>
+                    <Typography variant="h4" sx={{ fontWeight: "medium" }}>Services</Typography>
+                    <Typography variant="body1" sx={{}}>Version: {process.env.REACT_APP_VERSION}</Typography>
+                </Box>
                 <Box sx={{ border: 1, borderColor: "#D1D5DB", borderRadius: 1, pt: 2, pb: 3, px: 1.5 }}>
                     <Grid container spacing={3} sx={{ display: "flex", flexDirection: "column" }}>
                         <Service servName="Channel Finder" connected={cfConnected}
