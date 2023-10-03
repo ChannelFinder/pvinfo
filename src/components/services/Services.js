@@ -1,5 +1,6 @@
 import React, { Fragment, useCallback, useEffect, useState } from "react";
 import useWebSocket from "react-use-websocket";
+import GitInfo from 'react-git-info/macro';
 import Service from "./service";
 import api from "../../api";
 import { Box, Grid, Typography } from "@mui/material";
@@ -16,6 +17,12 @@ function Services() {
     const [pvwsSummary, setPVWSSummary] = useState(false);
     const [pvsMonitored, setPVsMonitored] = useState(0);
     const [pvwsConnected, setPVWSConnected] = useState(false);
+
+    const useAL = process.env.REACT_APP_USE_AL;
+    const useOLOG = process.env.REACT_APP_USE_OLOG;
+    const usePVWS = process.env.REACT_APP_USE_PVWS;
+
+    const gitInfo = GitInfo();
 
     const { sendJsonMessage, lastJsonMessage } = useWebSocket(api.PVWS_URL, {
         shouldReconnect: (closeEvent) => true
@@ -101,9 +108,12 @@ function Services() {
             <Box sx={{ display: "flex", flexDirection: "column" }}>
                 <Box sx={{ mb: 3, display: "flex", flexDirection: { xs: "column", sm: "row" }, alignItems: { xs: "start", sm: "end" }, justifyContent: "space-between" }}>
                     <Typography variant="h4" sx={{ fontWeight: "medium" }}>Services</Typography>
-                    <Typography variant="body1" sx={{}}>Version: {process.env.REACT_APP_VERSION}</Typography>
+                    <Box>
+                        <Typography variant="body1"><Box component="span" sx={{ fontWeight: "medium" }}>PV Info Version:</Box> {gitInfo.commit.shortHash}</Typography>
+                        <Typography variant="body1"><Box component="span" sx={{ fontWeight: "medium" }}>Commit Date:</Box> {new Date(gitInfo.commit.date).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</Typography>
+                    </Box>
                 </Box>
-                <Box sx={{ border: 1, borderColor: "#D1D5DB", borderRadius: 1, pt: 2, pb: 3, px: 1.5 }}>
+                <Box sx={{ overflow: "auto", border: 1, borderColor: "#D1D5DB", borderRadius: 1, pt: 2, pb: 3, px: 1.5 }}>
                     <Grid container spacing={3} sx={{ display: "flex", flexDirection: "column" }}>
                         <Service servName="Channel Finder" connected={cfConnected}
                             data={{
@@ -113,26 +123,38 @@ function Services() {
                                 "Total PVs": pvCount
                             }}
                         />
-                        <Service servName="Alarm Logger" connected={alConnected}
-                            data={{
-                                "Elastic Status": aliData?.elastic?.status,
-                                "Elastic Version": aliData?.elastic?.version
-                            }}
-                        />
-                        <Service servName="Online Log" connected={ologConnected}
-                            data={{
-                                "Elastic Status": oliData?.elastic?.status,
-                                "Elastic Version": oliData?.elastic?.version
-                            }}
-                        />
-                        <Service servName="PV Web Socket" connected={pvwsConnected} sockets={pvwsSummary?.sockets}
-                            data={{
-                                "Start Time": pvwsInfo?.start_time,
-                                "JRE": pvwsInfo?.jre,
-                                "Total Clients": pvwsSummary?.sockets?.length,
-                                "Currently Monitored PVs": pvsMonitored
-                            }}
-                        />
+                        {
+                            useAL === "true" ? (
+                                <Service servName="Alarm Logger" connected={alConnected}
+                                    data={{
+                                        "Elastic Status": aliData?.elastic?.status,
+                                        "Elastic Version": aliData?.elastic?.version
+                                    }}
+                                />
+                            ) : null
+                        }
+                        {
+                            useOLOG === "true" ? (
+                                <Service servName="Online Log" connected={ologConnected}
+                                    data={{
+                                        "Elastic Status": oliData?.elastic?.status,
+                                        "Elastic Version": oliData?.elastic?.version
+                                    }}
+                                />
+                            ) : null
+                        }
+                        {
+                            usePVWS === "true" ? (
+                                <Service servName="PV Web Socket" connected={pvwsConnected} sockets={pvwsSummary?.sockets}
+                                    data={{
+                                        "Start Time": pvwsInfo?.start_time,
+                                        "JRE": pvwsInfo?.jre,
+                                        "Total Clients": pvwsSummary?.sockets?.length,
+                                        "Currently Monitored PVs": pvsMonitored
+                                    }}
+                                />
+                            ) : null
+                        }
                     </Grid>
                 </Box>
             </Box>

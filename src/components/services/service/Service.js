@@ -20,8 +20,8 @@ function Service(props) {
                 props.connected ? (
                     Object.keys(props.data).map((key, i) => (
                         <Box key={i} sx={{ display: "flex", flexDirection: "row", ml: 0.5, alignItems: "center" }}>
-                            <Typography variant="subtitle2" sx={{ mr: 2 }}>{key}:</Typography>
-                            <Typography variant="body2">{props.data[key]}</Typography>
+                            <Typography noWrap variant="subtitle2" sx={{ mr: 2 }}>{key}:</Typography>
+                            <Typography noWrap variant="body2">{props.data[key]}</Typography>
                         </Box>
                     ))
                 ) : null

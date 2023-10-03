@@ -15,6 +15,7 @@
     "he": "^1.2.0",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
+    "react-git-info": "^2.0.1",
     "react-router": "^6.3.0",
     "react-router-dom": "^6.3.0",
     "react-use-websocket": "^4.0.0",
@@ -29,8 +30,8 @@
     "optionator": "^0.9.3"
   },
   "scripts": {
-    "start": "REACT_APP_VERSION=$(git describe --tags --abbrev=0) react-scripts start",
-    "build": "REACT_APP_VERSION=$(git describe --tags --abbrev=0) react-scripts build",
+    "start": "react-scripts start",
+    "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

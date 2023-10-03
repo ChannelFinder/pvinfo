@@ -342,7 +342,11 @@ function Home(props) {
                             </ToggleButton>
                         </ToggleButtonGroup>
                     </Tooltip>
-                    <Typography sx={{ ml: 4, fontWeight: 'medium', color: 'grey.600' }}>Results: {pvCount ? pvCount : "null"}</Typography>
+                    {
+                        pvCount !== null ? (
+                            <Typography sx={{ ml: 4 }}><Box component="span" sx={{ fontWeight: "medium" }}>Results:</Box> {pvCount}</Typography>
+                        ) : null
+                    }
                 </Box>
                 {
                     standardSearch ? (
