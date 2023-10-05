@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState } from 'react';
-import { Grid, ToggleButton, ToggleButtonGroup, Typography, Tooltip } from '@mui/material';
+import { Box, Grid, ToggleButton, ToggleButtonGroup, Typography, Tooltip } from '@mui/material';
 import QueryResults from "./queryresults";
 import api from "../../api";
 import { useSearchParams } from "react-router-dom";
@@ -22,6 +22,7 @@ function Home(props) {
     const [standardSearch, setStandardSearch] = useState(true);
     const [searchParams, setSearchParams] = useSearchParams();
     const [cfData, setCFData] = useState(null);
+    const [pvCount, setPVCount] = useState(null);
     const [pvName, setPVName] = useState(searchParams.get("pvName") || "");
     const [hostName, setHostName] = useState(searchParams.get("hostName") || "");
     const [iocName, setIOCName] = useState(searchParams.get("iocName") || "");
@@ -79,7 +80,7 @@ function Home(props) {
         api.CF_QUERY(parameters)
             .then((data) => {
                 if (data === null) {
-                    console.log("Null data from channel finder");
+                    console.log("Null PV data from Channel Finder");
                     setCFData(null);
                     setIsLoading(false);
                 }
@@ -99,29 +100,41 @@ function Home(props) {
             })
     };
 
+    const queryCount = (parameters) => {
+        api.COUNT_QUERY(parameters)
+            .then((data) => {
+                if (data === null) {
+                    console.log("Null count data from Channel Finder");
+                    setPVCount(null)
+                }
+                else {
+                    setPVCount(data);
+                }
+            })
+            .catch((err) => {
+                console.log("Error in PV count fetch");
+                console.log(err);
+                setPVCount(null)
+            })
+    }
+
     useEffect(() => {
-        api.HELPERS_QUERY(api.QUERY_HELPERS.PROPERTIES)
+        api.HELPERS_QUERY(api.HELPERS_ENUM.PROPERTIES)
             .then((data) => {
                 setSearchProperties(data);
             })
             .catch((err) => {
                 console.log("Error fetching search properties");
                 console.log(err);
-                props.handleErrorMessage("Error in EPICS Channel Finder Properties Query");
-                props.handleSeverity("warning");
-                props.handleOpenErrorAlert(true);
             })
 
-        api.HELPERS_QUERY(api.QUERY_HELPERS.TAGS)
+        api.HELPERS_QUERY(api.HELPERS_ENUM.TAGS)
             .then((data) => {
                 setSearchTags(data);
             })
             .catch((err) => {
                 console.log("Error fetching search tags");
                 console.log(err);
-                props.handleErrorMessage("Error in EPICS Channel Finder Tags Query");
-                props.handleSeverity("warning");
-                props.handleOpenErrorAlert(true);
             })
     }, [props])
 
@@ -200,6 +213,7 @@ function Home(props) {
             resetParams["standardSearch"] = standardSearch;
             setIsLoading(true);
             queryPVs(resetParams);
+            queryCount(resetParams);
         }
         else {
             setPVName("");
@@ -214,6 +228,7 @@ function Home(props) {
             // https://stackoverflow.com/a/59845474
             setRecordTypeAutocompleteKey(recordTypeAutocompleteKey - 1);
             setCFData(null);
+            setPVCount(null);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [searchParams, extraPropAName, extraPropBName]);
@@ -271,28 +286,8 @@ function Home(props) {
             params = parseFreeformSearch(e);
         }
         params['standardSearch'] = standardSearch;
-        api.CF_QUERY(params)
-            .then((data) => {
-                if (data === null) {
-                    console.log("Null data from channel finder");
-                    setCFData(null);
-                    setIsLoading(false);
-                }
-                else {
-                    setCFData(data);
-                    setIsLoading(false);
-                }
-            })
-            .catch((err) => {
-                console.log("Error in fetch of channel finder data");
-                console.log(err);
-                props.handleErrorMessage("Error in EPICS Channel Finder query");
-                props.handleSeverity("error");
-                props.handleOpenErrorAlert(true);
-                setIsLoading(false);
-                setCFData(null);
-
-            })
+        queryCount(params);
+        queryPVs(params);
         setSearchParams(params);
     }
 
@@ -331,22 +326,29 @@ function Home(props) {
                         {process.env.REACT_APP_HOMEPAGE_SUBHEADER}
                     </Typography>
                 </Grid>
-                <Tooltip arrow title="Search Type - Standard / Free Form">
-                    <ToggleButtonGroup
-                        value={standardSearch}
-                        exclusive
-                        onChange={handleSearchType}
-                        aria-label="search type"
-                        style={{ marginBottom: 15 }}
-                    >
-                        <ToggleButton value={true} aria-label="param search">
-                            <ManageSearchRoundedIcon />
-                        </ToggleButton>
-                        <ToggleButton value={false} aria-label="free search">
-                            <PageviewRoundedIcon />
-                        </ToggleButton>
-                    </ToggleButtonGroup>
-                </Tooltip>
+                <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                    <Tooltip arrow title="Search Type - Standard / Free Form">
+                        <ToggleButtonGroup
+                            value={standardSearch}
+                            exclusive
+                            onChange={handleSearchType}
+                            aria-label="search type"
+                            style={{ marginBottom: 15 }}
+                        >
+                            <ToggleButton value={true} aria-label="param search">
+                                <ManageSearchRoundedIcon />
+                            </ToggleButton>
+                            <ToggleButton value={false} aria-label="free search">
+                                <PageviewRoundedIcon />
+                            </ToggleButton>
+                        </ToggleButtonGroup>
+                    </Tooltip>
+                    {
+                        pvCount !== null ? (
+                            <Typography sx={{ ml: 2, marginBottom: 2 }}><Box component="span" sx={{ fontWeight: "medium" }}>Results:</Box> {pvCount}</Typography>
+                        ) : null
+                    }
+                </Box>
                 {
                     standardSearch ? (
                         <ParamSearch

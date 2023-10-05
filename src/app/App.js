@@ -9,6 +9,7 @@ import IOC from '../components/ioc';
 import Plot from '../components/plot';
 import Header from '../components/header';
 import Help from '../components/help';
+import Services from '../components/services';
 import Page404 from '../Page404';
 
 function App() {
@@ -35,6 +36,7 @@ function App() {
             <Route path="/pv/:id" exact={true} element={<PV handleOpenErrorAlert={setOpenErrorAlert} handleErrorMessage={setErrorMessage} handleSeverity={setSeverity} />} />
             <Route path="/ioc" exact={true} element={<IOC />} />
             <Route path="/plot" exact={true} element={<Plot />} />
+            <Route path="/services" exact={true} element={<Services />} />
             <Route path="/help" exact={true} element={<Help />} />
             <Route path="/" exact={true} element={<Home handleOpenErrorAlert={setOpenErrorAlert} handleErrorMessage={setErrorMessage} handleSeverity={setSeverity} />} />
           </Routes>
