@@ -68,17 +68,17 @@ function Header() {
                     </ListItemIcon>
                     <ListItemText primary="Plotting" />
                   </ListItemButton>
+                  <ListItemButton key="Services" component={NavLink} to="/services" onClick={handleMenuToggle} divider color="primary">
+                    <ListItemIcon>
+                      <InfoIcon color="primary" />
+                    </ListItemIcon>
+                    <ListItemText primary="Services" />
+                  </ListItemButton>
                   <ListItemButton key="Help" component={NavLink} to="/help" onClick={handleMenuToggle} divider color="primary">
                     <ListItemIcon>
                       <HelpIcon color="primary" />
                     </ListItemIcon>
                     <ListItemText primary="Help" />
-                  </ListItemButton>
-                  <ListItemButton key="About" component={NavLink} to="/about" onClick={handleMenuToggle} divider color="primary">
-                    <ListItemIcon>
-                      <InfoIcon color="primary" />
-                    </ListItemIcon>
-                    <ListItemText primary="About" />
                   </ListItemButton>
                 </List>
               </div>
@@ -98,11 +98,11 @@ function Header() {
                 <Typography variant="h5">Plotting</Typography>
               </NavLink>
             }
-            <NavLink to="/help" style={{ textDecoration: "none", color: 'inherit', paddingRight: 40 }}>
-              <Typography variant="h5">Help</Typography>
-            </NavLink>
             <NavLink to="/services" style={{ textDecoration: "none", color: 'inherit', paddingRight: 40 }}>
               <Typography variant="h5">Services</Typography>
+            </NavLink>
+            <NavLink to="/help" style={{ textDecoration: "none", color: 'inherit', paddingRight: 40 }}>
+              <Typography variant="h5">Help</Typography>
             </NavLink>
           </Hidden>
         </Toolbar>

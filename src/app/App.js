@@ -36,8 +36,8 @@ function App() {
             <Route path="/pv/:id" exact={true} element={<PV handleOpenErrorAlert={setOpenErrorAlert} handleErrorMessage={setErrorMessage} handleSeverity={setSeverity} />} />
             <Route path="/ioc" exact={true} element={<IOC />} />
             <Route path="/plot" exact={true} element={<Plot />} />
-            <Route path="/help" exact={true} element={<Help />} />
             <Route path="/services" exact={true} element={<Services />} />
+            <Route path="/help" exact={true} element={<Help />} />
             <Route path="/" exact={true} element={<Home handleOpenErrorAlert={setOpenErrorAlert} handleErrorMessage={setErrorMessage} handleSeverity={setSeverity} />} />
           </Routes>
         </main>

@@ -228,6 +228,7 @@ function Home(props) {
             // https://stackoverflow.com/a/59845474
             setRecordTypeAutocompleteKey(recordTypeAutocompleteKey - 1);
             setCFData(null);
+            setPVCount(null);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [searchParams, extraPropAName, extraPropBName]);
@@ -344,7 +345,7 @@ function Home(props) {
                     </Tooltip>
                     {
                         pvCount !== null ? (
-                            <Typography sx={{ ml: 4 }}><Box component="span" sx={{ fontWeight: "medium" }}>Results:</Box> {pvCount}</Typography>
+                            <Typography sx={{ ml: 2, marginBottom: 2 }}><Box component="span" sx={{ fontWeight: "medium" }}>Results:</Box> {pvCount}</Typography>
                         ) : null
                     }
                 </Box>
