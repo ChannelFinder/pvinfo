@@ -169,6 +169,9 @@ async function getOLOGInfo() {
 
 async function getPVWSInfo(path) {
     if (pvwsHTTPURL === "") return;
+    if (pvwsHTTPURL.slice(-1) !== "/") {
+        path = "/" + path;
+    }
     const requestURI = pvwsHTTPURL + path;
     return await standardQuery(requestURI);
 }
@@ -176,7 +179,15 @@ async function getPVWSInfo(path) {
 async function standardQuery(requestURI, options = null, handleData = null) {
     let data = {};
     let error = "";
-    let errorFlag = false
+    let errorFlag = false;
+
+    if (process.env.REACT_APP_SEND_CREDENTIALS === "true") {
+        if (process.env.NODE_ENV !== 'development') {
+            if(options === null) options = {};
+            // credentials header would help if CF, AA, etc are behind a SSO
+            options['credentials'] = 'include';
+        }
+    }
 
     await fetch(requestURI, options)
         .then(response => {
