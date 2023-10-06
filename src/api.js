@@ -167,7 +167,7 @@ async function getOLOGInfo() {
 
 async function getPVWSInfo(path) {
     if (pvwsHTTPURL === "") return;
-    if (pvwsHTTPURL.substring(-1) !== "/") {
+    if (pvwsHTTPURL.slice(-1) !== "/") {
         path = "/" + path;
     }
     const requestURI = pvwsHTTPURL + path;
