@@ -1,4 +1,5 @@
 const channelFinderURL = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_CF_URL_DEV : process.env.REACT_APP_CF_URL;
+const cfMaxResults = parseInt(process.env.REACT_APP_CF_MAX_RESULTS);
 const ologURL = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_OLOG_URL_DEV : process.env.REACT_APP_OLOG_URL;
 const ologWebURL = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_OLOG_WEB_CLIENT_URL_DEV : process.env.REACT_APP_OLOG_WEB_CLIENT_URL;
 const aaViewerURL = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_AA_URL_DEV : process.env.REACT_APP_AA_URL;
@@ -90,7 +91,8 @@ function freeformParse(params) {
 
 async function queryChannelFinder(params) {
     let urlParams = handleParams(params);
-    let requestURI = `${channelFinderURL}/resources/channels?~name=${urlParams.pvName}${urlParams.params}`;
+    let maxResults = cfMaxResults ? `&~size=${cfMaxResults}` : "";
+    let requestURI = `${channelFinderURL}/resources/channels?~name=${urlParams.pvName}${urlParams.params}${maxResults}`;
     let options = {};
 
     options = { method: 'GET' }
