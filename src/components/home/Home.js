@@ -41,33 +41,50 @@ function Home(props) {
     const [searchTags, setSearchTags] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
 
+    const cfProps = {
+        "pvName": setPVName,
+        "recordDesc": setRecordDesc,
+        "recordType": setRecordType,
+        "iocName": setIOCName,
+        "hostName": setHostName,
+        "pvStatus": setPVStatus,
+        "alias": setAliasOf,
+        extraPropAName, setExtraPropAValue,
+        extraPropBName, setExtraPropBValue
+    }
+
     const handleSearchType = (e, newSearchType) => {
         if (newSearchType !== null) {
             setStandardSearch(newSearchType);
         }
     };
-    const handlePVNameChange = (e) => {
-        setPVName(e.target.value);
-    };
-    const handleHostNameChange = (e) => {
-        setHostName(e.target.value);
-    };
-    const handleIOCNameChange = (e) => {
-        setIOCName(e.target.value);
-    };
-    const handlePVStatusChange = (e) => {
-        setPVStatus(e.target.value);
-    };
-    const handleAliasOfChange = (e) => {
-        setAliasOf(e.target.value);
-    };
+    const handleInputChange = (e) => {
+        console.log(e);
+        cfProps[e.target.name](e.target.value);
+    }
+    // const handlePVNameChange = (e) => {
+    //     setPVName(e.target.value);
+    // };
+    // const handleHostNameChange = (e) => {
+    //     setHostName(e.target.value);
+    // };
+    // const handleIOCNameChange = (e) => {
+    //     setIOCName(e.target.value);
+    // };
+    // const handlePVStatusChange = (e) => {
+    //     setPVStatus(e.target.value);
+    // };
+    // const handleAliasOfChange = (e) => {
+    //     setAliasOf(e.target.value);
+    // };
     const handleRecordTypeChange = (e) => {
         setRecordType(e.target.value);
     };
-    const handleRecordDescChange = (e) => {
-        setRecordDesc(e.target.value);
-    };
+    // const handleRecordDescChange = (e) => {
+    //     setRecordDesc(e.target.value);
+    // };
     const handleExtraPropAChange = (e) => {
+        console.log(e)
         setExtraPropAValue(e.target.value);
     };
     const handleExtraPropBChange = (e) => {
@@ -75,47 +92,29 @@ function Home(props) {
     };
     const handleFreeformChange = (e) => {
         setFreeformQuery(e.target.value);
-    }
-    const queryPVs = (parameters) => {
-        api.CF_QUERY(parameters)
-            .then((data) => {
-                if (data === null) {
-                    console.log("Null PV data from Channel Finder");
-                    setCFData(null);
-                    setIsLoading(false);
-                }
-                else {
-                    setCFData(data);
-                    setIsLoading(false);
-                }
-            })
-            .catch((err) => {
-                console.log("Error in fetch of channel finder data");
-                console.log(err);
-                props.handleErrorMessage("Error in EPICS Channel Finder query");
-                props.handleSeverity("error");
-                props.handleOpenErrorAlert(true);
-                setIsLoading(false);
-                setCFData(null);
-            })
     };
 
-    const queryCount = (parameters) => {
-        api.COUNT_QUERY(parameters)
+    const fetchData = (apiCall, parameters, setData, dataName, displayError = false, setLoading = false) => {
+        apiCall(parameters)
             .then((data) => {
                 if (data === null) {
-                    console.log("Null count data from Channel Finder");
-                    setPVCount(null)
+                    console.log(`Null ${dataName} data from Channel Finder`);
                 }
-                else {
-                    setPVCount(data);
-                }
+                setData(data);
+                if (setLoading) setIsLoading(false);
             })
             .catch((err) => {
-                console.log("Error in PV count fetch");
+                console.log(`Error in ${dataName} fetch from Channel Finder`);
                 console.log(err);
-                setPVCount(null)
+                if (displayError) {
+                    props.handleErrorMessage("Error in EPICS Channel Finder Query");
+                    props.handleSeverity("error");
+                    props.handleOpenErrorAlert(true);
+                }
+                setData(null);
+                if (setLoading) setIsLoading(false);
             })
+
     }
 
     useEffect(() => {
@@ -155,56 +154,24 @@ function Home(props) {
                 freeformQuery = params["pvName"];
                 delete params["pvName"];
             }
-            if ("recordDesc" in params) {
-                setRecordDesc(params["recordDesc"]);
-                freeformQuery = freeformQuery.concat(` recordDesc=${params["recordDesc"]}`);
-                delete params["recordDesc"];
+            // Populate the stock & extra prop CF property values
+            for (const prop in cfProps) {
+                if (prop in params) {
+                    if (prop === "pvName") continue;
+                    cfProps[prop](params[prop]);
+                    freeformQuery = freeformQuery.concat(` ${prop}=${params[prop]}`);
+                    delete params[prop];
+                } else if (prop === "pvStatus") {
+                    cfProps[prop]("*");
+                }
             }
-            if ("recordType" in params) {
-                setRecordType(params["recordType"]);
-                freeformQuery = freeformQuery.concat(` recordType=${params["recordType"]}`)
-                delete params["recordType"];
-            }
-            if ("iocName" in params) {
-                setIOCName(params["iocName"]);
-                freeformQuery = freeformQuery.concat(` iocName=${params["iocName"]}`);
-                delete params["iocName"];
-            }
-            if ("hostName" in params) {
-                setHostName(params["hostName"]);
-                freeformQuery = freeformQuery.concat(` hostName=${params["hostName"]}`);
-                delete params["hostName"];
-            }
-            if ("pvStatus" in params) {
-                setPVStatus(params["pvStatus"]);
-                freeformQuery = freeformQuery.concat(` pvStatus=${params["pvStatus"]}`);
-                delete params["pvStatus"]
-            } else {
-                setPVStatus("*");
-            }
-            if ("alias" in params) {
-                setAliasOf(params["alias"]);
-                freeformQuery = freeformQuery.concat(` alias=${params["alias"]}`);
-                delete params["alias"];
-            }
-            if (extraPropAName in params) {
-                setExtraPropAValue(params[extraPropAName]);
-                freeformQuery = freeformQuery.concat(` ${extraPropAName}=${params[extraPropAName]}`);
-                delete params[extraPropAName];
-            }
-            if (extraPropBName in params) {
-                setExtraPropBValue(params[extraPropBName]);
-                freeformQuery = freeformQuery.concat(` ${extraPropBName}=${params[extraPropBName]}`);
-                delete params[extraPropBName];
-            }
-            if (!standardSearch) {
-                for (let key in params) {
-                    const value = params[key];
-                    if (key.includes('tag')) {
-                        freeformQuery = freeformQuery.concat(` ${value}`);
-                    } else {
-                        freeformQuery = freeformQuery.concat(` ${key}=${value}`);
-                    }
+            // Fill out the freeform query with any extra search props
+            for (let key in params) {
+                const value = params[key];
+                if (key.includes('tag')) {
+                    freeformQuery = freeformQuery.concat(` ${value}`);
+                } else {
+                    freeformQuery = freeformQuery.concat(` ${key}=${value}`);
                 }
             }
             setFreeformQuery(freeformQuery);
@@ -212,8 +179,10 @@ function Home(props) {
             searchParams.forEach((val, key) => { if (val !== "") { resetParams[key] = val } });
             resetParams["standardSearch"] = standardSearch;
             setIsLoading(true);
-            queryPVs(resetParams);
-            queryCount(resetParams);
+            // queryPVs(resetParams);
+            // queryCount(resetParams);
+            fetchData(api.CF_QUERY, resetParams, setCFData, "PV", true, true);
+            fetchData(api.COUNT_QUERY, resetParams, setPVCount, "count");
         }
         else {
             setPVName("");
@@ -249,6 +218,7 @@ function Home(props) {
             if (e.target.recordDesc.value) { params[e.target.recordDesc.name] = e.target.recordDesc.value; }
         }
         if (extraPropAName !== null) {
+            console.log(extraPropAName);
             if (e.target.extraPropA.value) { params[process.env.REACT_APP_EXTRA_PROP] = e.target.extraPropA.value; }
         }
         if (extraPropBName !== null) {
@@ -286,8 +256,10 @@ function Home(props) {
             params = parseFreeformSearch(e);
         }
         params['standardSearch'] = standardSearch;
-        queryCount(params);
-        queryPVs(params);
+        // queryPVs(params);
+        // queryCount(params);
+        fetchData(api.CF_QUERY, params, setCFData, "PV", true, true);
+        fetchData(api.COUNT_QUERY, params, setPVCount, "count");
         setSearchParams(params);
     }
 
@@ -352,14 +324,14 @@ function Home(props) {
                 {
                     standardSearch ? (
                         <ParamSearch
-                            pvName={pvName} handlePVNameChange={handlePVNameChange}
-                            hostName={hostName} handleHostNameChange={handleHostNameChange}
-                            iocName={iocName} handleIOCNameChange={handleIOCNameChange}
-                            pvStatus={pvStatus} handlePVStatusChange={handlePVStatusChange}
-                            aliasOf={aliasOf} handleAliasOfChange={handleAliasOfChange}
+                            pvName={pvName} handleInputChange={handleInputChange}
+                            hostName={hostName}
+                            iocName={iocName}
+                            pvStatus={pvStatus}
+                            aliasOf={aliasOf}
                             recordType={recordType} handleRecordTypeChange={handleRecordTypeChange}
                             recordTypeAutocompleteKey={recordTypeAutocompleteKey}
-                            recordDesc={recordDesc} handleRecordDescChange={handleRecordDescChange}
+                            recordDesc={recordDesc}
                             extraPropAName={extraPropAName} extraPropBName={extraPropBName}
                             extraPropAValue={extraPropAValue} handleExtraPropAChange={handleExtraPropAChange}
                             extraPropBValue={extraPropBValue} handleExtraPropBChange={handleExtraPropBChange}

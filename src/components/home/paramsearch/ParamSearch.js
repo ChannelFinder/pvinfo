@@ -6,7 +6,7 @@ import PropTypes from "prop-types";
 
 const propTypes = {
     pvName: PropTypes.string,
-    handlePVNameChange: PropTypes.func,
+    handleInputChange: PropTypes.func,
     hostName: PropTypes.string,
     handleHostNameChange: PropTypes.func,
     iocName: PropTypes.string,
@@ -64,7 +64,7 @@ function ParamSearch(props) {
                         placeholder="Description"
                         type="search"
                         variant="outlined"
-                        onChange={props.handleRecordDescChange}
+                        onChange={props.handleInputChange}
                     />
                 </Tooltip>
             )
@@ -91,7 +91,7 @@ function ParamSearch(props) {
                                 placeholder="Record Type"
                                 type="search"
                                 variant="outlined"
-                                onChange={props.handleRecordTypeChange}
+                                onChange={props.handleInputChange}
                             />
                         }
                     />
@@ -114,7 +114,7 @@ function ParamSearch(props) {
                         placeholder="Alias Of"
                         type="search"
                         variant="outlined"
-                        onChange={props.handleAliasOfChange}
+                        onChange={props.handleInputChange}
                     />
                 </Tooltip>
             )
@@ -138,7 +138,7 @@ function ParamSearch(props) {
                                     id="extraPropA"
                                     {...params}
                                     label={process.env.REACT_APP_EXTRA_PROP_LABEL}
-                                    name="extraPropA"
+                                    name="extraPropBName"
                                     placeholder={process.env.REACT_APP_EXTRA_PROP_LABEL}
                                     type="search"
                                     variant="outlined"
@@ -158,12 +158,12 @@ function ParamSearch(props) {
                             id="extraPropA"
                             label={process.env.REACT_APP_EXTRA_PROP_LABEL}
                             autoComplete="off"
-                            name="extraPropA"
+                            name={props.extraPropAName}
                             value={props.extraPropAValue}
                             placeholder={process.env.REACT_APP_EXTRA_PROP_LABEL}
                             type="search"
                             variant="outlined"
-                            onChange={props.handleExtraPropAChange}
+                            onChange={props.handleInputChange}
                         />
                     </Tooltip>
                 )
@@ -188,11 +188,11 @@ function ParamSearch(props) {
                                     id="extraPropB"
                                     {...params}
                                     label={process.env.REACT_APP_SECOND_EXTRA_PROP_LABEL}
-                                    name="extraPropB"
+                                    name={props.extraPropBName}
                                     placeholder={process.env.REACT_APP_SECOND_EXTRA_PROP_LABEL}
                                     type="search"
                                     variant="outlined"
-                                    onChange={props.handleExtraPropBChange}
+                                    onChange={props.handleInputChange}
                                 />
                             }
                         />
@@ -208,12 +208,12 @@ function ParamSearch(props) {
                             id="extraPropB"
                             label={process.env.REACT_APP_SECOND_EXTRA_PROP_LABEL}
                             autoComplete="off"
-                            name="extraPropB"
+                            name={props.extraPropBName}
                             value={props.extraPropBValue}
                             placeholder={process.env.REACT_APP_SECOND_EXTRA_PROP_LABEL}
                             type="search"
                             variant="outlined"
-                            onChange={props.handleExtraPropBChange}
+                            onChange={props.handleInputChange}
                         />
                     </Tooltip>
                 )
@@ -236,7 +236,7 @@ function ParamSearch(props) {
                         placeholder="PV Name"
                         type="search"
                         variant="outlined"
-                        onChange={props.handlePVNameChange}
+                        onChange={props.handleInputChange}
                     />
                 </Tooltip>
                 {recordDescSearchRender()}
@@ -251,7 +251,7 @@ function ParamSearch(props) {
                         placeholder="Host Name"
                         type="search"
                         variant="outlined"
-                        onChange={props.handleHostNameChange}
+                        onChange={props.handleInputChange}
                     />
                 </Tooltip>
                 <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
@@ -265,7 +265,7 @@ function ParamSearch(props) {
                         placeholder="IOC Name"
                         type="search"
                         variant="outlined"
-                        onChange={props.handleIOCNameChange}
+                        onChange={props.handleInputChange}
                     />
                 </Tooltip>
                 {/* <Box sx={{ display: "flex", flexGrow: 1, minWidth: 100 }}> */}
@@ -275,7 +275,7 @@ function ParamSearch(props) {
                     name="pvStatus"
                     select
                     value={props.pvStatus}
-                    onChange={props.handlePVStatusChange}
+                    onChange={props.handleInputChange}
                     label="Status"
                     variant="outlined"
                 >
