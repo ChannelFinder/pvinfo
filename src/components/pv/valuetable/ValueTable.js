@@ -156,11 +156,7 @@ function ValueTable(props) {
                     if (message.severity === "NONE") {
                         setAlarmColor(colors.SEV_COLORS["OK"]);
                     } else if (message.severity !== "") {
-                        if (message.severity in colors.SEV_COLORS) {
-                            setAlarmColor(colors.SEV_COLORS[message.severity]);
-                        } else {
-                            setAlarmColor("#000")
-                        }
+                        message.severity in colors.SEV_COLORS ? setAlarmColor(colors.SEV_COLORS[message.severity]) : setAlarmColor("#000");
                     }
                     if (!props.snapshot) {
                         setPVSeverity(message.severity);

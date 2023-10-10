@@ -75,10 +75,8 @@ function Value(props) {
         if (pvSeverity !== undefined) {
             if (pvSeverity === "NONE") {
                 textColor = colors.SEV_COLORS["OK"];
-            } else if (pvSeverity in colors.SEV_COLORS) {
-                textColor = colors.SEV_COLORS[pvSeverity];
             } else {
-                textColor = "#000"
+                textColor = pvSeverity in colors.SEV_COLORS ? colors.SEV_COLORS[pvSeverity] : "#000";
             }
         }
 
