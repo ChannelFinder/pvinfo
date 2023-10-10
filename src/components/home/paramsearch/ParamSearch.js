@@ -6,26 +6,18 @@ import PropTypes from "prop-types";
 
 const propTypes = {
     pvName: PropTypes.string,
-    handlePVNameChange: PropTypes.func,
     hostName: PropTypes.string,
-    handleHostNameChange: PropTypes.func,
     iocName: PropTypes.string,
-    handleIOCNameChange: PropTypes.func,
     pvStatus: PropTypes.string,
-    handlePVStatusChange: PropTypes.func,
     aliasOf: PropTypes.string,
-    handleAliasOfChange: PropTypes.func,
     recordType: PropTypes.string,
-    handleRecordTypeChange: PropTypes.func,
     recordTypeAutocompleteKey: PropTypes.number,
     recordDesc: PropTypes.string,
-    handleRecordDescChange: PropTypes.func,
     extraPropAName: PropTypes.string,
     extraPropBName: PropTypes.string,
     extraPropAValue: PropTypes.string,
-    handleExtraPropAChange: PropTypes.func,
     extraPropBValue: PropTypes.string,
-    handleExtraPropBChange: PropTypes.func,
+    handleInputChange: PropTypes.func,
     handleClear: PropTypes.func,
     setIsLoading: PropTypes.func
 }
@@ -64,7 +56,7 @@ function ParamSearch(props) {
                         placeholder="Description"
                         type="search"
                         variant="outlined"
-                        onChange={props.handleRecordDescChange}
+                        onChange={props.handleInputChange}
                     />
                 </Tooltip>
             )
@@ -91,7 +83,7 @@ function ParamSearch(props) {
                                 placeholder="Record Type"
                                 type="search"
                                 variant="outlined"
-                                onChange={props.handleRecordTypeChange}
+                                onChange={props.handleInputChange}
                             />
                         }
                     />
@@ -114,7 +106,7 @@ function ParamSearch(props) {
                         placeholder="Alias Of"
                         type="search"
                         variant="outlined"
-                        onChange={props.handleAliasOfChange}
+                        onChange={props.handleInputChange}
                     />
                 </Tooltip>
             )
@@ -135,14 +127,14 @@ function ParamSearch(props) {
                             value={props.extraPropAValue}
                             renderInput={(params) =>
                                 <TextField
-                                    id="extraPropA"
+                                    id={props.extraPropAName}
                                     {...params}
                                     label={process.env.REACT_APP_EXTRA_PROP_LABEL}
-                                    name="extraPropA"
+                                    name={props.extraPropAName}
                                     placeholder={process.env.REACT_APP_EXTRA_PROP_LABEL}
                                     type="search"
                                     variant="outlined"
-                                    onChange={props.handleExtraPropAChange}
+                                    onChange={props.handleInputChange}
                                 />
                             }
                         />
@@ -155,15 +147,15 @@ function ParamSearch(props) {
                     <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
                         <TextField
                             sx={{ display: "flex", flexGrow: 1, minWidth: { xs: '50%', md: '25%', lg: '8%' } }}
-                            id="extraPropA"
+                            id={props.extraPropAName}
                             label={process.env.REACT_APP_EXTRA_PROP_LABEL}
                             autoComplete="off"
-                            name="extraPropA"
+                            name={props.extraPropAName}
                             value={props.extraPropAValue}
                             placeholder={process.env.REACT_APP_EXTRA_PROP_LABEL}
                             type="search"
                             variant="outlined"
-                            onChange={props.handleExtraPropAChange}
+                            onChange={props.handleInputChange}
                         />
                     </Tooltip>
                 )
@@ -185,14 +177,14 @@ function ParamSearch(props) {
                             value={props.extraPropBValue}
                             renderInput={(params) =>
                                 <TextField
-                                    id="extraPropB"
+                                    id={props.extraPropBName}
                                     {...params}
                                     label={process.env.REACT_APP_SECOND_EXTRA_PROP_LABEL}
-                                    name="extraPropB"
+                                    name={props.extraPropBName}
                                     placeholder={process.env.REACT_APP_SECOND_EXTRA_PROP_LABEL}
                                     type="search"
                                     variant="outlined"
-                                    onChange={props.handleExtraPropBChange}
+                                    onChange={props.handleInputChange}
                                 />
                             }
                         />
@@ -205,15 +197,15 @@ function ParamSearch(props) {
                     <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
                         <TextField
                             sx={{ display: "flex", flexGrow: 1, minWidth: { xs: '50%', md: '25%', lg: '8%' } }}
-                            id="extraPropB"
+                            id={props.extraPropBName}
                             label={process.env.REACT_APP_SECOND_EXTRA_PROP_LABEL}
                             autoComplete="off"
-                            name="extraPropB"
+                            name={props.extraPropBName}
                             value={props.extraPropBValue}
                             placeholder={process.env.REACT_APP_SECOND_EXTRA_PROP_LABEL}
                             type="search"
                             variant="outlined"
-                            onChange={props.handleExtraPropBChange}
+                            onChange={props.handleInputChange}
                         />
                     </Tooltip>
                 )
@@ -236,7 +228,7 @@ function ParamSearch(props) {
                         placeholder="PV Name"
                         type="search"
                         variant="outlined"
-                        onChange={props.handlePVNameChange}
+                        onChange={props.handleInputChange}
                     />
                 </Tooltip>
                 {recordDescSearchRender()}
@@ -251,7 +243,7 @@ function ParamSearch(props) {
                         placeholder="Host Name"
                         type="search"
                         variant="outlined"
-                        onChange={props.handleHostNameChange}
+                        onChange={props.handleInputChange}
                     />
                 </Tooltip>
                 <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
@@ -265,7 +257,7 @@ function ParamSearch(props) {
                         placeholder="IOC Name"
                         type="search"
                         variant="outlined"
-                        onChange={props.handleIOCNameChange}
+                        onChange={props.handleInputChange}
                     />
                 </Tooltip>
                 {/* <Box sx={{ display: "flex", flexGrow: 1, minWidth: 100 }}> */}
@@ -275,7 +267,7 @@ function ParamSearch(props) {
                     name="pvStatus"
                     select
                     value={props.pvStatus}
-                    onChange={props.handlePVStatusChange}
+                    onChange={props.handleInputChange}
                     label="Status"
                     variant="outlined"
                 >
