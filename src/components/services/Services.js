@@ -106,10 +106,11 @@ function Services() {
     return (
         <Fragment>
             <Box sx={{ display: "flex", flexDirection: "column" }}>
-                <Box sx={{ mb: 3, display: "flex", flexDirection: { xs: "column", sm: "row" }, alignItems: { xs: "start", sm: "end" }, justifyContent: "space-between" }}>
-                    <Typography variant="h4" sx={{ fontWeight: "medium" }}>Services</Typography>
+                <Box sx={{ mb: 2, display: "flex", flexDirection: { xs: "column", sm: "row" }, alignItems: { xs: "start", sm: "start" }, justifyContent: "space-between" }}>
+                    <Typography variant="h4" sx={{ fontWeight: "medium", mb: { xs: 1, sm: 0 } }}>Services</Typography>
                     <Box>
-                        <Typography variant="body1"><Box component="span" sx={{ fontWeight: "medium" }}>PV Info Version:</Box> {gitInfo.commit.shortHash}</Typography>
+                        <Typography variant="body1"><Box component="span" sx={{ fontWeight: "medium" }}>PV Info Version:</Box> {process.env.REACT_APP_VERSION}</Typography>
+                        <Typography variant="body1"><Box component="span" sx={{ fontWeight: "medium" }}>Commit Hash:</Box> {gitInfo.commit.shortHash}</Typography>
                         <Typography variant="body1"><Box component="span" sx={{ fontWeight: "medium" }}>Commit Date:</Box> {new Date(gitInfo.commit.date).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</Typography>
                     </Box>
                 </Box>
