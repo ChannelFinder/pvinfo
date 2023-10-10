@@ -49,8 +49,8 @@ function Home(props) {
         "hostName": setHostName,
         "pvStatus": setPVStatus,
         "alias": setAliasOf,
-        extraPropAName, setExtraPropAValue,
-        extraPropBName, setExtraPropBValue
+        [extraPropAName]: setExtraPropAValue,
+        [extraPropBName]: setExtraPropBValue,
     }
 
     const handleSearchType = (e, newSearchType) => {
@@ -59,37 +59,8 @@ function Home(props) {
         }
     };
     const handleInputChange = (e) => {
-        console.log(e);
         cfProps[e.target.name](e.target.value);
     }
-    // const handlePVNameChange = (e) => {
-    //     setPVName(e.target.value);
-    // };
-    // const handleHostNameChange = (e) => {
-    //     setHostName(e.target.value);
-    // };
-    // const handleIOCNameChange = (e) => {
-    //     setIOCName(e.target.value);
-    // };
-    // const handlePVStatusChange = (e) => {
-    //     setPVStatus(e.target.value);
-    // };
-    // const handleAliasOfChange = (e) => {
-    //     setAliasOf(e.target.value);
-    // };
-    const handleRecordTypeChange = (e) => {
-        setRecordType(e.target.value);
-    };
-    // const handleRecordDescChange = (e) => {
-    //     setRecordDesc(e.target.value);
-    // };
-    const handleExtraPropAChange = (e) => {
-        console.log(e)
-        setExtraPropAValue(e.target.value);
-    };
-    const handleExtraPropBChange = (e) => {
-        setExtraPropBValue(e.target.value);
-    };
     const handleFreeformChange = (e) => {
         setFreeformQuery(e.target.value);
     };
@@ -179,8 +150,6 @@ function Home(props) {
             searchParams.forEach((val, key) => { if (val !== "") { resetParams[key] = val } });
             resetParams["standardSearch"] = standardSearch;
             setIsLoading(true);
-            // queryPVs(resetParams);
-            // queryCount(resetParams);
             fetchData(api.CF_QUERY, resetParams, setCFData, "PV", true, true);
             fetchData(api.COUNT_QUERY, resetParams, setPVCount, "count");
         }
@@ -218,11 +187,10 @@ function Home(props) {
             if (e.target.recordDesc.value) { params[e.target.recordDesc.name] = e.target.recordDesc.value; }
         }
         if (extraPropAName !== null) {
-            console.log(extraPropAName);
-            if (e.target.extraPropA.value) { params[process.env.REACT_APP_EXTRA_PROP] = e.target.extraPropA.value; }
+            if (e.target[extraPropAName].value) { params[process.env.REACT_APP_EXTRA_PROP] = e.target[extraPropAName].value; }
         }
         if (extraPropBName !== null) {
-            if (e.target.extraPropB.value) { params[process.env.REACT_APP_SECOND_EXTRA_PROP] = e.target.extraPropB.value; }
+            if (e.target[extraPropBName].value) { params[process.env.REACT_APP_SECOND_EXTRA_PROP] = e.target[extraPropBName].value; }
         }
         return params;
     }
@@ -256,8 +224,6 @@ function Home(props) {
             params = parseFreeformSearch(e);
         }
         params['standardSearch'] = standardSearch;
-        // queryPVs(params);
-        // queryCount(params);
         fetchData(api.CF_QUERY, params, setCFData, "PV", true, true);
         fetchData(api.COUNT_QUERY, params, setPVCount, "count");
         setSearchParams(params);
@@ -324,19 +290,17 @@ function Home(props) {
                 {
                     standardSearch ? (
                         <ParamSearch
-                            pvName={pvName} handleInputChange={handleInputChange}
-                            hostName={hostName}
-                            iocName={iocName}
-                            pvStatus={pvStatus}
-                            aliasOf={aliasOf}
-                            recordType={recordType} handleRecordTypeChange={handleRecordTypeChange}
+                            pvName={pvName}
+                            hostName={hostName} iocName={iocName}
+                            pvStatus={pvStatus} aliasOf={aliasOf}
+                            recordType={recordType} recordDesc={recordDesc}
                             recordTypeAutocompleteKey={recordTypeAutocompleteKey}
-                            recordDesc={recordDesc}
                             extraPropAName={extraPropAName} extraPropBName={extraPropBName}
-                            extraPropAValue={extraPropAValue} handleExtraPropAChange={handleExtraPropAChange}
-                            extraPropBValue={extraPropBValue} handleExtraPropBChange={handleExtraPropBChange}
+                            extraPropAValue={extraPropAValue} extraPropBValue={extraPropBValue}
+                            handleInputChange={handleInputChange}
                             handleClear={handleClear}
-                            setIsLoading={setIsLoading}></ParamSearch>
+                            setIsLoading={setIsLoading}
+                        ></ParamSearch>
                     ) : (
                         <FreeSearch freeformQuery={freeformQuery} setFreeformQuery={setFreeformQuery} handleFreeformChange={handleFreeformChange}
                             handleClear={handleClear} searchProperties={searchProperties} searchTags={searchTags} />

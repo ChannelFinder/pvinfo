@@ -155,18 +155,12 @@ function ValueTable(props) {
                 if ("severity" in message && props.pvMonitoring) {
                     if (message.severity === "NONE") {
                         setAlarmColor(colors.SEV_COLORS["OK"]);
-                    }
-                    else if (message.severity === "INVALID") {
-                        setAlarmColor(colors.SEV_COLORS["INVALID"]);
-                    }
-                    else if (message.severity === "UNDEFINED") {
-                        setAlarmColor(colors.SEV_COLORS["UNDEFINED"]);
-                    }
-                    else if (message.severity === "MAJOR") {
-                        setAlarmColor(colors.SEV_COLORS["MAJOR"]);
-                    }
-                    else if (message.severity === "MINOR") {
-                        setAlarmColor(colors.SEV_COLORS["MINOR"]);
+                    } else if (message.severity !== "") {
+                        if (message.severity in colors.SEV_COLORS) {
+                            setAlarmColor(colors.SEV_COLORS[message.severity]);
+                        } else {
+                            setAlarmColor("#000")
+                        }
                     }
                     if (!props.snapshot) {
                         setPVSeverity(message.severity);

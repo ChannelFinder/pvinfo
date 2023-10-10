@@ -73,39 +73,29 @@ function Value(props) {
     else {
         let textColor = "black";
         if (pvSeverity !== undefined) {
-            if (pvSeverity === "INVALID") {
-                return (
-                    <div style={{ color: colors.SEV_COLORS["INVALID"] }}>{pvValue} ({pvSeverity})</div>
-                );
-            }
-            else if (pvSeverity === "UNDEFINED") {
-                return (
-                    <div style={{ color: colors.SEV_COLORS["UNDEFINED"] }}>{pvSeverity}</div>
-                );
-            }
-            else if (pvSeverity === "NONE") {
+            if (pvSeverity === "NONE") {
                 textColor = colors.SEV_COLORS["OK"];
-            }
-            else if (pvSeverity === "MINOR") {
-                textColor = colors.SEV_COLORS["MINOR"];
-            }
-            else if (pvSeverity === "MAJOR") {
-                textColor = colors.SEV_COLORS["MAJOR"];
+            } else if (pvSeverity in colors.SEV_COLORS) {
+                textColor = colors.SEV_COLORS[pvSeverity];
+            } else {
+                textColor = "#000"
             }
         }
+
+        const severityName = pvSeverity === "UNDEFINED" || pvSeverity === "INVALID" ? ` (${pvSeverity})` : null
         if (pvUnit !== undefined) {
             return (
-                <div style={{ color: textColor }}>{`${pvValue} ${pvUnit}`}</div>
+                <div style={{ color: textColor }}>{`${pvValue} ${pvUnit}`}{severityName}</div>
             );
         }
         else if (pvValue !== undefined) {
             return (
-                <div style={{ color: textColor }}>{pvValue}</div>
+                <div style={{ color: textColor }}>{pvValue}{severityName}</div>
             );
         }
         else {
             return (
-                <div></div>
+                null
             );
         }
     }

@@ -6,26 +6,18 @@ import PropTypes from "prop-types";
 
 const propTypes = {
     pvName: PropTypes.string,
-    handleInputChange: PropTypes.func,
     hostName: PropTypes.string,
-    handleHostNameChange: PropTypes.func,
     iocName: PropTypes.string,
-    handleIOCNameChange: PropTypes.func,
     pvStatus: PropTypes.string,
-    handlePVStatusChange: PropTypes.func,
     aliasOf: PropTypes.string,
-    handleAliasOfChange: PropTypes.func,
     recordType: PropTypes.string,
-    handleRecordTypeChange: PropTypes.func,
     recordTypeAutocompleteKey: PropTypes.number,
     recordDesc: PropTypes.string,
-    handleRecordDescChange: PropTypes.func,
     extraPropAName: PropTypes.string,
     extraPropBName: PropTypes.string,
     extraPropAValue: PropTypes.string,
-    handleExtraPropAChange: PropTypes.func,
     extraPropBValue: PropTypes.string,
-    handleExtraPropBChange: PropTypes.func,
+    handleInputChange: PropTypes.func,
     handleClear: PropTypes.func,
     setIsLoading: PropTypes.func
 }
@@ -135,14 +127,14 @@ function ParamSearch(props) {
                             value={props.extraPropAValue}
                             renderInput={(params) =>
                                 <TextField
-                                    id="extraPropA"
+                                    id={props.extraPropAName}
                                     {...params}
                                     label={process.env.REACT_APP_EXTRA_PROP_LABEL}
-                                    name="extraPropBName"
+                                    name={props.extraPropAName}
                                     placeholder={process.env.REACT_APP_EXTRA_PROP_LABEL}
                                     type="search"
                                     variant="outlined"
-                                    onChange={props.handleExtraPropAChange}
+                                    onChange={props.handleInputChange}
                                 />
                             }
                         />
@@ -155,7 +147,7 @@ function ParamSearch(props) {
                     <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
                         <TextField
                             sx={{ display: "flex", flexGrow: 1, minWidth: { xs: '50%', md: '25%', lg: '8%' } }}
-                            id="extraPropA"
+                            id={props.extraPropAName}
                             label={process.env.REACT_APP_EXTRA_PROP_LABEL}
                             autoComplete="off"
                             name={props.extraPropAName}
@@ -185,7 +177,7 @@ function ParamSearch(props) {
                             value={props.extraPropBValue}
                             renderInput={(params) =>
                                 <TextField
-                                    id="extraPropB"
+                                    id={props.extraPropBName}
                                     {...params}
                                     label={process.env.REACT_APP_SECOND_EXTRA_PROP_LABEL}
                                     name={props.extraPropBName}
@@ -205,7 +197,7 @@ function ParamSearch(props) {
                     <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
                         <TextField
                             sx={{ display: "flex", flexGrow: 1, minWidth: { xs: '50%', md: '25%', lg: '8%' } }}
-                            id="extraPropB"
+                            id={props.extraPropBName}
                             label={process.env.REACT_APP_SECOND_EXTRA_PROP_LABEL}
                             autoComplete="off"
                             name={props.extraPropBName}
