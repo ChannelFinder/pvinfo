@@ -86,7 +86,7 @@ function PV(props) {
 
     // transform PV data from CF into JS object. This should be moved to api.js!
     useEffect(() => {
-        if (cfPVData === null || cfPVData === {} || Object.keys(cfPVData).length === 0) {
+        if (cfPVData === null || Object.keys(cfPVData).length === 0) {
             return;
         }
         let pvObject = {};
@@ -155,7 +155,7 @@ function PV(props) {
             </Accordion>
         );
     }
-    else if (cfPVData === {} || Object.keys(cfPVData).length === 0) {
+    else if (Object.keys(cfPVData).length === 0) {
         return (
             <Accordion expanded={false}>
                 <AccordionSummary>
@@ -174,7 +174,9 @@ function PV(props) {
                     }
                 </Box>
                 {
-                    process.env.REACT_APP_USE_PVWS === "true" ? <FormControlLabel control={<Checkbox color="primary" checked={pvMonitoring} onChange={handlePVMonitoringChange}></Checkbox>} label="Enable Live PV Monitoring" /> : <div></div>
+                    process.env.REACT_APP_USE_PVWS === "true" ?
+                        <FormControlLabel control={<Checkbox color="primary" checked={pvMonitoring} onChange={handlePVMonitoringChange}></Checkbox>} disabled={pvData?.pvStatus?.value === "Inactive" || pvData?.recordType?.value === "waveform"} label="Enable Live PV Monitoring" />
+                        : null
                 }
                 <Box sx={{ border: 1, borderColor: '#D1D5DB', borderRadius: 1, boxShadow: 2, mb: 2, overflow: "hidden" }}>
                     <Accordion expanded={detailsExpanded} onChange={handleDetailExpandedChange()}>
