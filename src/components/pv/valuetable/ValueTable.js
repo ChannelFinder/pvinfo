@@ -146,7 +146,9 @@ function ValueTable(props) {
                         timestamp = new Date(message.seconds * 1000).toLocaleString();
                     }
                     if (!props.snapshot) {
-                        setPVTimestamp(timestamp);
+                        if (message.seconds !== 631152000) {
+                            setPVTimestamp(timestamp)
+                        }
                     }
                 }
                 else {
