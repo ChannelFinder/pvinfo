@@ -146,8 +146,10 @@ function ValueTable(props) {
                         timestamp = new Date(message.seconds * 1000).toLocaleString();
                     }
                     if (!props.snapshot) {
-                        if (message.seconds !== 631152000) {
-                            setPVTimestamp(timestamp)
+                        if (pvSeverity === "INVALID" || message.severity === "INVALID") {
+                            setPVTimestamp(timestamp);
+                        } else if (message.seconds !== 631152000) {
+                            setPVTimestamp(timestamp);
                         }
                     }
                 }
@@ -193,7 +195,7 @@ function ValueTable(props) {
                 console.log("Unexpected message type: ", message);
             }
         }
-    }, [lastJsonMessage, props.pvMonitoring, props.snapshot, snapshot, pvPrecision]);
+    }, [lastJsonMessage, props.pvMonitoring, props.snapshot, snapshot, pvPrecision, pvSeverity]);
 
     if (props.isLoading) {
         return (
