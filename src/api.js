@@ -94,8 +94,6 @@ async function queryChannelFinder(params) {
     let maxResults = cfMaxResults ? `&~size=${cfMaxResults}` : "";
     let requestURI = `${channelFinderURL}/resources/channels?~name=${urlParams.pvName}${urlParams.params}${maxResults}`;
     let options = {};
-    console.log("RequestURI", requestURI)
-    console.log("++++++++++++++++++++++")
     options = { method: 'GET' }
     if (import.meta.env.REACT_APP_SEND_CREDENTIALS === "true") {
         if (import.meta.env.NODE_ENV !== 'development') {
