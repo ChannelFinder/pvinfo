@@ -25,7 +25,7 @@ function App() {
   };
 
   return (
-    <Router basename={process.env.PUBLIC_URL}>
+    <Router basename={import.meta.env.PUBLIC_URL}>
       <Grid container>
         <Header />
       </Grid>

@@ -1,23 +1,23 @@
-const channelFinderURL = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_CF_URL_DEV : process.env.REACT_APP_CF_URL;
-const cfMaxResults = parseInt(process.env.REACT_APP_CF_MAX_RESULTS);
-const ologURL = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_OLOG_URL_DEV : process.env.REACT_APP_OLOG_URL;
-const ologWebURL = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_OLOG_WEB_CLIENT_URL_DEV : process.env.REACT_APP_OLOG_WEB_CLIENT_URL;
-const aaViewerURL = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_AA_URL_DEV : process.env.REACT_APP_AA_URL;
-const pvwsURL = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_PVWS_URL_DEV : process.env.REACT_APP_PVWS_URL;
-const pvwsHTTPURL = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_PVWS_HTTP_URL_DEV : process.env.REACT_APP_PVWS_HTTP_URL;
-const serverURL = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_BASE_URL_DEV : process.env.REACT_APP_BASE_URL;
-const alarmLogURL = process.env.NODE_ENV === 'development' ? process.env.REACT_APP_AL_URL_DEV : process.env.REACT_APP_AL_URL;
-const ologStartDays = process.env.REACT_APP_OLOG_START_TIME_DAYS !== '' ?
-    `&start=${process.env.REACT_APP_OLOG_START_TIME_DAYS}days&end=now`
+const channelFinderURL = import.meta.env.NODE_ENV === 'development' ? import.meta.env.REACT_APP_CF_URL_DEV : import.meta.env.REACT_APP_CF_URL;
+const cfMaxResults = parseInt(import.meta.env.REACT_APP_CF_MAX_RESULTS);
+const ologURL = import.meta.env.NODE_ENV === 'development' ? import.meta.env.REACT_APP_OLOG_URL_DEV : import.meta.env.REACT_APP_OLOG_URL;
+const ologWebURL = import.meta.env.NODE_ENV === 'development' ? import.meta.env.REACT_APP_OLOG_WEB_CLIENT_URL_DEV : import.meta.env.REACT_APP_OLOG_WEB_CLIENT_URL;
+const aaViewerURL = import.meta.env.NODE_ENV === 'development' ? import.meta.env.REACT_APP_AA_URL_DEV : import.meta.env.REACT_APP_AA_URL;
+const pvwsURL = import.meta.env.NODE_ENV === 'development' ? import.meta.env.REACT_APP_PVWS_URL_DEV : import.meta.env.REACT_APP_PVWS_URL;
+const pvwsHTTPURL = import.meta.env.NODE_ENV === 'development' ? import.meta.env.REACT_APP_PVWS_HTTP_URL_DEV : import.meta.env.REACT_APP_PVWS_HTTP_URL;
+const serverURL = import.meta.env.NODE_ENV === 'development' ? import.meta.env.REACT_APP_BASE_URL_DEV : import.meta.env.REACT_APP_BASE_URL;
+const alarmLogURL = import.meta.env.NODE_ENV === 'development' ? import.meta.env.REACT_APP_AL_URL_DEV : import.meta.env.REACT_APP_AL_URL;
+const ologStartDays = import.meta.env.REACT_APP_OLOG_START_TIME_DAYS !== '' ?
+    `&start=${import.meta.env.REACT_APP_OLOG_START_TIME_DAYS}days&end=now`
     : "";
-const ologMaxResults = process.env.REACT_APP_OLOG_MAX_RESULTS !== '' ?
-    `&size=${process.env.REACT_APP_OLOG_MAX_RESULTS}`
+const ologMaxResults = import.meta.env.REACT_APP_OLOG_MAX_RESULTS !== '' ?
+    `&size=${import.meta.env.REACT_APP_OLOG_MAX_RESULTS}`
     : "";
-const alarmLogStartDays = process.env.REACT_APP_AL_START_TIME_DAYS !== '' ?
-    `&start=${process.env.REACT_APP_AL_START_TIME_DAYS}days&end=now`
+const alarmLogStartDays = import.meta.env.REACT_APP_AL_START_TIME_DAYS !== '' ?
+    `&start=${import.meta.env.REACT_APP_AL_START_TIME_DAYS}days&end=now`
     : "";
-const alarmLogMaxResults = process.env.REACT_APP_AL_MAX_RESULTS !== '' ?
-    `&size=${process.env.REACT_APP_AL_MAX_RESULTS}`
+const alarmLogMaxResults = import.meta.env.REACT_APP_AL_MAX_RESULTS !== '' ?
+    `&size=${import.meta.env.REACT_APP_AL_MAX_RESULTS}`
     : "";
 
 function handleParams(params) {
@@ -45,11 +45,11 @@ function handleParams(params) {
 
 function standardParse(params) {
     let noWildcard = new Set(["pvStatus", "recordType"]);
-    if (process.env.REACT_APP_EXTRA_PROP && process.env.REACT_APP_EXTRA_PROP_DROPDOWN_LABELS) {
-        noWildcard.add(process.env.REACT_APP_EXTRA_PROP);
+    if (import.meta.env.REACT_APP_EXTRA_PROP && import.meta.env.REACT_APP_EXTRA_PROP_DROPDOWN_LABELS) {
+        noWildcard.add(import.meta.env.REACT_APP_EXTRA_PROP);
     }
-    if (process.env.REACT_APP_SECOND_EXTRA_PROP && process.env.REACT_APP_SECOND_EXTRA_PROP_DROPDOWN_LABELS) {
-        noWildcard.add(process.env.REACT_APP_SECOND_EXTRA_PROP);
+    if (import.meta.env.REACT_APP_SECOND_EXTRA_PROP && import.meta.env.REACT_APP_SECOND_EXTRA_PROP_DROPDOWN_LABELS) {
+        noWildcard.add(import.meta.env.REACT_APP_SECOND_EXTRA_PROP);
     }
 
     let addOn = "";
@@ -94,10 +94,11 @@ async function queryChannelFinder(params) {
     let maxResults = cfMaxResults ? `&~size=${cfMaxResults}` : "";
     let requestURI = `${channelFinderURL}/resources/channels?~name=${urlParams.pvName}${urlParams.params}${maxResults}`;
     let options = {};
-
+    console.log("RequestURI", requestURI)
+    console.log("++++++++++++++++++++++")
     options = { method: 'GET' }
-    if (process.env.REACT_APP_SEND_CREDENTIALS === "true") {
-        if (process.env.NODE_ENV !== 'development') {
+    if (import.meta.env.REACT_APP_SEND_CREDENTIALS === "true") {
+        if (import.meta.env.NODE_ENV !== 'development') {
             // credentials header would help if CF, AA, etc are behind a SSO
             options['credentials'] = 'include';
         }
@@ -181,9 +182,9 @@ async function standardQuery(requestURI, options = null, handleData = null) {
     let error = "";
     let errorFlag = false;
 
-    if (process.env.REACT_APP_SEND_CREDENTIALS === "true") {
-        if (process.env.NODE_ENV !== 'development') {
-            if(options === null) options = {};
+    if (import.meta.env.REACT_APP_SEND_CREDENTIALS === "true") {
+        if (import.meta.env.NODE_ENV !== 'development') {
+            if (options === null) options = {};
             // credentials header would help if CF, AA, etc are behind a SSO
             options['credentials'] = 'include';
         }

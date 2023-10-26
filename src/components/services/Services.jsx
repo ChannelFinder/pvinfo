@@ -1,6 +1,5 @@
 import React, { Fragment, useCallback, useEffect, useState } from "react";
 import useWebSocket from "react-use-websocket";
-import GitInfo from 'react-git-info/macro';
 import Service from "./service";
 import api from "../../api";
 import { Box, Grid, Typography } from "@mui/material";
@@ -18,11 +17,9 @@ function Services() {
     const [pvsMonitored, setPVsMonitored] = useState(0);
     const [pvwsConnected, setPVWSConnected] = useState(false);
 
-    const useAL = process.env.REACT_APP_USE_AL;
-    const useOLOG = process.env.REACT_APP_USE_OLOG;
-    const usePVWS = process.env.REACT_APP_USE_PVWS;
-
-    const gitInfo = GitInfo();
+    const useAL = import.meta.env.REACT_APP_USE_AL;
+    const useOLOG = import.meta.env.REACT_APP_USE_OLOG;
+    const usePVWS = import.meta.env.REACT_APP_USE_PVWS;
 
     const { sendJsonMessage, lastJsonMessage } = useWebSocket(api.PVWS_URL, {
         shouldReconnect: (closeEvent) => true
@@ -109,9 +106,9 @@ function Services() {
                 <Box sx={{ mb: 2, display: "flex", flexDirection: { xs: "column", sm: "row" }, alignItems: { xs: "start", sm: "start" }, justifyContent: "space-between" }}>
                     <Typography variant="h4" sx={{ fontWeight: "medium", mb: { xs: 1, sm: 0 } }}>Services</Typography>
                     <Box>
-                        <Typography variant="body1"><Box component="span" sx={{ fontWeight: "medium" }}>PV Info Version:</Box> {process.env.REACT_APP_VERSION}</Typography>
-                        <Typography variant="body1"><Box component="span" sx={{ fontWeight: "medium" }}>Commit Hash:</Box> {gitInfo.commit.shortHash}</Typography>
-                        <Typography variant="body1"><Box component="span" sx={{ fontWeight: "medium" }}>Commit Date:</Box> {new Date(gitInfo.commit.date).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</Typography>
+                        <Typography variant="body1"><Box component="span" sx={{ fontWeight: "medium" }}>PV Info Version:</Box> {import.meta.env.REACT_APP_VERSION}</Typography>
+                        {/* <Typography variant="body1"><Box component="span" sx={{ fontWeight: "medium" }}>Commit Hash:</Box> {gitInfo.commit.shortHash}</Typography> */}
+                        {/* <Typography variant="body1"><Box component="span" sx={{ fontWeight: "medium" }}>Commit Date:</Box> {new Date(gitInfo.commit.date).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</Typography> */}
                     </Box>
                 </Box>
                 <Box sx={{ overflow: "auto", border: 1, borderColor: "#D1D5DB", borderRadius: 1, pt: 2, pb: 3, px: 1.5 }}>

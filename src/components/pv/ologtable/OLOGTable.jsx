@@ -51,14 +51,14 @@ function OLOGTable(props) {
             </Accordion>
         );
     }
-    else if (ologData === null || ologData === {} || Object.keys(ologData).length === 0 || ologData.hitCount === 0) {
+    else if (ologData === null || Object.keys(ologData).length === 0 || ologData.hitCount === 0) {
         return (
             <Accordion expanded={false}>
                 <AccordionSummary>
                     <Typography sx={{ fontSize: 18, fontWeight: "medium" }}>{noOlogMessage}</Typography>
                     {
-                        process.env.REACT_APP_OLOG_START_TIME_DAYS !== '' ?
-                            <Typography variant="subtitle2">&nbsp;Within {process.env.REACT_APP_OLOG_START_TIME_DAYS} Days</Typography>
+                        import.meta.env.REACT_APP_OLOG_START_TIME_DAYS !== '' ?
+                            <Typography variant="subtitle2">&nbsp;Within {import.meta.env.REACT_APP_OLOG_START_TIME_DAYS} Days</Typography>
                             : null
                     }
                 </AccordionSummary>

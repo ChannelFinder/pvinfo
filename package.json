@@ -12,28 +12,26 @@
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.1.1",
     "@testing-library/user-event": "^14.1.1",
+    "@vitejs/plugin-react": "^4.1.0",
     "he": "^1.2.0",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
-    "react-git-info": "^2.0.1",
     "react-router": "^6.3.0",
     "react-router-dom": "^6.3.0",
     "react-use-websocket": "^4.0.0",
     "tss-react": "^3.6.2",
+    "vite": "^4.5.0",
+    "vite-plugin-env-compatible": "^1.1.1",
+    "vite-plugin-svgr": "^4.1.0",
     "web-vitals": "^2.1.4"
-  },
-  "devDependencies": {
-    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
-    "react-scripts": "^5.0.0"
   },
   "resolutions": {
     "optionator": "^0.9.3"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "start": "vite",
+    "build": "tsc && vite build",
+    "serve": "vite preview"
   },
   "eslintConfig": {
     "extends": [

@@ -7,11 +7,11 @@ import api from "../../api";
 
 function Plot() {
     const getAAPolicies = () => {
-        if(process.env.REACT_APP_AA_POLICIES.length <= 0) {
+        if(import.meta.env.REACT_APP_AA_POLICIES.length <= 0) {
             return [];
         }
         let aaPolicies = [];
-        let policyList = process.env.REACT_APP_AA_POLICIES.split(",");
+        let policyList = import.meta.env.REACT_APP_AA_POLICIES.split(",");
         policyList.forEach(policy => {
             let policyDetails = policy.split("|");
             let policyMap = {};

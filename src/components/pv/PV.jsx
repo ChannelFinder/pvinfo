@@ -31,7 +31,7 @@ function PV(props) {
     const [detailsExpanded, setDetailsExpanded] = useState(true);
 
     let { handleErrorMessage, handleOpenErrorAlert, handleSeverity } = props;
-    const omitVariables = process.env.REACT_APP_DETAILS_PAGE_PROPERTIES_BLOCKLIST ? new Set(process.env.REACT_APP_DETAILS_PAGE_PROPERTIES_BLOCKLIST.split(',').map(item => item.trim())) : new Set();
+    const omitVariables = import.meta.env.REACT_APP_DETAILS_PAGE_PROPERTIES_BLOCKLIST ? new Set(import.meta.env.REACT_APP_DETAILS_PAGE_PROPERTIES_BLOCKLIST.split(',').map(item => item.trim())) : new Set();
 
     const handleDetailExpandedChange = () => (event, isExpanded) => {
         setDetailsExpanded(isExpanded);
@@ -41,7 +41,7 @@ function PV(props) {
     useEffect(() => {
         const dict = {}
         let order = []
-        let dataNames = process.env.REACT_APP_DETAILS_PAGE_PROPERTIES ? process.env.REACT_APP_DETAILS_PAGE_PROPERTIES : "";
+        let dataNames = import.meta.env.REACT_APP_DETAILS_PAGE_PROPERTIES ? import.meta.env.REACT_APP_DETAILS_PAGE_PROPERTIES : "";
         dataNames.split(',').forEach((pair) => {
             if (pair === "*") {
                 setDisplayAllVars(true);
@@ -118,7 +118,7 @@ function PV(props) {
             return;
         }
         if (Object.keys(pvData).length !== 0) {
-            if (process.env.REACT_APP_DEFAULT_LIVE_MONITORING === "true") {
+            if (import.meta.env.REACT_APP_DEFAULT_LIVE_MONITORING === "true") {
                 setPVMonitoring(true);
                 setSnapshot(false);
             } else {
@@ -170,11 +170,11 @@ function PV(props) {
                 <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, justifyContent: "space-between" }}>
                     <Typography variant="h3" sx={{ fontSize: { xs: 32, sm: 48 } }}>{id}</Typography>
                     {
-                        process.env.REACT_APP_USE_AA === "true" ? <Button style={{ marginTop: 10, marginBottom: 10 }} target="_blank" href={pvHTMLString} variant="contained" color="secondary" endIcon={<TimelineIcon />} >Plot This PV</Button> : <div></div>
+                        import.meta.env.REACT_APP_USE_AA === "true" ? <Button style={{ marginTop: 10, marginBottom: 10 }} target="_blank" href={pvHTMLString} variant="contained" color="secondary" endIcon={<TimelineIcon />} >Plot This PV</Button> : <div></div>
                     }
                 </Box>
                 {
-                    process.env.REACT_APP_USE_PVWS === "true" ?
+                    import.meta.env.REACT_APP_USE_PVWS === "true" ?
                         <FormControlLabel control={<Checkbox color="primary" checked={pvMonitoring} onChange={handlePVMonitoringChange}></Checkbox>} disabled={pvData?.pvStatus?.value === "Inactive" || pvData?.recordType?.value === "waveform"} label="Enable Live PV Monitoring" />
                         : null
                 }
@@ -213,7 +213,7 @@ function PV(props) {
                                 ) : (null)}
                                 <Grid container sx={{ mt: -0.1, mb: -0.1, borderTop: 1, borderColor: 'grey.300' }}>
                                     {
-                                        process.env.REACT_APP_USE_PVWS === "true" ?
+                                        import.meta.env.REACT_APP_USE_PVWS === "true" ?
                                             <ValueTable pvData={pvData} pvMonitoring={pvMonitoring}
                                                 isLoading={isLoading} pvName={id} snapshot={snapshot}
                                                 handleOpenErrorAlert={props.handleOpenErrorAlert} handleErrorMessage={props.handleErrorMessage} handleSeverity={props.handleSeverity} />
@@ -224,13 +224,13 @@ function PV(props) {
                         </AccordionDetails>
                     </Accordion>
                     {
-                        process.env.REACT_APP_USE_OLOG === "true" ? <OLOGTable pvName={id} /> : null
+                        import.meta.env.REACT_APP_USE_OLOG === "true" ? <OLOGTable pvName={id} /> : null
                     }
                     {
-                        process.env.REACT_APP_USE_AL === "true" ? <AlarmLogTable pvName={id} /> : null
+                        import.meta.env.REACT_APP_USE_AL === "true" ? <AlarmLogTable pvName={id} /> : null
                     }
                     {
-                        process.env.REACT_APP_USE_AL === "true" ? <AlarmConfigTable pvName={id} /> : null
+                        import.meta.env.REACT_APP_USE_AL === "true" ? <AlarmConfigTable pvName={id} /> : null
                     }
                 </Box>
             </Fragment >

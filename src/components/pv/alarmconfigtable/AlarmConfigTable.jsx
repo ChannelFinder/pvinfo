@@ -59,14 +59,14 @@ function AlarmConfigTable(props) {
             </Accordion>
         );
     }
-    else if (alarmConfigData === null || alarmConfigData === {} || Object.keys(alarmConfigData).length === 0 || alarmConfigData.hitCount === 0) {
+    else if (alarmConfigData === null || Object.keys(alarmConfigData).length === 0 || alarmConfigData.hitCount === 0) {
         return (
             <Accordion expanded={false}>
                 <AccordionSummary>
                     <Typography sx={{ fontSize: 18, fontWeight: "medium" }}>{noConfigMessage}</Typography>
                     {
-                        process.env.REACT_APP_AL_START_TIME_DAYS !== '' ?
-                            <Typography sx={{ fontSize: 18, fontWeight: "medium" }}>&nbsp;Within {process.env.REACT_APP_AL_START_TIME_DAYS} Days</Typography>
+                        import.meta.env.REACT_APP_AL_START_TIME_DAYS !== '' ?
+                            <Typography sx={{ fontSize: 18, fontWeight: "medium" }}>&nbsp;Within {import.meta.env.REACT_APP_AL_START_TIME_DAYS} Days</Typography>
                             : null
                     }
                 </AccordionSummary>
