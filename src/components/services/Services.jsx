@@ -107,8 +107,8 @@ function Services() {
                     <Typography variant="h4" sx={{ fontWeight: "medium", mb: { xs: 1, sm: 0 } }}>Services</Typography>
                     <Box>
                         <Typography variant="body1"><Box component="span" sx={{ fontWeight: "medium" }}>PV Info Version:</Box> {import.meta.env.REACT_APP_VERSION}</Typography>
-                        {/* <Typography variant="body1"><Box component="span" sx={{ fontWeight: "medium" }}>Commit Hash:</Box> {gitInfo.commit.shortHash}</Typography> */}
-                        {/* <Typography variant="body1"><Box component="span" sx={{ fontWeight: "medium" }}>Commit Date:</Box> {new Date(gitInfo.commit.date).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</Typography> */}
+                        <Typography variant="body1"><Box component="span" sx={{ fontWeight: "medium" }}>Commit Hash:</Box> {import.meta.env.REACT_APP_GIT_SHORT_HASH}</Typography>
+                        <Typography variant="body1"><Box component="span" sx={{ fontWeight: "medium" }}>Commit Date:</Box> {import.meta.env.REACT_APP_GIT_COMMIT_DATE}</Typography>
                     </Box>
                 </Box>
                 <Box sx={{ overflow: "auto", border: 1, borderColor: "#D1D5DB", borderRadius: 1, pt: 2, pb: 3, px: 1.5 }}>
