@@ -1,12 +1,12 @@
-const channelFinderURL = import.meta.env.NODE_ENV === 'development' ? import.meta.env.REACT_APP_CF_URL_DEV : import.meta.env.REACT_APP_CF_URL;
+const channelFinderURL = import.meta.env.PROD ? import.meta.env.REACT_APP_CF_URL : import.meta.env.REACT_APP_CF_URL_DEV;
 const cfMaxResults = parseInt(import.meta.env.REACT_APP_CF_MAX_RESULTS);
-const ologURL = import.meta.env.NODE_ENV === 'development' ? import.meta.env.REACT_APP_OLOG_URL_DEV : import.meta.env.REACT_APP_OLOG_URL;
-const ologWebURL = import.meta.env.NODE_ENV === 'development' ? import.meta.env.REACT_APP_OLOG_WEB_CLIENT_URL_DEV : import.meta.env.REACT_APP_OLOG_WEB_CLIENT_URL;
-const aaViewerURL = import.meta.env.NODE_ENV === 'development' ? import.meta.env.REACT_APP_AA_URL_DEV : import.meta.env.REACT_APP_AA_URL;
-const pvwsURL = import.meta.env.NODE_ENV === 'development' ? import.meta.env.REACT_APP_PVWS_URL_DEV : import.meta.env.REACT_APP_PVWS_URL;
-const pvwsHTTPURL = import.meta.env.NODE_ENV === 'development' ? import.meta.env.REACT_APP_PVWS_HTTP_URL_DEV : import.meta.env.REACT_APP_PVWS_HTTP_URL;
-const serverURL = import.meta.env.NODE_ENV === 'development' ? import.meta.env.REACT_APP_BASE_URL_DEV : import.meta.env.REACT_APP_BASE_URL;
-const alarmLogURL = import.meta.env.NODE_ENV === 'development' ? import.meta.env.REACT_APP_AL_URL_DEV : import.meta.env.REACT_APP_AL_URL;
+const ologURL = import.meta.env.PROD ? import.meta.env.REACT_APP_OLOG_URL : import.meta.env.REACT_APP_OLOG_URL_DEV;
+const ologWebURL = import.meta.env.PROD ? import.meta.env.REACT_APP_OLOG_WEB_CLIENT_URL : import.meta.env.REACT_APP_OLOG_WEB_CLIENT_URL_DEV;
+const aaViewerURL = import.meta.env.PROD ? import.meta.env.REACT_APP_AA_URL : import.meta.env.REACT_APP_AA_URL_DEV;
+const pvwsURL = import.meta.env.PROD ? import.meta.env.REACT_APP_PVWS_URL : import.meta.env.REACT_APP_PVWS_URL_DEV;
+const pvwsHTTPURL = import.meta.env.PROD ? import.meta.env.REACT_APP_PVWS_HTTP_URL : import.meta.env.REACT_APP_PVWS_HTTP_URL_DEV;
+const serverURL = import.meta.env.PROD ? import.meta.env.REACT_APP_BASE_URL : import.meta.env.REACT_APP_BASE_URL_DEV;
+const alarmLogURL = import.meta.env.PROD ? import.meta.env.REACT_APP_AL_URL : import.meta.env.REACT_APP_AL_URL_DEV;
 const ologStartDays = import.meta.env.REACT_APP_OLOG_START_TIME_DAYS !== '' ?
     `&start=${import.meta.env.REACT_APP_OLOG_START_TIME_DAYS}days&end=now`
     : "";
@@ -96,7 +96,7 @@ async function queryChannelFinder(params) {
     let options = {};
     options = { method: 'GET' }
     if (import.meta.env.REACT_APP_SEND_CREDENTIALS === "true") {
-        if (import.meta.env.NODE_ENV !== 'development') {
+        if (import.meta.env.MODE !== 'development') {
             // credentials header would help if CF, AA, etc are behind a SSO
             options['credentials'] = 'include';
         }
@@ -181,7 +181,7 @@ async function standardQuery(requestURI, options = null, handleData = null) {
     let errorFlag = false;
 
     if (import.meta.env.REACT_APP_SEND_CREDENTIALS === "true") {
-        if (import.meta.env.NODE_ENV !== 'development') {
+        if (import.meta.env.MODE !== 'development') {
             if (options === null) options = {};
             // credentials header would help if CF, AA, etc are behind a SSO
             options['credentials'] = 'include';
