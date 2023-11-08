@@ -96,7 +96,7 @@ async function queryChannelFinder(params) {
     let options = {};
     options = { method: 'GET' }
     if (import.meta.env.REACT_APP_SEND_CREDENTIALS === "true") {
-        if (import.meta.env.MODE !== 'development') {
+        if (import.meta.env.PROD) {
             // credentials header would help if CF, AA, etc are behind a SSO
             options['credentials'] = 'include';
         }
@@ -181,7 +181,7 @@ async function standardQuery(requestURI, options = null, handleData = null) {
     let errorFlag = false;
 
     if (import.meta.env.REACT_APP_SEND_CREDENTIALS === "true") {
-        if (import.meta.env.MODE !== 'development') {
+        if (import.meta.env.PROD) {
             if (options === null) options = {};
             // credentials header would help if CF, AA, etc are behind a SSO
             options['credentials'] = 'include';
