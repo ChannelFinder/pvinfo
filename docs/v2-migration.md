@@ -2,7 +2,7 @@
 
 The first step when migrating to version 2.0.0 is to delete the node_modules directory for PV Info and regenerate it with `npm install`. This will install Vite and the dependencies needed to run and build PV Info.
 
-Vite configuration is done in the vite.config.js file. We have configured this file to try to best match the experience with Create React App. For instance, all env variables prefixed with `REACT_APP` will still work with Vite. The development server should also still work on localhost port 3000.
+Vite configuration is done in the vite.config.js file. We have configured this file to try to best match the experience with Create React App. For instance, all env variables prefixed with `REACT_APP` will still work with Vite. The development server should also still work on localhost port 3000. Files with JSX in them now use the .jsx extension instead of .js and instead of process.env.ENV_VAR we now use import.meta.env.ENV_VAR in the code but this should be transparent for most users.
 
 The major difference to be aware of is that Vite does not use the `PUBLIC_URL` environment variable that Create React App did. Instead, Vite uses the `base` variable in vite.config.js to let production static builds be hosted on the non-root endpoint of a domain. (https://vitejs.dev/guide/build.html#public-base-path)
 
