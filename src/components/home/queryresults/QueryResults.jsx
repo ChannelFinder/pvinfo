@@ -20,13 +20,13 @@ const propTypes = {
 
 function QueryResults(props) {
     const navigate = useNavigate();
-    const pageSizeEnvValue = process.env.REACT_APP_RESULTS_TABLE_SIZE ? parseInt(process.env.REACT_APP_RESULTS_TABLE_SIZE.trim()) : 50;
+    const pageSizeEnvValue = import.meta.env.REACT_APP_RESULTS_TABLE_SIZE ? parseInt(import.meta.env.REACT_APP_RESULTS_TABLE_SIZE.trim()) : 50;
     const [pageSize, setPageSize] = useState(pageSizeEnvValue);
     const [pvs, setPVs] = useState([]);
-    const defaultTableDensity = process.env.REACT_APP_RESULTS_TABLE_DENSITY ? process.env.REACT_APP_RESULTS_TABLE_DENSITY : "standard";
+    const defaultTableDensity = import.meta.env.REACT_APP_RESULTS_TABLE_DENSITY ? import.meta.env.REACT_APP_RESULTS_TABLE_DENSITY : "standard";
     let tablePageSizeOptions = [5, 10, 20, 50, 100];
-    if (process.env.REACT_APP_RESULTS_TABLE_SIZE_OPTIONS) {
-        tablePageSizeOptions = process.env.REACT_APP_RESULTS_TABLE_SIZE_OPTIONS.split(',').filter(item => item.trim().length && !isNaN(item)).map(Number);
+    if (import.meta.env.REACT_APP_RESULTS_TABLE_SIZE_OPTIONS) {
+        tablePageSizeOptions = import.meta.env.REACT_APP_RESULTS_TABLE_SIZE_OPTIONS.split(',').filter(item => item.trim().length && !isNaN(item)).map(Number);
         if (!tablePageSizeOptions.includes(pageSizeEnvValue)) {
             tablePageSizeOptions.push(pageSizeEnvValue);
         }
@@ -38,8 +38,8 @@ function QueryResults(props) {
     const [checked, setChecked] = useState([]);
     const [currentChecked, setCurrentChecked] = useState(new Set());
     const [monitorAllChecked, setMonitorAllChecked] = useState(false);
-    const liveMonitorMax = process.env.REACT_APP_LIVE_MONITOR_MAX ? process.env.REACT_APP_LIVE_MONITOR_MAX : 100;
-    const liveMonitorWarn = process.env.REACT_APP_LIVE_MONITOR_WARN ? process.env.REACT_APP_LIVE_MONITOR_WARN : 50;
+    const liveMonitorMax = import.meta.env.REACT_APP_LIVE_MONITOR_MAX ? import.meta.env.REACT_APP_LIVE_MONITOR_MAX : 100;
+    const liveMonitorWarn = import.meta.env.REACT_APP_LIVE_MONITOR_WARN ? import.meta.env.REACT_APP_LIVE_MONITOR_WARN : 50;
 
     let { handleErrorMessage, handleOpenErrorAlert, handleSeverity } = props;
 
@@ -156,7 +156,7 @@ function QueryResults(props) {
                 </Tooltip>
                 {
                     // if PVWS is on, show checkbox for live monitoring, else nothing
-                    process.env.REACT_APP_USE_PVWS === "true" ? <ValueCheckbox pvName={params.row.name} id={params.row.id}
+                    import.meta.env.REACT_APP_USE_PVWS === "true" ? <ValueCheckbox pvName={params.row.name} id={params.row.id}
                         pvStatus={params.row.pvStatus} recordType={params.row.recordType} checked={checked}
                         currentChecked={currentChecked} updateCurrentChecked={updateCurrentChecked} />
                         : <div></div>
@@ -170,7 +170,7 @@ function QueryResults(props) {
             <div>
                 <Typography display="inline" variant="subtitle2">Actions</Typography>
                 {
-                    process.env.REACT_APP_USE_PVWS === "true" ? <Tooltip arrow title="Monitor All PVs">
+                    import.meta.env.REACT_APP_USE_PVWS === "true" ? <Tooltip arrow title="Monitor All PVs">
                         <Checkbox checked={monitorAllChecked} onChange={handleMonitorSelectAll()} sx={{ ml: ".5rem" }}></Checkbox>
                     </Tooltip>
                         : <div></div>
@@ -204,7 +204,7 @@ function QueryResults(props) {
     }
 
     const renderValue = (params) => {
-        if (process.env.REACT_APP_USE_PVWS === "true") {
+        if (import.meta.env.REACT_APP_USE_PVWS === "true") {
             return (
                 <Value pvName={params.row.name} id={params.row.id} isChecked={currentChecked.has(params.row.id)} pvRecordType={params.row.recordType} pvStatus={params.row.pvStatus} />
             );
@@ -219,7 +219,7 @@ function QueryResults(props) {
     let columns = [
         { field: "name", headerName: 'PV Name', flex: 15, minWidth: 175, maxWidth: 300, renderCell: renderPVNameLink }
     ]
-    if (process.env.REACT_APP_CF_RECORD_DESC === "true") {
+    if (import.meta.env.REACT_APP_CF_RECORD_DESC === "true") {
         columns.push({ field: "recordDesc", headerName: 'Description', flex: 18, minWidth: 175, maxWidth: 300 })
     }
     columns.push(
@@ -227,25 +227,25 @@ function QueryResults(props) {
         { field: "iocName", headerName: 'IOC', flex: 8.5, minWidth: 125, maxWidth: 170, renderCell: renderIOCLink },
         { field: "pvStatus", headerName: 'Status', flex: 7.5, minWidth: 125, maxWidth: 170 }
     )
-    if (process.env.REACT_APP_CF_RECORD_TYPE === "true") {
+    if (import.meta.env.REACT_APP_CF_RECORD_TYPE === "true") {
         columns.push({ field: "recordType", headerName: 'Type', flex: 7.5, minWidth: 125, maxWidth: 170 })
     }
-    if (process.env.REACT_APP_EXTRA_PROP_SHOW_IN_RESULTS.toLowerCase() === "true" && process.env.REACT_APP_EXTRA_PROP !== "") {
-        columns.push({ field: process.env.REACT_APP_EXTRA_PROP, headerName: process.env.REACT_APP_EXTRA_PROP_LABEL, flex: 7.5, minWidth: 125, maxWidth: 170 })
+    if (import.meta.env.REACT_APP_EXTRA_PROP_SHOW_IN_RESULTS.toLowerCase() === "true" && import.meta.env.REACT_APP_EXTRA_PROP !== "") {
+        columns.push({ field: import.meta.env.REACT_APP_EXTRA_PROP, headerName: import.meta.env.REACT_APP_EXTRA_PROP_LABEL, flex: 7.5, minWidth: 125, maxWidth: 170 })
     }
-    if (process.env.REACT_APP_SECOND_EXTRA_PROP_SHOW_IN_RESULTS.toLowerCase() === "true" && process.env.REACT_APP_SECOND_EXTRA_PROP !== "") {
-        columns.push({ field: process.env.REACT_APP_SECOND_EXTRA_PROP, headerName: process.env.REACT_APP_SECOND_EXTRA_PROP_LABEL, flex: 7.5, minWidth: 125, maxWidth: 170 })
+    if (import.meta.env.REACT_APP_SECOND_EXTRA_PROP_SHOW_IN_RESULTS.toLowerCase() === "true" && import.meta.env.REACT_APP_SECOND_EXTRA_PROP !== "") {
+        columns.push({ field: import.meta.env.REACT_APP_SECOND_EXTRA_PROP, headerName: import.meta.env.REACT_APP_SECOND_EXTRA_PROP_LABEL, flex: 7.5, minWidth: 125, maxWidth: 170 })
     }
-    if (process.env.REACT_APP_CF_ALIAS === "true") {
+    if (import.meta.env.REACT_APP_CF_ALIAS === "true") {
         columns.push({ field: "alias", headerName: 'Alias Of', flex: 10.5, minWidth: 175, maxWidth: 300, renderCell: renderAliasLink })
     }
-    if (process.env.REACT_APP_USE_PVWS === "true") {
+    if (import.meta.env.REACT_APP_USE_PVWS === "true") {
         columns.push({ field: "value", headerName: 'Value', flex: 7.5, minWidth: 120, maxWidth: 140, renderCell: renderValue })
     }
     columns.push({ field: "button", headerName: 'Actions', flex: 9.5, minWidth: 160, maxWidth: 200, disableClickEventBubbling: true, renderCell: renderButtons, renderHeader: renderActionsHeader })
 
     useEffect(() => {
-        if (props.cfData === null || props.cfData === {} || Object.keys(props.cfData).length === 0) {
+        if (props.cfData === null || Object.keys(props.cfData).length === 0) {
             return;
         }
         setPVs(props.cfData.map((pv, index) => {
@@ -267,16 +267,16 @@ function QueryResults(props) {
     }
 
     useEffect(() => {
-        setCurrentBreakpoint(parseInt(process.env.REACT_APP_LG_BREAKPOINT));
-        setPrevBreakpoint(parseInt(process.env.REACT_APP_LG_BREAKPOINT));
+        setCurrentBreakpoint(parseInt(import.meta.env.REACT_APP_LG_BREAKPOINT));
+        setPrevBreakpoint(parseInt(import.meta.env.REACT_APP_LG_BREAKPOINT));
     }, []);
 
     useEffect(() => {
         const handleWindowResize = () => {
             const windowWidth = window.innerWidth;
-            const sm = process.env.REACT_APP_SM_BREAKPOINT ? parseInt(process.env.REACT_APP_SM_BREAKPOINT) : 600;
-            const md = process.env.REACT_APP_MD_BREAKPOINT ? parseInt(process.env.REACT_APP_MD_BREAKPOINT) : 900;
-            const lg = process.env.REACT_APP_LG_BREAKPOINT ? parseInt(process.env.REACT_APP_LG_BREAKPOINT) : 1536;
+            const sm = import.meta.env.REACT_APP_SM_BREAKPOINT ? parseInt(import.meta.env.REACT_APP_SM_BREAKPOINT) : 600;
+            const md = import.meta.env.REACT_APP_MD_BREAKPOINT ? parseInt(import.meta.env.REACT_APP_MD_BREAKPOINT) : 900;
+            const lg = import.meta.env.REACT_APP_LG_BREAKPOINT ? parseInt(import.meta.env.REACT_APP_LG_BREAKPOINT) : 1536;
 
             const breakpoint = roundToBreakpoint(windowWidth, [0, sm, md, lg]);
             setCurrentBreakpoint(breakpoint);
@@ -284,9 +284,9 @@ function QueryResults(props) {
             if (breakpoint !== prevBreakpoint) {
                 setPrevBreakpoint(currentBreakpoint);
 
-                const omitExtraSmall = process.env.REACT_APP_OMIT_IN_TABLE_X_SMALL ? process.env.REACT_APP_OMIT_IN_TABLE_X_SMALL.split(',').map(item => item.trim()) : [];
-                const omitSmall = process.env.REACT_APP_OMIT_IN_TABLE_SMALL ? process.env.REACT_APP_OMIT_IN_TABLE_SMALL.split(',').map(item => item.trim()) : [];
-                const omitMedium = process.env.REACT_APP_OMIT_IN_TABLE_MEDIUM ? process.env.REACT_APP_OMIT_IN_TABLE_MEDIUM.split(',').map(item => item.trim()) : [];
+                const omitExtraSmall = import.meta.env.REACT_APP_OMIT_IN_TABLE_X_SMALL ? import.meta.env.REACT_APP_OMIT_IN_TABLE_X_SMALL.split(',').map(item => item.trim()) : [];
+                const omitSmall = import.meta.env.REACT_APP_OMIT_IN_TABLE_SMALL ? import.meta.env.REACT_APP_OMIT_IN_TABLE_SMALL.split(',').map(item => item.trim()) : [];
+                const omitMedium = import.meta.env.REACT_APP_OMIT_IN_TABLE_MEDIUM ? import.meta.env.REACT_APP_OMIT_IN_TABLE_MEDIUM.split(',').map(item => item.trim()) : [];
 
                 if (windowWidth <= sm) {
                     for (let i = 0; i < omitExtraSmall.length; ++i) {

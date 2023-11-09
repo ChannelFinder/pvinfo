@@ -18,7 +18,7 @@ function Help() {
               <Typography variant='body1' paragraph={true}>
                 Process Variable (PV) is the name applied to the Real-Time Database Records that contain control system information.
                 Like most Database records it has a set of fields. Unlike conventional database records, Process Variables are 'connected' to the 'real world',
-                so they reflect or control values in the control system. For example, here is a PV at our facility:  <Link component={RouterLink} to={"/pv/" + process.env.REACT_APP_HELP_EXAMPLE_PV} underline="always">{process.env.REACT_APP_HELP_EXAMPLE_PV}</Link>
+                so they reflect or control values in the control system. For example, here is a PV at our facility:  <Link component={RouterLink} to={"/pv/" + import.meta.env.REACT_APP_HELP_EXAMPLE_PV} underline="always">{import.meta.env.REACT_APP_HELP_EXAMPLE_PV}</Link>
               </Typography>
               <Typography variant='body1' paragraph={true}>
                 The Control System is based on the Experimental Physics and Industrial Control System
@@ -102,22 +102,22 @@ function Help() {
                     PVs can have alias names. You can click on the alias name to open the details page for the alias (will have the same information as the real PV name).
                   </li>
                 </ul>
-                {process.env.REACT_APP_EXTRA_PROP.length > 0 &&
+                {import.meta.env.REACT_APP_EXTRA_PROP.length > 0 &&
                   <div>
-                    <li><strong>{process.env.REACT_APP_EXTRA_PROP_LABEL}</strong></li>
+                    <li><strong>{import.meta.env.REACT_APP_EXTRA_PROP_LABEL}</strong></li>
                     <ul>
                       <li>
-                        {process.env.REACT_APP_EXTRA_PROP_HELP_TEXT}
+                        {import.meta.env.REACT_APP_EXTRA_PROP_HELP_TEXT}
                       </li>
                     </ul>
                   </div>
                 }
-                {process.env.REACT_APP_SECOND_EXTRA_PROP.length > 0 &&
+                {import.meta.env.REACT_APP_SECOND_EXTRA_PROP.length > 0 &&
                   <div>
-                    <li><strong>{process.env.REACT_APP_SECOND_EXTRA_PROP_LABEL}</strong></li>
+                    <li><strong>{import.meta.env.REACT_APP_SECOND_EXTRA_PROP_LABEL}</strong></li>
                     <ul>
                       <li>
-                        {process.env.REACT_APP_SECOND_EXTRA_PROP_HELP_TEXT}
+                        {import.meta.env.REACT_APP_SECOND_EXTRA_PROP_HELP_TEXT}
                       </li>
                     </ul>
                   </div>

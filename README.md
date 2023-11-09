@@ -22,6 +22,12 @@ This repository is under active development and is currently in production at th
 
 ## Configuration
 
+### Version 1.x.x vs. Version 2.x.x
+
+In version 2.0.0 the PV Info build tool was changed from [Create React App](https://github.com/facebook/create-react-app) to [Vite](https://github.com/vitejs/vite). Create React App has been deprecated by Facebook and is no longer maintained. This can cause some issues with security vulnerabilities and isn't good for the long term so we have switched to Vite. Vite is mostly a drop-in replacement but see here for differences in PV Info 1.x.x and 2.x.x - [Version 2 notes](docs/v2-migration.md).
+
+It is important to delete the node_modules directory and do an `npm install` to regenerate all the dependencies when converting an existing application to version 2.0.0.
+
 ### React Environment Variables
 
 There are many React environment variables avaiable to configure PV Info for your site. Several variables will most definately need to be updated for PV Info to work. These variables are containted in [.env file](.env):
@@ -47,16 +53,6 @@ Other interesting variables are the channel finder properties that you can confi
 - `REACT_APP_CF_ALIAS`
 - `REACT_APP_EXTRA_PROP`
 - `REACT_APP_SECOND_EXTRA_PROP`
-
-### package.json
-
-Update the "homepage" variable in [package.json](package.json).
-
-https://github.com/ChannelFinder/pvinfo/blob/master/package.json#L3
-
-You can also use the `PUBLIC_URL` environment variable to override the homepage string, for instance during npm run
-build: `PUBLIC_URL=http://myhomepage/pvinfo npm run build`
-
 
 ### Logos and Colors
 
@@ -89,7 +85,7 @@ It correctly bundles React in production mode and optimizes the build for the be
 The build is minified and the filenames include the hashes.\
 Your app is ready to be deployed!
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+See the section about [deployment](https://vitejs.dev/guide/using-plugins.html) for more information.
 
 ### React Routing Configuration
 

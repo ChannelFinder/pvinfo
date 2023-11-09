@@ -93,7 +93,7 @@ function Header() {
             <NavLink to="/ioc" style={{ textDecoration: "none", color: 'inherit', paddingRight: 40 }}>
               <Typography variant="h5">IOCs</Typography>
             </NavLink>
-            {process.env.REACT_APP_USE_AA.toLowerCase() === "true" &&
+            {import.meta.env.REACT_APP_USE_AA.toLowerCase() === "true" &&
               <NavLink to="/plot" style={{ textDecoration: "none", color: 'inherit', paddingRight: 40 }}>
                 <Typography variant="h5">Plotting</Typography>
               </NavLink>
