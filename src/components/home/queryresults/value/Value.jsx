@@ -3,6 +3,7 @@ import useWebSocket from 'react-use-websocket';
 import api from '../../../../api';
 import colors from '../../../../colors';
 import PropTypes from "prop-types";
+import { toByteArray } from 'base64-js';
 
 const propTypes = {
     pvName: PropTypes.string,
@@ -34,6 +35,8 @@ function Value(props) {
             const severity = jsonMessage.severity;
             const units = jsonMessage.units;
             const text = jsonMessage.text;
+            const b64dbl = jsonMessage.b64dbl;
+            const b64int = jsonMessage.b64int;
             const value = jsonMessage.value;
             const pv = jsonMessage.pv;
             if (pv === undefined) {
@@ -48,6 +51,18 @@ function Value(props) {
             }
             if (text !== undefined) {
                 setPVValue(text);
+            }
+            else if (b64dbl !== undefined) {
+                let bytes = toByteArray(b64dbl);
+                let value_array = new Float64Array(bytes.buffer);
+                value_array = Array.prototype.slice.call(value_array);
+                setPVValue(value_array);
+            }
+            else if (b64int !== undefined) {
+                let bytes = toByteArray(b64int);
+                let value_array = new Int32Array(bytes.buffer);
+                value_array = Array.prototype.slice.call(value_array);
+                setPVValue(value_array);
             }
             else if (value !== undefined) {
                 if ((Number(value) >= 0.01 && Number(value) < 1000000000) || (Number(value) <= -0.01 && Number(value) > -1000000000) || Number(value) === 0) {
@@ -81,15 +96,17 @@ function Value(props) {
         }
 
         const severityName = pvSeverity === "UNDEFINED" || pvSeverity === "INVALID" ? ` (${pvSeverity})` : null
-        if (pvUnit !== undefined) {
-            return (
-                <div style={{ color: textColor }}>{`${pvValue} ${pvUnit}`}{severityName}</div>
-            );
-        }
-        else if (pvValue !== undefined) {
-            return (
-                <div style={{ color: textColor }}>{pvValue}{severityName}</div>
-            );
+        if (pvValue !== undefined) {
+            if (Array.isArray(pvValue)) {
+                return (
+                    <div style={{ color: textColor }}>{`[ ${pvValue.join(', ')} ] ${pvUnit}`}{severityName}</div>
+                )
+            }
+            else {
+                return (
+                    <div style={{ color: textColor }}>{`${pvValue} ${pvUnit}`}{severityName}</div>
+                );
+            }
         }
         else {
             return (

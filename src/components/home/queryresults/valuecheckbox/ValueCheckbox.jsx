@@ -14,11 +14,6 @@ const propTypes = {
     updateCurrentChecked: PropTypes.func,
 }
 
-// TODO - check if these changes make performance better or worse or same
-// fix dependency array issues, cleanup
-// create PR into current PR branch
-// then will need to talk to mitch and get things merged
-
 function ValueCheckbox(props) {
     // open web socket for sending subscribe/clear messages
     // filter all messages as false since we don't need to read anything in parent component
@@ -34,7 +29,7 @@ function ValueCheckbox(props) {
     }
 
     useEffect(() => {
-        if (props.pvStatus === "Inactive" || props.recordType === "waveform") {
+        if (props.pvStatus === "Inactive" || (import.meta.env.REACT_APP_PVWS_ALLOW_WAVEFORMS !== "true" && props.recordType === "waveform")) {
             setEnabled(false);
         }
     }, [props.pvStatus, props.recordType])
@@ -54,7 +49,7 @@ function ValueCheckbox(props) {
         <Tooltip arrow title={<div>Monitor<br />{props.pvName}</div>}>
             <Checkbox
                 checked={props.checked[props.id] && enabled}
-                disabled={props.pvStatus === "Inactive" || props.recordType === "waveform"}
+                disabled={props.pvStatus === "Inactive" || (import.meta.env.REACT_APP_PVWS_ALLOW_WAVEFORMS !== "true" && props.recordType === "waveform")}
                 color="primary"
                 onChange={handleMonitorPVChange(props.id)} >
             </Checkbox>
