@@ -1,7 +1,7 @@
 {
   "name": "pvinfo",
   "homepage": "https://yourdomainhere/pvinfo",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.9.0",
@@ -13,6 +13,7 @@
     "@testing-library/react": "^13.1.1",
     "@testing-library/user-event": "^14.1.1",
     "@vitejs/plugin-react": "^4.1.0",
+    "base64-js": "^1.5.1",
     "he": "^1.2.0",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",

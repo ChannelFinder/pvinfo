@@ -1,6 +1,7 @@
 import React, { Fragment, useState, useEffect } from "react";
 import { Typography } from "@mui/material";
 import useWebSocket from 'react-use-websocket';
+import { toByteArray } from 'base64-js';
 import api from "../../../api";
 import colors from "../../../colors";
 import PropTypes from "prop-types";
@@ -60,7 +61,7 @@ function ValueTable(props) {
                 handleSeverity("warning");
                 handleOpenErrorAlert(true);
             }
-            else if (props.pvData.recordType?.value === "waveform") {
+            else if (import.meta.env.REACT_APP_PVWS_ALLOW_WAVEFORMS !== "true" && props.pvData.recordType?.value === "waveform") {
                 handleErrorMessage("Can't show live PV values - Waveform record type not supported");
                 handleSeverity("warning");
                 handleOpenErrorAlert(true);
@@ -174,6 +175,29 @@ function ValueTable(props) {
                         setSnapshot(false);
                     }
 
+                }
+                // see "handleMessage" in https://github.com/ornl-epics/pvws/blob/main/src/main/webapp/js/pvws.js
+                else if ("b64dbl" in message) {
+                    if (!props.snapshot) {
+                        let bytes = toByteArray(message.b64dbl);
+                        let value_array = new Float64Array(bytes.buffer);
+                        value_array = Array.prototype.slice.call(value_array);
+                        setPVValue(value_array);
+                    }
+                    if (snapshot) {
+                        setSnapshot(false);
+                    }
+                }
+                else if ("b64int" in message) {
+                    if (!props.snapshot) {
+                        let bytes = toByteArray(message.b64int);
+                        let value_array = new Int32Array(bytes.buffer);
+                        value_array = Array.prototype.slice.call(value_array);
+                        setPVValue(value_array);
+                    }
+                    if (snapshot) {
+                        setSnapshot(false);
+                    }
                 }
                 else if ("value" in message) {
                     if (!props.snapshot) {

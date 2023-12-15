@@ -5,6 +5,8 @@ import PropTypes from 'prop-types';
 
 const propTypes = {
     title: PropTypes.string,
+    url: PropTypes.string,
+    textColor: PropTypes.string,
     value: PropTypes.any,
 }
 
@@ -27,6 +29,8 @@ function KeyValuePair(props) {
                         ))
                     ) : props.url ? (
                         <Link component={RouterLink} to={props.url} underline="hover">{props.value}</Link>
+                    ) : Array.isArray(props.value) ? (
+                        <Fragment>[{props.value.join(', ')}]</Fragment>
                     ) : (
                         <Fragment>{props.value}</Fragment>
                     )}
