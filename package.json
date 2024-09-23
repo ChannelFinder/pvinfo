@@ -1,7 +1,7 @@
 {
   "name": "pvinfo",
   "homepage": "https://yourdomainhere/pvinfo",
-  "version": "2.1.2",
+  "version": "2.1.4",
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.9.0",
