@@ -21,8 +21,7 @@ const alarmLogMaxResults = import.meta.env.REACT_APP_AL_MAX_RESULTS !== '' ?
     : "";
 
 function handleParams(params) {
-    let urlParams = { "pvName": "*", "params": "" }
-    
+    let urlParams = { "pvName": "*", "params": "" };
     if ("pvName" in params && params.pvName !== "") {
         if (params.pvName.charAt(0) === "=") {
             urlParams.pvName = params.pvName.substring(1);
