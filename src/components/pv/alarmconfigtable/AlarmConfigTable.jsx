@@ -100,6 +100,8 @@ function AlarmConfigTable(props) {
                                         let prettyConfigMsg = "";
                                         if (item.config_msg) {
                                             prettyConfigMsg = JSON.stringify(JSON.parse(item.config_msg), null, 2);
+                                        } else if (item.command) {
+                                            prettyConfigMsg = JSON.stringify(JSON.parse(item.command), null, 2);
                                         }
                                         const message_time = item.message_time ? new Date(item.message_time).toLocaleString("en-US", dateFormat) : "";
                                         return (
