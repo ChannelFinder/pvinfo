@@ -54,7 +54,7 @@ export default function CaputLogTable(props) {
             },];
         const filters = [
             {
-                field: "@timestamp", 
+                field: "@timestamp",
                 values: [{
                     from: startDate.toISOString(),
                     to: endDate.toISOString(),
@@ -66,7 +66,6 @@ export default function CaputLogTable(props) {
                 values: [props.pvName],
             },
         ];
-        console.log("Generated Filters:", filters);
         return filters;
     };
     
@@ -81,7 +80,7 @@ export default function CaputLogTable(props) {
                     weight: 3
                 },
             },
-            result_fields: { 
+            result_fields: {
                 old: { raw: {} },
                 user: { raw: {} },
                 message: { raw: {} },
