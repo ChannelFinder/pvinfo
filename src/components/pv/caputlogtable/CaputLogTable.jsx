@@ -12,17 +12,18 @@ import "@elastic/react-search-ui-views/lib/styles/styles.css";
 import moment from "moment";
 
 const apiHost = import.meta.env.REACT_APP_CAPUTLOG_URL;
-const apikey = import.meta.env.REACT_APP_ELASTICSEARCH_API_KEY ? "" : "";
+const apikey = import.meta.env.REACT_APP_ELASTICSEARCH_API_KEY || "";
+const elasticIndexName = import.meta.env.REACT_APP_ELASTICSEARCH_INDEX_NAME || "";
 
 // Choice to use Elasticsearch directly or an API Proxy
-var connector = import.meta.env.REACT_APP_USE_CAPUT_ELASTICSEARCH_CONNNECTOR === "true"
-    ? new ElasticSearchAPIConnector({
-            host: `${apiHost}`,
-            index: "putlog-*",
-            apiKey: `${apikey}`
-        })
-    : new ApiProxyConnector({
+var connector = import.meta.env.REACT_APP_USE_CAPUT_API_PROXY_CONNNECTOR === "true"
+    ? new ApiProxyConnector({
             basePath: `${apiHost}`
+        })
+    : new ElasticSearchAPIConnector({
+            host: `${apiHost}`,
+            index: `${elasticIndexName}`,
+            apiKey: `${apikey}`
         });
 
 export default function CaputLogTable(props) {
