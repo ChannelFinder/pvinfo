@@ -9,6 +9,7 @@ import ValueTable from "./valuetable";
 import OLOGTable from "./ologtable";
 import AlarmLogTable from "./alarmlogtable/AlarmLogTable";
 import AlarmConfigTable from "./alarmconfigtable/AlarmConfigTable";
+import CaputLogTable from "./caputlogtable/CaputLogTable";
 import PropTypes from "prop-types";
 
 const propTypes = {
@@ -234,6 +235,9 @@ function PV(props) {
                     }
                     {
                         import.meta.env.REACT_APP_USE_AL === "true" ? <AlarmConfigTable pvName={id} /> : null
+                    }
+                    {
+                        import.meta.env.REACT_APP_USE_CAPUTLOG === "true" ? <CaputLogTable pvName={id}/> : null
                     }
                 </Box>
             </Fragment >
