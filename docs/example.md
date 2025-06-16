@@ -11,3 +11,5 @@
 ![Alarm Log](./alarm-log.png?raw=true "Alarm Log")
 
 ![Services](./services.png?raw=true "Services")
+
+![Caput Log](./caputlog-details.png?raw=true "Caput Log")
