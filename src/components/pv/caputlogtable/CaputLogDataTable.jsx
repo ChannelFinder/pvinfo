@@ -32,8 +32,8 @@ const CaputLogDataTable = ({ results }) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {sortedResults.map((result, index) => (
-            <TableRow key={index}>
+          {sortedResults.map((result) => (
+            <TableRow key={result.id.raw}>
               <TableCell>{result.timestamp.raw}</TableCell>
               <TableCell>{result.pv.raw}</TableCell>
               <TableCell>{result.client.raw}</TableCell>

@@ -10,13 +10,18 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "@elastic/react-search-ui-views/lib/styles/styles.css";
 import moment from "moment";
+import PropTypes from "prop-types";
+
+const propTypes = {
+    pvName: PropTypes.string,
+}
 
 const apiHost = import.meta.env.REACT_APP_CAPUTLOG_URL;
 const apikey = import.meta.env.REACT_APP_ELASTICSEARCH_API_KEY || "";
 const elasticIndexName = import.meta.env.REACT_APP_ELASTICSEARCH_INDEX_NAME || "";
 
 // Choice to use Elasticsearch directly or an API Proxy
-var connector = import.meta.env.REACT_APP_USE_CAPUT_API_PROXY_CONNNECTOR === "true"
+let connector = import.meta.env.REACT_APP_USE_CAPUT_API_PROXY_CONNNECTOR === "true"
     ? new ApiProxyConnector({
             basePath: `${apiHost}`
         })
@@ -26,7 +31,7 @@ var connector = import.meta.env.REACT_APP_USE_CAPUT_API_PROXY_CONNNECTOR === "tr
             apiKey: `${apikey}`
         });
 
-export default function CaputLogTable(props) {
+function CaputLogTable(props) {
 
     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState(null);
@@ -89,7 +94,8 @@ export default function CaputLogTable(props) {
                 new: { raw: {} },
                 "@ioctimestamp": { raw: {} },
                 "@timestamp": { raw: {} },
-                timestamp: { raw: {} }
+                timestamp: { raw: {} },
+                id: { raw: {} }
             },
             facets: {
                 "user.keyword": { type: "value", size: 30, sort: "count" },
@@ -143,3 +149,6 @@ export default function CaputLogTable(props) {
         </Accordion>
     );
 }
+
+CaputLogTable.propTypes = propTypes;
+export default CaputLogTable;
