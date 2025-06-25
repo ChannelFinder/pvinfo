@@ -32,7 +32,7 @@ function handleParams(params) {
         else {
             urlParams.pvName = params.pvName;
         }
-        urlParams.pvName = urlParams.pvName.replace(/,/g, '?');
+        urlParams.pvName = encodeURIComponent(urlParams.pvName.replace(/,/g, '?'));
     }
     if (params['standardSearch']) {
         urlParams.params = standardParse(params);
