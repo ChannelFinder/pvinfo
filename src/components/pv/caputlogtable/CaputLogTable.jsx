@@ -73,7 +73,7 @@ function CaputLogTable(props) {
         ];
         return filters;
     };
-    
+
     const searchConfig = {
         alwaysSearchOnInitialLoad: true,
         apiConnector: connector,

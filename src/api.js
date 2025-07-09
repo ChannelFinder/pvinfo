@@ -7,6 +7,7 @@ const pvwsURL = import.meta.env.PROD ? import.meta.env.REACT_APP_PVWS_URL : impo
 const pvwsHTTPURL = import.meta.env.PROD ? import.meta.env.REACT_APP_PVWS_HTTP_URL : import.meta.env.REACT_APP_PVWS_HTTP_URL_DEV;
 const serverURL = import.meta.env.PROD ? import.meta.env.REACT_APP_BASE_URL : import.meta.env.REACT_APP_BASE_URL_DEV;
 const alarmLogURL = import.meta.env.PROD ? import.meta.env.REACT_APP_AL_URL : import.meta.env.REACT_APP_AL_URL_DEV;
+const caputlogURL = import.meta.env.PROD ? import.meta.env.REACT_APP_CAPUTLOG_URL : import.meta.env.REACT_APP_CAPUTLOG_URL_DEV;
 const ologStartDays = import.meta.env.REACT_APP_OLOG_START_TIME_DAYS !== '' ?
     `&start=${import.meta.env.REACT_APP_OLOG_START_TIME_DAYS}days&end=now`
     : "";
@@ -32,7 +33,7 @@ function handleParams(params) {
         else {
             urlParams.pvName = params.pvName;
         }
-        urlParams.pvName = urlParams.pvName.replace(/,/g, '?');
+        urlParams.pvName = encodeURIComponent(urlParams.pvName.replace(/,/g, '?'));
     }
     if (params['standardSearch']) {
         urlParams.params = standardParse(params);
@@ -166,6 +167,10 @@ async function getOLOGInfo() {
     return await standardQuery(ologURL);
 }
 
+async function getCaputLogInfo() {
+    return await standardQuery(caputlogURL);
+}
+
 async function getPVWSInfo(path) {
     if (pvwsHTTPURL === "") return;
     if (pvwsHTTPURL.slice(-1) !== "/") {
@@ -235,6 +240,7 @@ const api = {
     CFI_QUERY: getCFInfo,
     ALI_QUERY: getALInfo,
     OLI_QUERY: getOLOGInfo,
+    CAPUTLOG_QUERY: getCaputLogInfo,
     PVWSI_QUERY: getPVWSInfo,
     CF_URL: channelFinderURL,
     OLOG_URL: ologURL,
