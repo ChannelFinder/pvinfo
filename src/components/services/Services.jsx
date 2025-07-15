@@ -23,6 +23,7 @@ function Services() {
     const useOLOG = import.meta.env.REACT_APP_USE_OLOG;
     const usePVWS = import.meta.env.REACT_APP_USE_PVWS;
     const useCaputlog = import.meta.env.REACT_APP_USE_CAPUTLOG;
+    const isCaputLogProxy = import.meta.env.REACT_APP_USE_CAPUT_API_PROXY_CONNNECTOR;
 
     const { sendJsonMessage, lastJsonMessage } = useWebSocket(api.PVWS_URL, {
         shouldReconnect: (closeEvent) => true
@@ -161,13 +162,21 @@ function Services() {
                                 />
                             ) : null
                         }
-                                                {
+                        {
                             useCaputlog === "true" ? (
                                 <Service servName="Caput Log" connected={caputLogConnected}
-                                    data={{
-                                        "Elastic Status": caputLogData?.elasticsearch?.health?.status,
-                                        "Elastic Version": caputLogData?.elasticsearch?.info?.version?.number,
-                                    }}
+                                    data={
+                                        isCaputLogProxy === "true"
+                                        ? {
+                                            "Elastic Status": caputLogData?.elasticsearch?.connection,
+                                            "Elastic Health": caputLogData?.elasticsearch?.health?.status,
+                                            "Elastic Version": caputLogData?.elasticsearch?.info?.version?.number,
+                                            }
+                                        : {
+                                            "Elastic Status": caputLogData?.elastic?.status,
+                                            "Elastic Version": caputLogData?.elastic?.version,
+                                            }
+                                    }
                                 />
                             ) : null
                         }

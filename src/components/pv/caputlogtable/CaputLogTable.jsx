@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-import { ApiProxyConnector } from "@elastic/search-ui-elasticsearch-connector";
-import ElasticSearchAPIConnector from "@elastic/search-ui-elasticsearch-connector";
 import { ElasticsearchProvider } from "./ElasticsearchProvider";
 import { SearchProvider } from "@elastic/react-search-ui";
 import { Accordion, AccordionDetails, AccordionSummary, Typography, Box, TextField, InputAdornment } from "@mui/material";
@@ -11,25 +9,11 @@ import "react-datepicker/dist/react-datepicker.css";
 import "@elastic/react-search-ui-views/lib/styles/styles.css";
 import moment from "moment";
 import PropTypes from "prop-types";
+import api from "../../../api";
 
 const propTypes = {
     pvName: PropTypes.string,
 }
-
-const apiHost = import.meta.env.REACT_APP_CAPUTLOG_URL;
-const apikey = import.meta.env.REACT_APP_ELASTICSEARCH_API_KEY || "";
-const elasticIndexName = import.meta.env.REACT_APP_ELASTICSEARCH_INDEX_NAME || "";
-
-// Choice to use Elasticsearch directly or an API Proxy
-let connector = import.meta.env.REACT_APP_USE_CAPUT_API_PROXY_CONNNECTOR === "true"
-    ? new ApiProxyConnector({
-            basePath: `${apiHost}`
-        })
-    : new ElasticSearchAPIConnector({
-            host: `${apiHost}`,
-            index: `${elasticIndexName}`,
-            apiKey: `${apikey}`
-        });
 
 function CaputLogTable(props) {
 
@@ -76,8 +60,9 @@ function CaputLogTable(props) {
 
     const searchConfig = {
         alwaysSearchOnInitialLoad: true,
-        apiConnector: connector,
+        apiConnector: api.CAPUTLOG_CONNECTOR,
         hasA11yNotifications: true,
+        trackUrlState: false,
         searchQuery: {
             filters: buildFilter(),
             search_fields: {

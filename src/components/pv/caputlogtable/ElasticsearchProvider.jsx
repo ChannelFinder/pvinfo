@@ -36,7 +36,11 @@ export const ElasticsearchProvider = () => {
           bodyHeader={
             <React.Fragment>
               {wasSearched && <PagingInfo />}
-              {wasSearched && <ResultsPerPage />}
+              {wasSearched && (
+                <div style={{ position: 'relative', zIndex: 20, marginBottom: '10px' }}>
+                  <ResultsPerPage/>
+                </div>
+              )}
             </React.Fragment>
           }
           bodyFooter={<Paging />}
