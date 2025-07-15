@@ -1,3 +1,6 @@
+import { ApiProxyConnector } from "@elastic/search-ui-elasticsearch-connector";
+import ElasticSearchAPIConnector from "@elastic/search-ui-elasticsearch-connector";
+
 const channelFinderURL = import.meta.env.PROD ? import.meta.env.REACT_APP_CF_URL : import.meta.env.REACT_APP_CF_URL_DEV;
 const cfMaxResults = parseInt(import.meta.env.REACT_APP_CF_MAX_RESULTS);
 const ologURL = import.meta.env.PROD ? import.meta.env.REACT_APP_OLOG_URL : import.meta.env.REACT_APP_OLOG_URL_DEV;
@@ -7,6 +10,7 @@ const pvwsURL = import.meta.env.PROD ? import.meta.env.REACT_APP_PVWS_URL : impo
 const pvwsHTTPURL = import.meta.env.PROD ? import.meta.env.REACT_APP_PVWS_HTTP_URL : import.meta.env.REACT_APP_PVWS_HTTP_URL_DEV;
 const serverURL = import.meta.env.PROD ? import.meta.env.REACT_APP_BASE_URL : import.meta.env.REACT_APP_BASE_URL_DEV;
 const alarmLogURL = import.meta.env.PROD ? import.meta.env.REACT_APP_AL_URL : import.meta.env.REACT_APP_AL_URL_DEV;
+const caputlogURL = import.meta.env.PROD ? import.meta.env.REACT_APP_CAPUTLOG_URL : import.meta.env.REACT_APP_CAPUTLOG_URL_DEV;
 const ologStartDays = import.meta.env.REACT_APP_OLOG_START_TIME_DAYS !== '' ?
     `&start=${import.meta.env.REACT_APP_OLOG_START_TIME_DAYS}days&end=now`
     : "";
@@ -19,6 +23,19 @@ const alarmLogStartDays = import.meta.env.REACT_APP_AL_START_TIME_DAYS !== '' ?
 const alarmLogMaxResults = import.meta.env.REACT_APP_AL_MAX_RESULTS !== '' ?
     `&size=${import.meta.env.REACT_APP_AL_MAX_RESULTS}`
     : "";
+
+const elasticIndexName = import.meta.env.REACT_APP_ELASTICSEARCH_INDEX_NAME;
+const elasticApikey = import.meta.env.REACT_APP_ELASTICSEARCH_API_KEY;
+// Choice to use Elasticsearch directly or an API Proxy
+const caputLogConnector = import.meta.env.REACT_APP_USE_CAPUT_API_PROXY_CONNNECTOR === "true"
+    ? new ApiProxyConnector({
+            basePath: `${caputlogURL}`
+        })
+    : new ElasticSearchAPIConnector({
+            host: `${caputlogURL}`,
+            index: `${elasticIndexName}`,
+            apiKey: `${elasticApikey}`
+        });
 
 function handleParams(params) {
     let urlParams = { "pvName": "*", "params": "" };
@@ -166,6 +183,10 @@ async function getOLOGInfo() {
     return await standardQuery(ologURL);
 }
 
+async function getCaputLogInfo() {
+    return await standardQuery(caputlogURL);
+}
+
 async function getPVWSInfo(path) {
     if (pvwsHTTPURL === "") return;
     if (pvwsHTTPURL.slice(-1) !== "/") {
@@ -235,6 +256,7 @@ const api = {
     CFI_QUERY: getCFInfo,
     ALI_QUERY: getALInfo,
     OLI_QUERY: getOLOGInfo,
+    CAPUTLOG_QUERY: getCaputLogInfo,
     PVWSI_QUERY: getPVWSInfo,
     CF_URL: channelFinderURL,
     OLOG_URL: ologURL,
@@ -244,6 +266,7 @@ const api = {
     SERVER_URL: serverURL,
     LOG_ENUM: logEnum,
     HELPERS_ENUM: queryHelperEnum,
+    CAPUTLOG_CONNECTOR: caputLogConnector,
 }
 
 export default api;

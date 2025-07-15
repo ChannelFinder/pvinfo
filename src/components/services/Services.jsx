@@ -16,10 +16,14 @@ function Services() {
     const [pvwsSummary, setPVWSSummary] = useState(false);
     const [pvsMonitored, setPVsMonitored] = useState(0);
     const [pvwsConnected, setPVWSConnected] = useState(false);
+    const [caputLogConnected, setCaputLogConnected] = useState(false);
+    const [caputLogData, setCaputLogData] = useState(false);
 
     const useAL = import.meta.env.REACT_APP_USE_AL;
     const useOLOG = import.meta.env.REACT_APP_USE_OLOG;
     const usePVWS = import.meta.env.REACT_APP_USE_PVWS;
+    const useCaputlog = import.meta.env.REACT_APP_USE_CAPUTLOG;
+    const isCaputLogProxy = import.meta.env.REACT_APP_USE_CAPUT_API_PROXY_CONNNECTOR;
 
     const { sendJsonMessage, lastJsonMessage } = useWebSocket(api.PVWS_URL, {
         shouldReconnect: (closeEvent) => true
@@ -67,15 +71,20 @@ function Services() {
         fetchData(api.PVWSI_QUERY, setPVWSSummary, null, "PVWS Summary", "summary");
     }, [setPVWSSummary]);
 
+    const queryCaputLog = useCallback(() => {
+        fetchData(api.CAPUTLOG_QUERY, setCaputLogData, setCaputLogConnected, "CaputLog Info");
+    }, [setCaputLogData, setCaputLogConnected]);
+
     useEffect(() => {
         queryCount({});
         queryCF();
         queryAL();
         queryOLOG();
+        queryCaputLog();
         queryPVWSInfo();
         queryPVWSSummary()
         sendJsonMessage({ "type": "echo", "body": "Hello, PVWS!" })
-    }, [queryCount, queryCF, queryAL, queryOLOG, queryPVWSInfo, queryPVWSSummary, sendJsonMessage])
+    }, [queryCount, queryCF, queryAL, queryOLOG, queryCaputLog, queryPVWSInfo, queryPVWSSummary, sendJsonMessage])
 
     useEffect(() => {
         if (lastJsonMessage !== null) {
@@ -150,6 +159,24 @@ function Services() {
                                         "Total Clients": pvwsSummary?.sockets?.length,
                                         "Currently Monitored PVs": pvsMonitored
                                     }}
+                                />
+                            ) : null
+                        }
+                        {
+                            useCaputlog === "true" ? (
+                                <Service servName="Caput Log" connected={caputLogConnected}
+                                    data={
+                                        isCaputLogProxy === "true"
+                                        ? {
+                                            "Elastic Status": caputLogData?.elasticsearch?.connection,
+                                            "Elastic Health": caputLogData?.elasticsearch?.health?.status,
+                                            "Elastic Version": caputLogData?.elasticsearch?.info?.version?.number,
+                                            }
+                                        : {
+                                            "Elastic Status": caputLogData?.elastic?.status,
+                                            "Elastic Version": caputLogData?.elastic?.version,
+                                            }
+                                    }
                                 />
                             ) : null
                         }

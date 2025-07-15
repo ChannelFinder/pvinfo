@@ -41,11 +41,12 @@ There are many React environment variables avaiable to configure PV Info for you
 - `REACT_APP_OLOG_URL`
 - `REACT_APP_AL_URL`
 
-The only required service is Channel Finder. To turn off PV Web Socket, Archiver Web Viewer, or OLOG:
+The only required service is Channel Finder. To turn off PV Web Socket, Archiver Web Viewer, OLOG, or CAPUT Log:
 - `REACT_APP_USE_PVWS=false`
 - `REACT_APP_USE_AA=false`
 - `REACT_APP_USE_OLOG=false`
 - `REACT_APP_USE_AL=false`
+- `REACT_APP_USE_CAPUTLOG=false`
 
 Other interesting variables are the channel finder properties that you can configure to show as searchable on the homepage:
 - `REACT_APP_CF_RECORD_TYPE`
