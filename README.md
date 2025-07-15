@@ -9,7 +9,8 @@ PV Info also integrates with several other EPICS high level services:
 - [PV Web Socket](https://github.com/ornl-epics/pvws) is used to show live PV data including the value, alarm status/severity, alarm limits, etc.
 - [Phoebus OLOG](https://github.com/Olog/phoebus-olog) allows you to display any log entries that contain the specific PV name on the PV "details" page.
 - [Phoebus Alarm Logger](https://github.com/ControlSystemStudio/phoebus/tree/master/services/alarm-logger) displays the alarm history for a specific PV on it's "details" page.
-- [Archiver Appliance Web Viewer](https://github.com/slacmshankar/epicsarchiverap) is used to show the archived history of PVs. Since this is simply an external link in PV Info to the archiver web viewer, other archive engines and their own web viewers can easily be used.
+- [Archiver Appliance Web Viewer](https://github.com/archiver-appliance/epicsarchiverap) is used to show the archived history of PVs. Since this is simply an external link in PV Info to the archiver web viewer, other archive engines and their own web viewers can easily be used.
+- [caPutLog (with Elasticsearch)](https://github.com/epics-modules/caPutLog) displays the who/what/when/where history of caputs to a specific PV on the PV "details" page.
 
 It is important to note that **only the Channel Finder integration is required to use PV Info**.
 ![PV Info Arch](docs/arch.svg?raw=true "PV Info Arch")
@@ -41,7 +42,7 @@ There are many React environment variables avaiable to configure PV Info for you
 - `REACT_APP_OLOG_URL`
 - `REACT_APP_AL_URL`
 
-The only required service is Channel Finder. To turn off PV Web Socket, Archiver Web Viewer, OLOG, or CAPUT Log:
+The only required service is Channel Finder. To turn off PV Web Socket, Archiver Web Viewer, OLOG, or caPutLog:
 - `REACT_APP_USE_PVWS=false`
 - `REACT_APP_USE_AA=false`
 - `REACT_APP_USE_OLOG=false`
