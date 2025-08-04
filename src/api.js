@@ -266,6 +266,7 @@ const api = {
     SERVER_URL: serverURL,
     LOG_ENUM: logEnum,
     HELPERS_ENUM: queryHelperEnum,
+    CAPUTLOG_URL: caputlogURL,
     CAPUTLOG_CONNECTOR: caputLogConnector,
 }
 
