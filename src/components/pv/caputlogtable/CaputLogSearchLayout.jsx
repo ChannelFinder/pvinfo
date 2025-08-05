@@ -19,106 +19,106 @@ const propTypes = {
 }
 
 function CaputLogSearchLayout({
-  showSearchBox = false,
-  facetFields = [],
-  children
+    showSearchBox = false,
+    facetFields = [],
+    children
 }) {
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
-  const { wasSearched, setFilter, results } = useSearch();
+    const [startDate, setStartDate] = useState(null);
+    const [endDate, setEndDate] = useState(null);
+    const { wasSearched, setFilter, results } = useSearch();
 
-  const onDateChange = (dates) => {
-    const [start, end] = dates;
-    const adjustedStartDate = start ? moment(start).startOf("day").toDate() : null;
-    const adjustedEndDate = end ? moment(end).endOf("day").toDate() : null;
-    setStartDate(adjustedStartDate);
-    setEndDate(adjustedEndDate);
-    if (!adjustedStartDate || !adjustedEndDate) {
-      setFilter("@timestamp", undefined);
-    } else {
-      setFilter("@timestamp", {
-        name: "@timestamp",
-        from: adjustedStartDate.toISOString(),
-        to: adjustedEndDate.toISOString(),
-      });
-    }
-  };
+    const onDateChange = (dates) => {
+        const [start, end] = dates;
+        const adjustedStartDate = start ? moment(start).startOf("day").toDate() : null;
+        const adjustedEndDate = end ? moment(end).endOf("day").toDate() : null;
+        setStartDate(adjustedStartDate);
+        setEndDate(adjustedEndDate);
+        if (!adjustedStartDate || !adjustedEndDate) {
+            clearFilter("@timestamp");
+        } else {
+            setFilter("@timestamp", {
+                name: "@timestamp",
+                from: adjustedStartDate.toISOString(),
+                to: adjustedEndDate.toISOString(),
+            });
+        }
+    };
 
-  return (
-    <div>
-      <ErrorBoundary>
-        <Layout
-          header={
-            <Box sx={{
-              width: "100%",
-              maxWidth: "100%",
-              display: "flex",
-              flexDirection: "column",
-            }} >
-              {showSearchBox && (
-                <SearchBox inputProps={{ placeholder: "Search by PV Name, User, or Client" }} />
-              )}
-              <DatePicker
-                selected={startDate}
-                onChange={onDateChange}
-                startDate={startDate}
-                endDate={endDate}
-                selectsRange={true}
-                showPreviousMonths
-                monthsShown={2}
-                placeholderText="Date Range for Caput Log Data"
-                withPortal
-                customInput={
-                  <TextField
-                    fullWidth
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <CalendarMonthIcon />
-                        </InputAdornment>
-                      ),
-                    }}
-                    variant="outlined"
-                    size="small"
-                    placeholder="Date Range for Caput Log Data"
-                  />
-                }
-              />
-            </Box>
-          }
-          bodyContent={
-            wasSearched ? (
-              children(results)
-            ) : (
-              <p>No results to display.</p>
-            )
-          }
-          sideContent={
-              facetFields.map(facet => (
-                <Facet
-                  key={facet.field}
-                  field={facet.field}
-                  label={facet.label}
-                  filterType="any"
-                  isFilterable={false}
+    return (
+        <div>
+            <ErrorBoundary>
+                <Layout
+                    header={
+                        <Box sx={{
+                            width: "100%",
+                            maxWidth: "100%",
+                            display: "flex",
+                            flexDirection: "column",
+                        }} >
+                            {showSearchBox && (
+                                <SearchBox inputProps={{ placeholder: "Search by PV Name, User, or Client" }} />
+                            )}
+                            <DatePicker
+                                selected={startDate}
+                                onChange={onDateChange}
+                                startDate={startDate}
+                                endDate={endDate}
+                                selectsRange={true}
+                                showPreviousMonths
+                                monthsShown={2}
+                                placeholderText="Date Range for Caput Log Data"
+                                withPortal
+                                customInput={
+                                    <TextField
+                                        fullWidth
+                                        InputProps={{
+                                            startAdornment: (
+                                                <InputAdornment position="start">
+                                                    <CalendarMonthIcon />
+                                                </InputAdornment>
+                                            ),
+                                        }}
+                                        variant="outlined"
+                                        size="small"
+                                        placeholder="Date Range for Caput Log Data"
+                                    />
+                                }
+                            />
+                        </Box>
+                    }
+                    bodyContent={
+                        wasSearched ? (
+                            children(results)
+                        ) : (
+                            <p>No results to display.</p>
+                        )
+                    }
+                    sideContent={
+                        facetFields.map(facet => (
+                            <Facet
+                                key={facet.field}
+                                field={facet.field}
+                                label={facet.label}
+                                filterType="any"
+                                isFilterable={false}
+                            />
+                        ))
+                    }
+                    bodyHeader={
+                        <React.Fragment>
+                            {wasSearched && <PagingInfo />}
+                            {wasSearched && (
+                                <div style={{ position: 'relative', zIndex: 20, marginBottom: '10px' }}>
+                                    <ResultsPerPage />
+                                </div>
+                            )}
+                        </React.Fragment>
+                    }
+                    bodyFooter={<Paging />}
                 />
-              ))
-          }
-          bodyHeader={
-            <React.Fragment>
-              {wasSearched && <PagingInfo />}
-              {wasSearched && (
-                <div style={{ position: 'relative', zIndex: 20, marginBottom: '10px' }}>
-                  <ResultsPerPage />
-                </div>
-              )}
-            </React.Fragment>
-          }
-          bodyFooter={<Paging />}
-        />
-      </ErrorBoundary>
-    </div>
-  );
+            </ErrorBoundary>
+        </div>
+    );
 }
 
 CaputLogSearchLayout.propTypes = propTypes;
