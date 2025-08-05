@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Layout } from "@elastic/react-search-ui-views";
 import { ErrorBoundary, Facet, PagingInfo, ResultsPerPage, Paging, useSearch, SearchBox } from "@elastic/react-search-ui";
 import { Box, TextField, InputAdornment } from "@mui/material";
@@ -25,7 +25,12 @@ function CaputLogSearchLayout({
 }) {
     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState(null);
-    const { wasSearched, setFilter, results } = useSearch();
+    const { wasSearched, setFilter, results, setSort } = useSearch();
+
+    // Set initial sort to @timestamp desc on mount
+    useEffect(() => {
+        setSort("@timestamp", "desc");
+    }, [setSort]);
 
     const onDateChange = (dates) => {
         const [start, end] = dates;
