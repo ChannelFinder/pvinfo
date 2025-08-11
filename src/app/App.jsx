@@ -10,7 +10,7 @@ import Plot from '../components/plot';
 import Header from '../components/header';
 import Help from '../components/help';
 import Services from '../components/services';
-import CaputLogPage from '../components/pv/caputlogtable/CaputLogPage';
+import CaputLogPage from '../components/caputlog/CaputLogPage';
 import Page404 from '../Page404';
 
 function App() {

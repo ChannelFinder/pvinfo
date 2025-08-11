@@ -3,6 +3,7 @@ import { SearchProvider } from "@elastic/react-search-ui";
 import CaputLogDataTable from "./CaputLogDataTable";
 import { getCaputLogSearchConfig } from "./caputlogSearchConfig";
 import CaputLogSearchLayout from "./CaputLogSearchLayout";
+import "@elastic/react-search-ui-views/lib/styles/styles.css";
 
 function CaputLogPage(props) {
   const searchConfig = getCaputLogSearchConfig({

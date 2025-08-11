@@ -68,7 +68,7 @@ function Header() {
                     </ListItemIcon>
                     <ListItemText primary="Plotting" />
                   </ListItemButton>
-                  {import.meta.env.REACT_APP_USE_CAPUTLOG.toLowerCase() === "true" &&
+                  {(import.meta.env.REACT_APP_USE_CAPUTLOG || "").toLowerCase() === "true" &&
                     <ListItemButton key="CaputLog" component={NavLink} to="/caputlog" onClick={handleMenuToggle} divider color="primary">
                       <ListItemIcon>
                         <InfoIcon color="primary" />
@@ -101,12 +101,12 @@ function Header() {
             <NavLink to="/ioc" style={{ textDecoration: "none", color: 'inherit', paddingRight: 40 }}>
               <Typography variant="h5">IOCs</Typography>
             </NavLink>
-            {import.meta.env.REACT_APP_USE_AA.toLowerCase() === "true" &&
+            {(import.meta.env.REACT_APP_USE_AA || "").toLowerCase() === "true" &&
               <NavLink to="/plot" style={{ textDecoration: "none", color: 'inherit', paddingRight: 40 }}>
                 <Typography variant="h5">Plotting</Typography>
               </NavLink>
             }
-            {import.meta.env.REACT_APP_USE_CAPUTLOG.toLowerCase() === "true" &&
+            {(import.meta.env.REACT_APP_USE_CAPUTLOG || "").toLowerCase() === "true" &&
               <NavLink to="/caputlog" style={{ textDecoration: "none", color: 'inherit', paddingRight: 40 }}>
                 <Typography variant="h5">Caput Log</Typography>
               </NavLink>

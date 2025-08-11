@@ -3,9 +3,10 @@ import { SearchProvider } from "@elastic/react-search-ui";
 import { Accordion, AccordionDetails, AccordionSummary, Typography } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import PropTypes from "prop-types";
-import { getCaputLogSearchConfig } from "./caputlogSearchConfig";
-import CaputLogDataTable from "./CaputLogDataTable";
-import CaputLogSearchLayout from "./CaputLogSearchLayout";
+import { getCaputLogSearchConfig } from "../../caputlog/caputlogSearchConfig";
+import CaputLogDataTable from "../../caputlog/CaputLogDataTable";
+import CaputLogSearchLayout from "../../caputlog/CaputLogSearchLayout";
+import "@elastic/react-search-ui-views/lib/styles/styles.css";
 
 const propTypes = {
     pvName: PropTypes.string,
@@ -19,13 +20,8 @@ function CaputLogTable(props) {
     }
 
     const searchConfig = getCaputLogSearchConfig({
-        filters: [
-            {
-                field: "pv.keyword",
-                values: [props.pvName],
-            },
-        ],
         search_fields: { pv: { weight: 3 } },
+        initialState: { searchTerm: props.pvName ? `${props.pvName}*` : "" }
     });
 
     return (
@@ -34,13 +30,14 @@ function CaputLogTable(props) {
                 <Typography sx={{ fontSize: 18, fontWeight: "medium" }}>Caput Log Data</Typography>
             </AccordionSummary>
             <AccordionDetails sx={{ p: 0 }}>
-                <SearchProvider config={searchConfig}>
+                <SearchProvider config={searchConfig} >
                     <CaputLogSearchLayout
                         showSearchBox={false}
                         facetFields={[
                             { field: "user.keyword", label: "User" },
                             { field: "client.keyword", label: "Client" },
                         ]}
+                        initialSearchTerm={ props.pvName ? `${props.pvName}*` : "" }
                     >
                         {(results) => <CaputLogDataTable results={results} />}
                     </CaputLogSearchLayout>

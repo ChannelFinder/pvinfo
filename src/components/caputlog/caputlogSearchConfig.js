@@ -1,6 +1,6 @@
-import api from "../../../api";
+import api from "../../api";
 
-export function getCaputLogSearchConfig({ filters = [], search_fields = {}, facets = {} } = {}) {
+export function getCaputLogSearchConfig({ filters = [], search_fields = {}, facets = {}, initialState = {} } = {}) {
   return {
     alwaysSearchOnInitialLoad: true,
     apiConnector: api.CAPUTLOG_CONNECTOR,
@@ -25,7 +25,8 @@ export function getCaputLogSearchConfig({ filters = [], search_fields = {}, face
         "user.keyword": { type: "value", size: 30, sort: "count" },
         "client.keyword": { type: "value", size: 30, sort: "count" },
         ...facets
-      }
-    }
+      },
+    },
+    initialState: { ...initialState }
   };
 }

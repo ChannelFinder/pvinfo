@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Layout } from "@elastic/react-search-ui-views";
 import { ErrorBoundary, Facet, PagingInfo, ResultsPerPage, Paging, useSearch, SearchBox } from "@elastic/react-search-ui";
-import { Box, TextField, InputAdornment } from "@mui/material";
+import { Box, Button, TextField, InputAdornment } from "@mui/material";
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import "@elastic/react-search-ui-views/lib/styles/styles.css";
+import './CaputLogSearchLayout.css';
 import moment from "moment";
 import PropTypes from "prop-types";
 
@@ -15,17 +15,19 @@ const propTypes = {
         field: PropTypes.string.isRequired,
         label: PropTypes.string.isRequired,
     })),
+    initialSearchTerm: PropTypes.string,
     children: PropTypes.func.isRequired,
 }
 
 function CaputLogSearchLayout({
     showSearchBox = false,
     facetFields = [],
+    initialSearchTerm = "",
     children
 }) {
     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState(null);
-    const { wasSearched, setFilter, results, setSort } = useSearch();
+    const { wasSearched, setFilter, removeFilter, results, setSort, setSearchTerm } = useSearch();
 
     // Set initial sort to @timestamp desc on mount
     useEffect(() => {
@@ -39,7 +41,7 @@ function CaputLogSearchLayout({
         setStartDate(adjustedStartDate);
         setEndDate(adjustedEndDate);
         if (!adjustedStartDate || !adjustedEndDate) {
-            clearFilter("@timestamp");
+            removeFilter("@timestamp");
         } else {
             setFilter("@timestamp", {
                 name: "@timestamp",
@@ -47,6 +49,13 @@ function CaputLogSearchLayout({
                 to: adjustedEndDate.toISOString(),
             });
         }
+    };
+
+    const clearAllFilters = () => {
+        setStartDate(null);
+        setEndDate(null);
+        setSearchTerm(initialSearchTerm);
+        removeFilter("@timestamp");
     };
 
     return (
@@ -63,32 +72,39 @@ function CaputLogSearchLayout({
                             {showSearchBox && (
                                 <SearchBox inputProps={{ placeholder: "Search by PV Name, User, or Client" }} />
                             )}
-                            <DatePicker
-                                selected={startDate}
-                                onChange={onDateChange}
-                                startDate={startDate}
-                                endDate={endDate}
-                                selectsRange={true}
-                                showPreviousMonths
-                                monthsShown={2}
-                                placeholderText="Date Range for Caput Log Data"
-                                withPortal
-                                customInput={
-                                    <TextField
-                                        fullWidth
-                                        InputProps={{
-                                            startAdornment: (
-                                                <InputAdornment position="start">
-                                                    <CalendarMonthIcon />
-                                                </InputAdornment>
-                                            ),
-                                        }}
-                                        variant="outlined"
-                                        size="small"
-                                        placeholder="Date Range for Caput Log Data"
+                            <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1, width: '100%' }}>
+                                <Box sx={{ flex: 1 }}>
+                                    <DatePicker
+                                        selected={startDate}
+                                        onChange={onDateChange}
+                                        startDate={startDate}
+                                        endDate={endDate}
+                                        selectsRange={true}
+                                        showPreviousMonths
+                                        monthsShown={2}
+                                        placeholderText="Date Range for Caput Log Data"
+                                        withPortal
+                                        customInput={
+                                            <TextField
+                                                fullWidth
+                                                InputProps={{
+                                                    startAdornment: (
+                                                        <InputAdornment position="start">
+                                                            <CalendarMonthIcon />
+                                                        </InputAdornment>
+                                                    ),
+                                                }}
+                                                variant="outlined"
+                                                size="small"
+                                                placeholder="Date Range for Caput Log Data"
+                                            />
+                                        }
                                     />
-                                }
-                            />
+                                </Box>
+                                <Button variant="contained" onClick={clearAllFilters}>
+                                    Clear
+                                </Button>
+                            </Box>
                         </Box>
                     }
                     bodyContent={
