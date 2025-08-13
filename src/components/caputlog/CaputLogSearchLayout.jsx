@@ -15,19 +15,17 @@ const propTypes = {
         field: PropTypes.string.isRequired,
         label: PropTypes.string.isRequired,
     })),
-    initialSearchTerm: PropTypes.string,
     children: PropTypes.func.isRequired,
 }
 
 function CaputLogSearchLayout({
     showSearchBox = false,
     facetFields = [],
-    initialSearchTerm = "",
     children
 }) {
     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState(null);
-    const { wasSearched, setFilter, removeFilter, results, setSort, setSearchTerm } = useSearch();
+    const { wasSearched, setFilter, removeFilter, results, setSort } = useSearch();
 
     // Set initial sort to @timestamp desc on mount
     useEffect(() => {
@@ -51,10 +49,9 @@ function CaputLogSearchLayout({
         }
     };
 
-    const clearAllFilters = () => {
+    const clearDateFilters = () => {
         setStartDate(null);
         setEndDate(null);
-        setSearchTerm(initialSearchTerm);
         removeFilter("@timestamp");
     };
 
@@ -101,7 +98,7 @@ function CaputLogSearchLayout({
                                         }
                                     />
                                 </Box>
-                                <Button variant="contained" onClick={clearAllFilters}>
+                                <Button variant="contained" onClick={clearDateFilters}>
                                     Clear
                                 </Button>
                             </Box>
