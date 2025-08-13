@@ -1,5 +1,5 @@
 import { ApiProxyConnector } from "@elastic/search-ui-elasticsearch-connector";
-import ElasticSearchAPIConnector from "@elastic/search-ui-elasticsearch-connector";
+import CustomElasticSearchAPIConnector from "./components/caputlog/CustomElasticSearchAPIConnector";
 
 const channelFinderURL = import.meta.env.PROD ? import.meta.env.REACT_APP_CF_URL : import.meta.env.REACT_APP_CF_URL_DEV;
 const cfMaxResults = parseInt(import.meta.env.REACT_APP_CF_MAX_RESULTS);
@@ -31,7 +31,7 @@ const caputLogConnector = import.meta.env.REACT_APP_USE_CAPUT_API_PROXY_CONNNECT
     ? new ApiProxyConnector({
             basePath: `${caputlogURL}`
         })
-    : new ElasticSearchAPIConnector({
+    : CustomElasticSearchAPIConnector({
             host: `${caputlogURL}`,
             index: `${elasticIndexName}`,
             apiKey: `${elasticApikey}`
