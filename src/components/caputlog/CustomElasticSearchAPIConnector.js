@@ -8,7 +8,7 @@ export default function CustomElasticSearchAPIConnector(config) {
             // If searchTerm ends with '*', use phrase_prefix for prefix search
             if (searchTerm.includes('*')) {
                 const prefix = searchTerm.slice(0, -2);
-                const fields = queryConfig && queryConfig.search_fields ? Object.keys(queryConfig.search_fields) : [];
+                const fields = queryConfig?.search_fields ? Object.keys(queryConfig.search_fields) : [];
                 if (fields.length > 0) {
                     return {
                         multi_match: {
