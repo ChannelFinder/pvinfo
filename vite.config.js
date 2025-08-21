@@ -2,6 +2,7 @@ import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
 import envCompatible from "vite-plugin-env-compatible";
 import svgrPlugin from "vite-plugin-svgr";
+import path from "path";
 import * as child from "child_process";
 
 
@@ -9,18 +10,46 @@ import * as child from "child_process";
 // https://stackoverflow.com/questions/71162040/how-to-insert-git-info-in-environment-variables-using-vite
 // https://stackoverflow.com/questions/70436753/how-to-add-commit-hash-into-reactjs-vite-config-js
 export default defineConfig(({ command, mode }) => {
-    const commitHash = child.execSync("git rev-parse --short HEAD").toString().trimEnd();
-    const commitDate = child.execSync("git log -1 --format='%ad' --date=short --date=format:'%m/%d/%Y'").toString().trimEnd();
-    const errString = "fatal: not a git repository (or any of the parent directories): .git"
-    const errStringShort = "Err: not a git repository";
+    const hardcodedPath = [
+        // Windows
+        'C:\\Windows\\System32',
+        'C:\\Windows',
+        'C:\\Program Files',
+        'C:\\Program Files (x86)',
 
-    if (commitHash !== errString && commitDate !== errString) {
-        process.env.REACT_APP_GIT_SHORT_HASH = commitHash;
-        process.env.REACT_APP_GIT_COMMIT_DATE = commitDate;
-    } else {
-        process.env.REACT_APP_GIT_SHORT_HASH = errStringShort;
-        process.env.REACT_APP_GIT_COMMIT_DATE = errStringShort;
+        // Linux and macOS
+        '/bin',
+        '/usr/bin',
+        '/usr/local/bin',
+        '/usr/sbin',
+        '/usr/local/sbin',
+        '/Applications', // for macOS
+    ];
+    process.env.PATH = hardcodedPath.join(path.delimiter);
+
+    let commitHash = "";
+    let commitDate = "";
+    try {
+        commitHash = child.execSync("git rev-parse --short HEAD").toString().trimEnd();
+        commitDate = child.execSync("git log -1 --format='%ad' --date=short --date=format:'%m/%d/%Y'").toString().trimEnd();
+    } catch (error) {
+        console.error("Error occurred while fetching git information: ", error);
+        commitHash = "unknown";
+        commitDate = "unknown";
     }
+
+    // Common error string is "fatal: not a git repository (or any of the parent directories): .git"
+    if (commitHash.includes("fatal")) {
+        console.error("Error occurred while fetching git short hash: ", commitHash);
+        commitHash = "unknown";
+    }
+    if (commitDate.includes("fatal")) {
+        console.error("Error occurred while fetching git commit date: ", commitDate);
+        commitDate = "unknown";
+    }
+    process.env.REACT_APP_GIT_SHORT_HASH = commitHash;
+    process.env.REACT_APP_GIT_COMMIT_DATE = commitDate;
+
     const env = loadEnv(mode, process.cwd(), '')
 
     return {
@@ -42,7 +71,7 @@ export default defineConfig(({ command, mode }) => {
             }),
         ],
         server: {
-            host: "localhost",
+            host: "localhost", // change to 0.0.0.0 or true to listen on all addresses
             port: 3000,
         },
     };
