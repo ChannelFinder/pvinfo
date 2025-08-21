@@ -29,7 +29,10 @@ function ValueCheckbox(props) {
     }
 
     useEffect(() => {
-        if (props.pvStatus === "Inactive" || (import.meta.env.REACT_APP_PVWS_ALLOW_WAVEFORMS !== "true" && props.recordType === "waveform")) {
+        if (props.pvStatus !== "Active" && import.meta.env.REACT_APP_PVWS_IGNORE_CF_PVSTATUS !== "true") {
+            setEnabled(false);
+        }
+        else if (props.recordType === "waveform" && import.meta.env.REACT_APP_PVWS_ALLOW_WAVEFORMS !== "true") {
             setEnabled(false);
         }
     }, [props.pvStatus, props.recordType])
@@ -49,7 +52,7 @@ function ValueCheckbox(props) {
         <Tooltip arrow title={<div>Monitor<br />{props.pvName}</div>}>
             <Checkbox
                 checked={props.checked[props.id] && enabled}
-                disabled={props.pvStatus === "Inactive" || (import.meta.env.REACT_APP_PVWS_ALLOW_WAVEFORMS !== "true" && props.recordType === "waveform")}
+                disabled={!enabled}
                 color="primary"
                 onChange={handleMonitorPVChange(props.id)} >
             </Checkbox>

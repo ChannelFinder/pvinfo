@@ -176,11 +176,12 @@ function PV(props) {
                 </Box>
                 {
                     import.meta.env.REACT_APP_USE_PVWS === "true" ?
-                        import.meta.env.REACT_APP_PVWS_ALLOW_WAVEFORMS === "true" ?
-                        <FormControlLabel control={<Checkbox color="primary" checked={pvMonitoring} onChange={handlePVMonitoringChange}></Checkbox>} disabled={pvData?.pvStatus?.value === "Inactive"} label="Enable Live PV Monitoring" />
+                        <FormControlLabel
+                            control={<Checkbox color="primary" checked={pvMonitoring} onChange={handlePVMonitoringChange}></Checkbox>}
+                            disabled={!((import.meta.env.REACT_APP_PVWS_IGNORE_CF_PVSTATUS === "true" || pvData?.pvStatus?.value === "Active") && (import.meta.env.REACT_APP_PVWS_ALLOW_WAVEFORMS === "true" || pvData?.recordType?.value !== "waveform"))}
+                            label="Enable Live PV Monitoring" />
                         :
-                        <FormControlLabel control={<Checkbox color="primary" checked={pvMonitoring} onChange={handlePVMonitoringChange}></Checkbox>} disabled={pvData?.pvStatus?.value === "Inactive" || pvData?.recordType?.value === "waveform"} label="Enable Live PV Monitoring" />
-                        : null
+                        null
                 }
                 <Box sx={{ border: 1, borderColor: '#D1D5DB', borderRadius: 1, boxShadow: 2, mb: 2, overflow: "hidden" }}>
                     <Accordion expanded={detailsExpanded} onChange={handleDetailExpandedChange()}>
