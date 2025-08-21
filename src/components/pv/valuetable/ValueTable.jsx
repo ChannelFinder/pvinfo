@@ -56,21 +56,23 @@ function ValueTable(props) {
             if (props.pvData === null || Object.keys(props.pvData).length === 0 || props.isLoading) {
                 return;
             }
-            else if (props.pvData.pvStatus?.value === "Inactive") {
-                handleErrorMessage("Can't show live PV values - PV is in Inactive state");
-                handleSeverity("warning");
-                handleOpenErrorAlert(true);
-            }
-            else if (import.meta.env.REACT_APP_PVWS_ALLOW_WAVEFORMS !== "true" && props.pvData.recordType?.value === "waveform") {
+            const status = props.pvData.pvStatus?.value || "Unknown";
+
+            if (import.meta.env.REACT_APP_PVWS_ALLOW_WAVEFORMS !== "true" && props.pvData.recordType?.value === "waveform") {
                 handleErrorMessage("Can't show live PV values - Waveform record type not supported");
                 handleSeverity("warning");
                 handleOpenErrorAlert(true);
             }
-            else if (props.pvData.pvStatus?.value === "Active") {
+            else if (import.meta.env.REACT_APP_PVWS_IGNORE_CF_PVSTATUS === "true" || status === "Active") {
                 if (!subscribed) {
                     sendJsonMessage({ "type": "subscribe", "pvs": [props.pvName] });
                     setSubscribed(true);
                 }
+            }
+            else {
+                handleErrorMessage(`Can't show live PV values - PV is in ${status} state`);
+                handleSeverity("warning");
+                handleOpenErrorAlert(true);
             }
         }
         else {
