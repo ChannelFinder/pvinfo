@@ -37,7 +37,6 @@ function CaputLogTable(props) {
                             { field: "user.keyword", label: "User" },
                             { field: "client.keyword", label: "Client" },
                         ]}
-                        initialSearchTerm={ props.pvName ? `${props.pvName}.*` : "" }
                     >
                         {(results) => <CaputLogDataTable results={results} />}
                     </CaputLogSearchLayout>
