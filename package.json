@@ -1,13 +1,13 @@
 {
   "name": "pvinfo",
   "homepage": "https://yourdomainhere/pvinfo",
-  "version": "2.4.0",
+  "version": "2.4.1",
   "private": true,
   "dependencies": {
-    "@elastic/react-search-ui": "^1.24.1",
-    "@elastic/react-search-ui-views": "^1.24.1",
-    "@elastic/search-ui": "^1.24.1",
-    "@elastic/search-ui-elasticsearch-connector": "^1.24.1",
+    "@elastic/react-search-ui": "^1.24.2",
+    "@elastic/react-search-ui-views": "^1.24.2",
+    "@elastic/search-ui": "^1.24.2",
+    "@elastic/search-ui-elasticsearch-connector": "^1.24.2",
     "@emotion/react": "^11.9.0",
     "@emotion/styled": "^11.8.1",
     "@mui/icons-material": "^5.6.2",

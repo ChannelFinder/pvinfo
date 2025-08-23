@@ -1,2 +1,2 @@
-import CaputLogTable from "./CaputLogTableTest";
+import CaputLogTable from "./CaputLogTable";
 export default CaputLogTable;
