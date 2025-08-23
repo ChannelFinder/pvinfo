@@ -27,15 +27,16 @@ const alarmLogMaxResults = import.meta.env.REACT_APP_AL_MAX_RESULTS !== '' ?
 const elasticIndexName = import.meta.env.REACT_APP_ELASTICSEARCH_INDEX_NAME;
 const elasticApikey = import.meta.env.REACT_APP_ELASTICSEARCH_API_KEY;
 // Choice to use Elasticsearch directly or an API Proxy
-const caputLogConnector = import.meta.env.REACT_APP_USE_CAPUT_API_PROXY_CONNNECTOR === "true"
-    ? new ApiProxyConnector({
-            basePath: `${caputlogURL}`
-        })
-    : CustomElasticSearchAPIConnector({
-            host: `${caputlogURL}`,
-            index: `${elasticIndexName}`,
-            apiKey: `${elasticApikey}`
-        });
+const useProxy = import.meta.env.REACT_APP_USE_CAPUT_API_PROXY_CONNNECTOR ?? "false";
+const caputLogConnector = (useProxy === "true")
+        ? new ApiProxyConnector({
+                basePath: `${caputlogURL}`
+            })
+        : CustomElasticSearchAPIConnector({
+                host: `${caputlogURL}`,
+                index: `${elasticIndexName}`,
+                apiKey: `${elasticApikey}`
+            });
 
 function handleParams(params) {
     let urlParams = { "pvName": "*", "params": "" };

@@ -51,10 +51,9 @@ function CaputLogSearchLayout({
         }
     };
 
-    const clearAllFilters = () => {
+    const clearDateFilters = () => {
         setStartDate(null);
         setEndDate(null);
-        setSearchTerm(initialSearchTerm);
         removeFilter("@timestamp");
     };
 
@@ -101,7 +100,7 @@ function CaputLogSearchLayout({
                                         }
                                     />
                                 </Box>
-                                <Button variant="contained" onClick={clearAllFilters}>
+                                <Button variant="contained" onClick={clearDateFilters}>
                                     Clear
                                 </Button>
                             </Box>
