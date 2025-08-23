@@ -21,7 +21,6 @@ export default function CustomElasticSearchAPIConnector(config) {
                         fields: fields
                     }
                 };
-                console.log("using main query for .*: ", mainQuery);
             } else {
                 mainQuery = {
                     multi_match: {
@@ -30,7 +29,6 @@ export default function CustomElasticSearchAPIConnector(config) {
                         fields: fields.length > 0 ? fields : ["*"]
                     }
                 };
-                console.log("using default main query: ", mainQuery);
             }
 
             // Build filters if present
