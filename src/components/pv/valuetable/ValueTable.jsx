@@ -29,6 +29,7 @@ function ValueTable(props) {
     const [pvWarnLow, setPVWarnLow] = useState(null);
     const [pvWarnHigh, setPVWarnHigh] = useState(null);
     const [pvTimestamp, setPVTimestamp] = useState(null);
+    const [pvLabels, setPVLabels] = useState(null);
     const [alarmColor, setAlarmColor] = useState("");
     const [snapshot, setSnapshot] = useState(true);
     const [subscribed, setSubscribed] = useState(false);
@@ -100,6 +101,7 @@ function ValueTable(props) {
         if ("warn_low" in message) setPVWarnLow(message.warn_low);
         if ("warn_high" in message) setPVWarnHigh(message.warn_high);
         if ("precision" in message) setPVPrecision(message.precision);
+        if ("labels" in message) setPVLabels(message.labels);
         if ("seconds" in message) {
             if (!props.snapshot) {
                 if (pvSeverity === "INVALID" || message.severity === "INVALID") {
@@ -151,6 +153,7 @@ function ValueTable(props) {
                 <KeyValuePair title="Lower Limit" value={pvMin} />
                 <KeyValuePair title="Upper Limit" value={pvMax} />
                 <KeyValuePair title="Precision" value={pvPrecision} />
+                <KeyValuePair title="Labels" value={pvLabels} />
             </Fragment>
         );
     }
