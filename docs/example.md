@@ -13,3 +13,5 @@
 ![Services](./services.png?raw=true "Services")
 
 ![Caput Log](./caputlog-details.png?raw=true "Caput Log")
+
+![Caput Log Page](./caputlog-page.png?raw=true "Caput Log Page")

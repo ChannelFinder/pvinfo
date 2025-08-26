@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { Table, TableBody, TableCell, TableHead, TableRow, Box } from "@mui/material";
-import { CustomTableContainer, TableHeaderCell } from "../customtablecells/CustomTable";
+import { CustomTableContainer, TableHeaderCell } from "../pv/customtablecells/CustomTable";
 
 const CaputLogDataTable = ({ results }) => {
   const [sortOrder, setSortOrder] = useState("desc");
