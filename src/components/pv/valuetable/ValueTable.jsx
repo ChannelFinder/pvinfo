@@ -86,12 +86,10 @@ function ValueTable(props) {
         if (!props.pvMonitoring && !snapshot) {
             return;
         }
-        console.log("WebSocket message received:", lastJsonMessage);
         const message = api.PARSE_WEBSOCKET_MSG(lastJsonMessage);
         if (message === null) {
             return; // unable to parse, could be invalid message type, no PV name, null lastJsonMessage
         }
-        console.log("Parsed WebSocket message:", message);
         if ("units" in message) setPVUnits(message.units);
         if ("min" in message) setPVMin(message.min);
         if ("max" in message) setPVMax(message.max);
