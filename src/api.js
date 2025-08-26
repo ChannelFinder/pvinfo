@@ -1,6 +1,7 @@
 import { ApiProxyConnector } from "@elastic/search-ui-elasticsearch-connector";
 import ElasticSearchAPIConnector from "@elastic/search-ui-elasticsearch-connector";
 import { toByteArray } from "base64-js";
+import CustomElasticSearchAPIConnector from "./components/caputlog/CustomElasticSearchAPIConnector";
 
 const channelFinderURL = import.meta.env.PROD ? import.meta.env.REACT_APP_CF_URL : import.meta.env.REACT_APP_CF_URL_DEV;
 const cfMaxResults = parseInt(import.meta.env.REACT_APP_CF_MAX_RESULTS);
@@ -28,15 +29,16 @@ const alarmLogMaxResults = import.meta.env.REACT_APP_AL_MAX_RESULTS !== '' ?
 const elasticIndexName = import.meta.env.REACT_APP_ELASTICSEARCH_INDEX_NAME;
 const elasticApikey = import.meta.env.REACT_APP_ELASTICSEARCH_API_KEY;
 // Choice to use Elasticsearch directly or an API Proxy
-const caputLogConnector = import.meta.env.REACT_APP_USE_CAPUT_API_PROXY_CONNNECTOR === "true"
-    ? new ApiProxyConnector({
-            basePath: `${caputlogURL}`
-        })
-    : new ElasticSearchAPIConnector({
-            host: `${caputlogURL}`,
-            index: `${elasticIndexName}`,
-            apiKey: `${elasticApikey}`
-        });
+const useProxy = import.meta.env.REACT_APP_USE_CAPUT_API_PROXY_CONNNECTOR ?? "false";
+const caputLogConnector = (useProxy === "true")
+        ? new ApiProxyConnector({
+                basePath: `${caputlogURL}`
+            })
+        : CustomElasticSearchAPIConnector({
+                host: `${caputlogURL}`,
+                index: `${elasticIndexName}`,
+                apiKey: `${elasticApikey}`
+            });
 
 function handleParams(params) {
     let urlParams = { "pvName": "*", "params": "" };
@@ -366,6 +368,7 @@ const api = {
     SERVER_URL: serverURL,
     LOG_ENUM: logEnum,
     HELPERS_ENUM: queryHelperEnum,
+    CAPUTLOG_URL: caputlogURL,
     CAPUTLOG_CONNECTOR: caputLogConnector,
     PARSE_WEBSOCKET_MSG: parseWebSocketMessage,
 }
