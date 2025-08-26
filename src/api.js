@@ -1,5 +1,4 @@
 import { ApiProxyConnector } from "@elastic/search-ui-elasticsearch-connector";
-import ElasticSearchAPIConnector from "@elastic/search-ui-elasticsearch-connector";
 import { toByteArray } from "base64-js";
 import CustomElasticSearchAPIConnector from "./components/caputlog/CustomElasticSearchAPIConnector";
 
