@@ -1,7 +1,6 @@
 import React, { Fragment, useState, useEffect } from "react";
 import { Typography } from "@mui/material";
 import useWebSocket from 'react-use-websocket';
-import { toByteArray } from 'base64-js';
 import api from "../../../api";
 import colors from "../../../colors";
 import PropTypes from "prop-types";
@@ -34,8 +33,7 @@ function ValueTable(props) {
     const [snapshot, setSnapshot] = useState(true);
     const [subscribed, setSubscribed] = useState(false);
 
-    const socketUrl = api.PVWS_URL;
-    const { sendJsonMessage, lastJsonMessage } = useWebSocket(socketUrl, {
+    const { sendJsonMessage, lastJsonMessage } = useWebSocket(api.PVWS_URL, {
         onClose: () => {
             if (props.snapshot && !props.pvMonitoring) return;
             setPVValue(null);
@@ -85,139 +83,52 @@ function ValueTable(props) {
     }, [props.pvMonitoring, snapshot, props.isLoading, props.pvData, props.pvName, handleErrorMessage, handleOpenErrorAlert, subscribed, sendJsonMessage, handleSeverity]);
 
     useEffect(() => {
-        if (lastJsonMessage !== null) {
-            if (!props.pvMonitoring && !snapshot) return;
-            const message = lastJsonMessage;
-            if (message.type === "update") {
-                // pv, severity, value, text, units, precision, labels
-                if ("units" in message) {
-                    setPVUnits(message.units);
-                }
-                if ("min" in message) {
-                    setPVMin(message.min);
-                }
-                if ("max" in message) {
-                    setPVMax(message.max);
-                }
-                if ("alarm_low" in message) {
-                    const alarm_low = message.alarm_low;
-                    if (alarm_low === "NaN" || alarm_low === "Infinity" || alarm_low === "-Infinity") {
-                        setPVAlarmLow("n/a");
-                    }
-                    else {
-                        setPVAlarmLow(alarm_low);
-                    }
-                }
-                if ("alarm_high" in message) {
-                    const alarm_high = message.alarm_high;
-                    if (alarm_high === "NaN" || alarm_high === "Infinity" || alarm_high === "-Infinity") {
-                        setPVAlarmHigh("n/a");
-                    }
-                    else {
-                        setPVAlarmHigh(alarm_high);
-                    }
-                }
-                if ("warn_low" in message) {
-                    const warn_low = message.warn_low;
-                    if (warn_low === "NaN" || warn_low === "Infinity" || warn_low === "-Infinity") {
-                        setPVWarnLow("n/a");
-                    }
-                    else {
-                        setPVWarnLow(warn_low);
-                    }
-                }
-                if ("warn_high" in message) {
-                    const warn_high = message.warn_high;
-                    if (warn_high === "NaN" || warn_high === "Infinity" || warn_high === "-Infinity") {
-                        setPVWarnHigh("n/a");
-                    }
-                    else {
-                        setPVWarnHigh(warn_high);
-                    }
-                }
-                if ("precision" in message) {
-                    setPVPrecision(message.precision);
-                }
-                if ("seconds" in message) {
-                    let timestamp = "";
-                    if ("nanos" in message) {
-                        timestamp = new Date(message.seconds * 1000 + (message.nanos * 1e-6)).toLocaleString();
-                    }
-                    else {
-                        timestamp = new Date(message.seconds * 1000).toLocaleString();
-                    }
-                    if (!props.snapshot) {
-                        if (pvSeverity === "INVALID" || message.severity === "INVALID") {
-                            setPVTimestamp(timestamp);
-                        } else if (message.seconds !== 631152000) {
-                            setPVTimestamp(timestamp);
-                        }
-                    }
-                }
-                else {
-                    setPVTimestamp(null);
-                }
-                if ("severity" in message && props.pvMonitoring) {
-                    if (message.severity === "NONE") {
-                        setAlarmColor(colors.SEV_COLORS["OK"]);
-                    } else if (message.severity !== "") {
-                        message.severity in colors.SEV_COLORS ? setAlarmColor(colors.SEV_COLORS[message.severity]) : setAlarmColor("#000");
-                    }
-                    if (!props.snapshot) {
-                        setPVSeverity(message.severity);
-                    }
-                }
-                if ("text" in message) {
-                    if (!props.snapshot) {
-                        setPVValue(message.text);
-                    }
-                    if (snapshot) {
-                        setSnapshot(false);
-                    }
-
-                }
-                // see "handleMessage" in https://github.com/ornl-epics/pvws/blob/main/src/main/webapp/js/pvws.js
-                else if ("b64dbl" in message) {
-                    if (!props.snapshot) {
-                        let bytes = toByteArray(message.b64dbl);
-                        let value_array = new Float64Array(bytes.buffer);
-                        value_array = Array.prototype.slice.call(value_array);
-                        setPVValue(value_array);
-                    }
-                    if (snapshot) {
-                        setSnapshot(false);
-                    }
-                }
-                else if ("b64int" in message) {
-                    if (!props.snapshot) {
-                        let bytes = toByteArray(message.b64int);
-                        let value_array = new Int32Array(bytes.buffer);
-                        value_array = Array.prototype.slice.call(value_array);
-                        setPVValue(value_array);
-                    }
-                    if (snapshot) {
-                        setSnapshot(false);
-                    }
-                }
-                else if ("value" in message) {
-                    if (!props.snapshot) {
-                        // if precision was explicitly set (and badly assume 0 is not explicit) then use that
-                        if (pvPrecision !== null && pvPrecision !== "" && !isNaN(pvPrecision) && pvPrecision !== 0) {
-                            setPVValue((Number(message.value) >= 0.01 || Number(message.value) === 0) ? Number(message.value.toFixed(Number(pvPrecision))) : Number(message.value).toExponential(Number(pvPrecision)));
-                        }
-                        // otherwise show full value
-                        else {
-                            setPVValue((Number(message.value) >= 0.01 || Number(message.value) === 0) ? Number(message.value) : Number(message.value).toExponential());
-                        }
-                    }
-                    if (snapshot) {
-                        setSnapshot(false);
-                    }
+        if (!props.pvMonitoring && !snapshot) {
+            return;
+        }
+        console.log("WebSocket message received:", lastJsonMessage);
+        const message = api.PARSE_WEBSOCKET_MSG(lastJsonMessage);
+        if (message === null) {
+            return; // unable to parse, could be invalid message type, no PV name, null lastJsonMessage
+        }
+        console.log("Parsed WebSocket message:", message);
+        if ("units" in message) setPVUnits(message.units);
+        if ("min" in message) setPVMin(message.min);
+        if ("max" in message) setPVMax(message.max);
+        if ("alarm_low" in message) setPVAlarmLow(message.alarm_low);
+        if ("alarm_high" in message) setPVAlarmHigh(message.alarm_high);
+        if ("warn_low" in message) setPVWarnLow(message.warn_low);
+        if ("warn_high" in message) setPVWarnHigh(message.warn_high);
+        if ("precision" in message) setPVPrecision(message.precision);
+        if ("seconds" in message) {
+            if (!props.snapshot) {
+                if (pvSeverity === "INVALID" || message.severity === "INVALID") {
+                    setPVTimestamp(message.timestamp);
+                } else if (message.seconds !== 631152000) {
+                    setPVTimestamp(message.timestamp);
                 }
             }
-            else {
-                console.log("Unexpected message type: ", message);
+        } else {
+            setPVTimestamp(null);
+        }
+        if ("severity" in message && props.pvMonitoring) {
+            if (message.severity === "NONE") {
+                setAlarmColor(colors.SEV_COLORS["OK"]);
+            } else if (message.severity !== "") {
+                message.severity in colors.SEV_COLORS ? setAlarmColor(colors.SEV_COLORS[message.severity]) : setAlarmColor("#000");
             }
+            if (!props.snapshot) {
+                setPVSeverity(message.severity);
+            }
+        }
+        if (message.pv_value === null) {
+            return; // only if no text, b64dbl, b64int, ..., value property found
+        }
+        if (!props.snapshot) {
+            setPVValue(message.pv_value);
+        }
+        if (snapshot) {
+            setSnapshot(false);
         }
     }, [lastJsonMessage, props.pvMonitoring, props.snapshot, snapshot, pvPrecision, pvSeverity]);
 

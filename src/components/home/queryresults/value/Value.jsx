@@ -3,7 +3,6 @@ import useWebSocket from 'react-use-websocket';
 import api from '../../../../api';
 import colors from '../../../../colors';
 import PropTypes from "prop-types";
-import { toByteArray } from 'base64-js';
 
 const propTypes = {
     pvName: PropTypes.string,
@@ -27,54 +26,18 @@ function Value(props) {
 
     // parse web socket message. filter on useWebSocket above means we only parse messages for this PV
     useEffect(() => {
-        if (lastJsonMessage === null) {
-            return;
+        const jsonMessage = api.PARSE_WEBSOCKET_MSG(lastJsonMessage, 2); // fix precision to 2 on the PV table
+        if (jsonMessage === null) {
+            return; // unable to parse, could be invalid message type, no PV name, null lastJsonMessage
         }
-        const jsonMessage = lastJsonMessage;
-        if (jsonMessage.type === "update") {
-            const severity = jsonMessage.severity;
-            const units = jsonMessage.units;
-            const text = jsonMessage.text;
-            const b64dbl = jsonMessage.b64dbl;
-            const b64int = jsonMessage.b64int;
-            const value = jsonMessage.value;
-            const pv = jsonMessage.pv;
-            if (pv === undefined) {
-                console.log("Websocket message without an PV name");
-                return;
-            }
-            if (severity !== undefined) {
-                setPVSeverity(severity);
-            }
-            if (units !== undefined) {
-                setPVUnit(units);
-            }
-            if (text !== undefined) {
-                setPVValue(text);
-            }
-            else if (b64dbl !== undefined) {
-                let bytes = toByteArray(b64dbl);
-                let value_array = new Float64Array(bytes.buffer);
-                value_array = Array.prototype.slice.call(value_array);
-                setPVValue(value_array);
-            }
-            else if (b64int !== undefined) {
-                let bytes = toByteArray(b64int);
-                let value_array = new Int32Array(bytes.buffer);
-                value_array = Array.prototype.slice.call(value_array);
-                setPVValue(value_array);
-            }
-            else if (value !== undefined) {
-                if ((Number(value) >= 0.01 && Number(value) < 1000000000) || (Number(value) <= -0.01 && Number(value) > -1000000000) || Number(value) === 0) {
-                    setPVValue(Number(value.toFixed(2)));
-                }
-                else {
-                    setPVValue(Number(value).toExponential(2));
-                }
-            }
+        if ("severity" in jsonMessage) {
+            setPVSeverity(jsonMessage.severity);
         }
-        else {
-            console.log("Unexpected message type: ", jsonMessage);
+        if ("units" in jsonMessage) {
+            setPVUnit(jsonMessage.units);
+        }
+        if ("pv_value" in jsonMessage) {
+            setPVValue(jsonMessage.pv_value);
         }
     }, [lastJsonMessage]);
 
