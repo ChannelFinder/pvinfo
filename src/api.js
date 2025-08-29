@@ -291,7 +291,7 @@ function parseWebSocketMessage(jsonMessage, fixedPrecision = null) {
             pvData.pv_value = Array.prototype.slice.call(value_array);
         } else if ("b64byt" in pvData) {
             let bytes = toByteArray(pvData.b64byt);
-            if (import.meta.env.PVWS_TREAT_BYTE_ARRAY_AS_STRING === "false") {
+            if (import.meta.env.REACT_APP_PVWS_TREAT_BYTE_ARRAY_AS_STRING === "false") {
                 let value_array = new Uint8Array(bytes.buffer);
                 pvData.pv_value = Array.prototype.slice.call(value_array);
             } else {
