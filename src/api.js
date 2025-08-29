@@ -1,4 +1,5 @@
 import { ApiProxyConnector } from "@elastic/search-ui-elasticsearch-connector";
+import { toByteArray } from "base64-js";
 import CustomElasticSearchAPIConnector from "./components/caputlog/CustomElasticSearchAPIConnector";
 
 const channelFinderURL = import.meta.env.PROD ? import.meta.env.REACT_APP_CF_URL : import.meta.env.REACT_APP_CF_URL_DEV;
@@ -239,6 +240,105 @@ async function standardQuery(requestURI, options = null, handleData = null) {
     })
 }
 
+function parseWebSocketMessage(jsonMessage, fixedPrecision = null) {
+    if (jsonMessage === null) {
+        return null;
+    }
+    else if (jsonMessage.type === "update") {
+        if (jsonMessage.pv === undefined) {
+            console.log("Websocket message without a PV name");
+            return null;
+        }
+        let pvData = jsonMessage;
+        if ("alarm_low" in pvData) {
+            if (pvData.alarm_low === "NaN" || pvData.alarm_low === "Infinity" || pvData.alarm_low === "-Infinity") {
+                pvData.alarm_low = "n/a";
+            }
+        }
+        if ("alarm_high" in pvData) {
+            if (pvData.alarm_high === "NaN" || pvData.alarm_high === "Infinity" || pvData.alarm_high === "-Infinity") {
+                pvData.alarm_high = "n/a";
+            }
+        }
+        if ("warn_low" in pvData) {
+            if (pvData.warn_low === "NaN" || pvData.warn_low === "Infinity" || pvData.warn_low === "-Infinity") {
+                pvData.warn_low = "n/a";
+            }
+        }
+        if ("warn_high" in pvData) {
+            if (pvData.warn_high === "NaN" || pvData.warn_high === "Infinity" || pvData.warn_high === "-Infinity") {
+                pvData.warn_high = "n/a";
+            }
+        }
+        if ("seconds" in pvData) {
+            if ("nanos" in pvData) {
+                pvData.timestamp = new Date(pvData.seconds * 1000 + (pvData.nanos * 1e-6)).toLocaleString();
+            } else {
+                pvData.timestamp = new Date(pvData.seconds * 1000).toLocaleString();
+            }
+        }
+        // determine the "pv_value" which will be displayed in the UI
+        // see "handleMessage" in https://github.com/ornl-epics/pvws/blob/main/src/main/webapp/js/pvws.js
+        if ("text" in pvData) {
+            pvData.pv_value = pvData.text;
+        } else if ("b64dbl" in pvData) {
+            let bytes = toByteArray(pvData.b64dbl);
+            let value_array = new Float64Array(bytes.buffer);
+            pvData.pv_value = Array.prototype.slice.call(value_array);
+        } else if ("b64int" in pvData) {
+            let bytes = toByteArray(pvData.b64int);
+            let value_array = new Int32Array(bytes.buffer);
+            pvData.pv_value = Array.prototype.slice.call(value_array);
+        } else if ("b64byt" in pvData) {
+            let bytes = toByteArray(pvData.b64byt);
+            if (import.meta.env.PVWS_TREAT_BYTE_ARRAY_AS_STRING === "false") {
+                let value_array = new Uint8Array(bytes.buffer);
+                pvData.pv_value = Array.prototype.slice.call(value_array);
+            } else {
+                try {
+                    const decoder = new TextDecoder('utf-8');
+                    pvData.pv_value = decoder.decode(bytes);
+                } catch (error) {
+                    console.log("Error decoding byte array: ", error.message);
+                }
+            }
+        } else if ("b64flt" in pvData) {
+            let bytes = toByteArray(pvData.b64flt);
+            let value_array = new Float32Array(bytes.buffer);
+            pvData.pv_value = Array.prototype.slice.call(value_array);
+        } else if ("b64srt" in pvData) {
+            let bytes = toByteArray(pvData.b64srt);
+            let value_array = new Int16Array(bytes.buffer);
+            pvData.pv_value = Array.prototype.slice.call(value_array);
+        } else if ("value" in pvData) {
+            if (fixedPrecision) {
+                if ((Number(pvData.value) >= 0.01 && Number(pvData.value) < 1000000000) || (Number(pvData.value) <= -0.01 && Number(pvData.value) > -1000000000) || Number(pvData.value) === 0) {
+                    pvData.pv_value = Number(pvData.value.toFixed(Number(fixedPrecision)));
+                } else {
+                    pvData.pv_value = Number(pvData.value).toExponential(Number(fixedPrecision));
+                }
+            }
+            else {
+                // if precision was explicitly set (and badly assume 0 is not explicit) then use that
+                if (pvData.precision !== null && pvData.precision !== "" && !isNaN(pvData.precision) && pvData.precision !== 0) {
+                    pvData.pv_value = (Number(pvData.value) >= 0.01 || Number(pvData.value) === 0) ? Number(pvData.value.toFixed(Number(pvData.precision))) : Number(pvData.value).toExponential(Number(pvData.precision));
+                }
+                // otherwise show full value
+                else {
+                    pvData.pv_value = (Number(pvData.value) >= 0.01 || Number(pvData.value) === 0) ? Number(pvData.value) : Number(pvData.value).toExponential();
+                }
+            }
+        } else {
+            pvData.pv_value = null;
+        }
+        return pvData;
+    }
+    else {
+        console.log("Unknown message type");
+        return null;
+    }
+}
+
 const logEnum = {
     ONLINE_LOG: "online_log",
     ALARM_LOG: "alarm_log"
@@ -269,6 +369,7 @@ const api = {
     HELPERS_ENUM: queryHelperEnum,
     CAPUTLOG_URL: caputlogURL,
     CAPUTLOG_CONNECTOR: caputLogConnector,
+    PARSE_WEBSOCKET_MSG: parseWebSocketMessage,
 }
 
 export default api;
