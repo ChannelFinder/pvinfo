@@ -85,9 +85,12 @@ function Help() {
                 </ul>
                 <li><strong>Status</strong></li>
                 <ul>
+
                   <li>
-                    Current status of this PV. Either Active or Inactive. Inactive means the PV is not up and indicates a problem with the IOC. If the PV is inactive then the PV value monitor
-                    checkbox will be disabled.
+                    Current status of this PV. Either Active or Inactive. Inactive means the PV is not synchronized with the recsync server and indicates a problem with the IOC or recsync.
+                    { import.meta.env.REACT_APP_PVWS_IGNORE_CF_PVSTATUS !== "true" &&
+                      <li>If the PV is inactive then the PV value monitor checkbox will be disabled.</li>
+                    }
                   </li>
                 </ul>
                 <li><strong>Record Type</strong></li>
