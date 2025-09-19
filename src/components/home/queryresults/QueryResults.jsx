@@ -90,7 +90,11 @@ function QueryResults(props) {
             [firstRow, lastRow] = [parseInt(start) - 1, parseInt(end) - 1];
         }
         for (let i = firstRow; i <= lastRow; ++i) {
-            updateCurrentChecked(i, event.target.checked);
+            // only check mark active PVs, unless we are ignoring CF PV status
+            // matters now that we show "Disconnected" for PVs that are not connected to their IOC
+            if (import.meta.env.REACT_APP_PVWS_IGNORE_CF_PVSTATUS === "true" || pvs[i].pvStatus === "Active") {
+                updateCurrentChecked(i, event.target.checked);
+            }
         }
         return
     }, [updateCurrentChecked])

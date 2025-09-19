@@ -35,7 +35,10 @@ function ValueCheckbox(props) {
         else if (props.recordType === "waveform" && import.meta.env.REACT_APP_PVWS_ALLOW_WAVEFORMS !== "true") {
             setEnabled(false);
         }
-    }, [props.pvStatus, props.recordType])
+        else {
+            setEnabled(true);
+        }
+    }, [props.pvStatus, props.recordType, props.pvName])
 
     // watch for changes in checked, if so send a subscribe message
     useEffect(() => {
