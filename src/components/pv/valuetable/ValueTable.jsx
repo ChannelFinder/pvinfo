@@ -124,6 +124,8 @@ function ValueTable(props) {
             }
         }
         if (message.pv_value === null) {
+            setPVSeverity("DISCONNECTED");
+            setAlarmColor(colors.SEV_COLORS["UNDEFINED"]);
             return; // only if no text, b64dbl, b64int, ..., value property found
         }
         if (!props.snapshot) {
