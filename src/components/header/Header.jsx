@@ -9,6 +9,7 @@ import AppsIcon from '@mui/icons-material/Apps';
 import SsidChartIcon from '@mui/icons-material/SsidChart';
 import HelpIcon from '@mui/icons-material/Help';
 import InfoIcon from '@mui/icons-material/Info'
+import TroubleshootIcon from '@mui/icons-material/Troubleshoot';
 import MenuIcon from '@mui/icons-material/Menu';
 import { makeStyles } from 'tss-react/mui';
 
@@ -73,7 +74,7 @@ function Header() {
                   {config.USE_CAPUTLOG &&
                     <ListItemButton key="CaputLog" component={NavLink} to="/caputlog" onClick={handleMenuToggle} divider color="primary">
                       <ListItemIcon>
-                        <InfoIcon color="primary" />
+                        <TroubleshootIcon color="primary" />
                       </ListItemIcon>
                       <ListItemText primary="CaputLog" />
                     </ListItemButton>
