@@ -16,7 +16,6 @@
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.1.1",
     "@testing-library/user-event": "^14.1.1",
-    "@vitejs/plugin-react": "^4.1.0",
     "base64-js": "^1.5.1",
     "dayjs": "^1.11.13",
     "he": "^1.2.0",
@@ -28,9 +27,6 @@
     "react-router-dom": "^6.3.0",
     "react-use-websocket": "^4.0.0",
     "tss-react": "^3.6.2",
-    "vite": "^4.5.14",
-    "vite-plugin-env-compatible": "^1.1.1",
-    "vite-plugin-svgr": "^4.1.0",
     "web-vitals": "^2.1.4"
   },
   "resolutions": {
@@ -58,5 +54,11 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^5.0.3",
+    "vite": "^5.4.20",
+    "vite-plugin-env-compatible": "^2.0.1",
+    "vite-plugin-svgr": "^4.5.0"
   }
 }
