@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import useWebSocket from 'react-use-websocket';
 import api from '../../../../api';
+import config from "../../../../config";
 import colors from '../../../../colors';
 import PropTypes from "prop-types";
 
@@ -34,7 +35,7 @@ function Value(props) {
             return;
         }
         // the debouncing is only useful if we are showing "Disconnected" for non-reachable PVs
-        if (import.meta.env.REACT_APP_SHOW_DISCONNECTED !== "true" || show) {
+        if (!config.SHOW_DISCONNECTED || show) {
             return;
         }
         const timeout = setTimeout(() => {
@@ -93,7 +94,7 @@ function Value(props) {
                 );
             }
         } else {
-            if (import.meta.env.REACT_APP_SHOW_DISCONNECTED !== "true") {
+            if (!config.SHOW_DISCONNECTED) {
                 return (
                     <div></div>
                 );

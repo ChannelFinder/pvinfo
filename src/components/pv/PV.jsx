@@ -11,6 +11,7 @@ import AlarmLogTable from "./alarmlogtable/AlarmLogTable";
 import AlarmConfigTable from "./alarmconfigtable/AlarmConfigTable";
 import CaputLogTable from "./caputlogtable/CaputLogTable";
 import PropTypes from "prop-types";
+import config from "../../config";
 
 const propTypes = {
     handleOpenErrorAlert: PropTypes.func,
@@ -32,17 +33,17 @@ function PV(props) {
     const [detailsExpanded, setDetailsExpanded] = useState(true);
 
     let { handleErrorMessage, handleOpenErrorAlert, handleSeverity } = props;
-    const omitVariables = import.meta.env.REACT_APP_DETAILS_PAGE_PROPERTIES_BLOCKLIST ? new Set(import.meta.env.REACT_APP_DETAILS_PAGE_PROPERTIES_BLOCKLIST.split(',').map(item => item.trim())) : new Set();
+    const omitVariables = config.DETAILS_PAGE_PROPERTIES_BLOCKLIST ? new Set(config.DETAILS_PAGE_PROPERTIES_BLOCKLIST) : new Set();
 
     const handleDetailExpandedChange = () => (event, isExpanded) => {
         setDetailsExpanded(isExpanded);
     }
 
-    // Parse environment variable REACT_APP_DETAILS_PAGE_PROPERTIES to determine what variables to display
+    // Parse config.DETAILS_PAGE_PROPERTIES to determine what variables to display
     useEffect(() => {
         const dict = {}
         let order = []
-        let dataNames = import.meta.env.REACT_APP_DETAILS_PAGE_PROPERTIES ? import.meta.env.REACT_APP_DETAILS_PAGE_PROPERTIES : "";
+        let dataNames = config.DETAILS_PAGE_PROPERTIES ? config.DETAILS_PAGE_PROPERTIES : "";
         dataNames.split(',').forEach((pair) => {
             if (pair === "*") {
                 setDisplayAllVars(true);
@@ -119,7 +120,7 @@ function PV(props) {
             return;
         }
         if (Object.keys(pvData).length !== 0) {
-            if (import.meta.env.REACT_APP_DEFAULT_LIVE_MONITORING === "true") {
+            if (config.DEFAULT_LIVE_MONITORING) {
                 setPVMonitoring(true);
                 setSnapshot(false);
             } else {
@@ -171,14 +172,14 @@ function PV(props) {
                 <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, justifyContent: "space-between" }}>
                     <Typography variant="h3" sx={{ fontSize: { xs: 32, sm: 48 } }}>{id}</Typography>
                     {
-                        import.meta.env.REACT_APP_USE_AA === "true" ? <Button style={{ marginTop: 10, marginBottom: 10 }} target="_blank" href={pvHTMLString} variant="contained" color="secondary" endIcon={<TimelineIcon />} >Plot This PV</Button> : <div></div>
+                        config.USE_AA ? <Button style={{ marginTop: 10, marginBottom: 10 }} target="_blank" href={pvHTMLString} variant="contained" color="secondary" endIcon={<TimelineIcon />} >Plot This PV</Button> : <div></div>
                     }
                 </Box>
                 {
-                    import.meta.env.REACT_APP_USE_PVWS === "true" ?
+                    config.USE_PVWS ?
                         <FormControlLabel
                             control={<Checkbox color="primary" checked={pvMonitoring} onChange={handlePVMonitoringChange}></Checkbox>}
-                            disabled={!((import.meta.env.REACT_APP_PVWS_IGNORE_CF_PVSTATUS === "true" || pvData?.pvStatus?.value === "Active") && (import.meta.env.REACT_APP_PVWS_ALLOW_WAVEFORMS === "true" || pvData?.recordType?.value !== "waveform"))}
+                            disabled={!((config.PVWS_IGNORE_CF_PVSTATUS || pvData?.pvStatus?.value === "Active") && (config.PVWS_ALLOW_WAVEFORMS || pvData?.recordType?.value !== "waveform"))}
                             label="Enable Live PV Monitoring" />
                         :
                         null
@@ -218,7 +219,7 @@ function PV(props) {
                                 ) : (null)}
                                 <Grid container sx={{ mt: -0.1, mb: -0.1, borderTop: 1, borderColor: 'grey.300' }}>
                                     {
-                                        import.meta.env.REACT_APP_USE_PVWS === "true" ?
+                                        config.USE_PVWS ?
                                             <ValueTable pvData={pvData} pvMonitoring={pvMonitoring}
                                                 isLoading={isLoading} pvName={id} snapshot={snapshot}
                                                 handleOpenErrorAlert={props.handleOpenErrorAlert} handleErrorMessage={props.handleErrorMessage} handleSeverity={props.handleSeverity} />
@@ -229,16 +230,16 @@ function PV(props) {
                         </AccordionDetails>
                     </Accordion>
                     {
-                        import.meta.env.REACT_APP_USE_OLOG === "true" ? <OLOGTable pvName={id} /> : null
+                        config.USE_OLOG ? <OLOGTable pvName={id} /> : null
                     }
                     {
-                        import.meta.env.REACT_APP_USE_AL === "true" ? <AlarmLogTable pvName={id} /> : null
+                        config.USE_AL ? <AlarmLogTable pvName={id} /> : null
                     }
                     {
-                        import.meta.env.REACT_APP_USE_AL === "true" ? <AlarmConfigTable pvName={id} /> : null
+                        config.USE_AL ? <AlarmConfigTable pvName={id} /> : null
                     }
                     {
-                        import.meta.env.REACT_APP_USE_CAPUTLOG === "true" ? <CaputLogTable pvName={id}/> : null
+                        config.USE_CAPUTLOG ? <CaputLogTable pvName={id}/> : null
                     }
                 </Box>
             </Fragment >

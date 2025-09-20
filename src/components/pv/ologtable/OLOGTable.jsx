@@ -4,7 +4,7 @@ import { CustomTableContainer, TableBodyCell, TableHeaderCell } from "../customt
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import api from "../../../api";
 import PropTypes from "prop-types";
-
+import config from "../../../config";
 
 const propTypes = {
     pvName: PropTypes.string,
@@ -57,8 +57,8 @@ function OLOGTable(props) {
                 <AccordionSummary>
                     <Typography sx={{ fontSize: 18, fontWeight: "medium" }}>{noOlogMessage}</Typography>
                     {
-                        import.meta.env.REACT_APP_OLOG_START_TIME_DAYS !== '' ?
-                            <Typography variant="subtitle2">&nbsp;Within {import.meta.env.REACT_APP_OLOG_START_TIME_DAYS} Days</Typography>
+                        config.OLOG_START_TIME_DAYS !== null ?
+                            <Typography variant="subtitle2">&nbsp;Within {config.OLOG_START_TIME_DAYS} Days</Typography>
                             : null
                     }
                 </AccordionSummary>

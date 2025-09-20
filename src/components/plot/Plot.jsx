@@ -4,14 +4,16 @@ import { Button, Typography, Grid } from "@mui/material";
 import { Table, TableCell, TableHead, TableBody, TableRow, TableContainer } from "@mui/material";
 import TimelineIcon from '@mui/icons-material/Timeline';
 import api from "../../api";
+import config from "../../config";
+
 
 function Plot() {
     const getAAPolicies = () => {
-        if(import.meta.env.REACT_APP_AA_POLICIES.length <= 0) {
+        if(config.AA_POLICIES.length <= 0) {
             return [];
         }
         let aaPolicies = [];
-        let policyList = import.meta.env.REACT_APP_AA_POLICIES.split(",");
+        let policyList = config.AA_POLICIES;
         policyList.forEach(policy => {
             let policyDetails = policy.split("|");
             let policyMap = {};

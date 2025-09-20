@@ -19,12 +19,6 @@ function Services() {
     const [caputLogConnected, setCaputLogConnected] = useState(false);
     const [caputLogData, setCaputLogData] = useState(false);
 
-    const useAL = import.meta.env.REACT_APP_USE_AL;
-    const useOLOG = import.meta.env.REACT_APP_USE_OLOG;
-    const usePVWS = import.meta.env.REACT_APP_USE_PVWS;
-    const useCaputlog = import.meta.env.REACT_APP_USE_CAPUTLOG;
-    const isCaputLogProxy = import.meta.env.REACT_APP_USE_CAPUT_API_PROXY_CONNNECTOR;
-
     const { sendJsonMessage, lastJsonMessage } = useWebSocket(api.PVWS_URL, {
         shouldReconnect: (closeEvent) => true
     })
@@ -115,9 +109,9 @@ function Services() {
                 <Box sx={{ mb: 2, display: "flex", flexDirection: { xs: "column", sm: "row" }, alignItems: { xs: "start", sm: "start" }, justifyContent: "space-between" }}>
                     <Typography variant="h4" sx={{ fontWeight: "medium", mb: { xs: 1, sm: 0 } }}>Services</Typography>
                     <Box>
-                        <Typography variant="body1"><Box component="span" sx={{ fontWeight: "medium" }}>PV Info Version:</Box> {import.meta.env.REACT_APP_VERSION}</Typography>
-                        <Typography variant="body1"><Box component="span" sx={{ fontWeight: "medium" }}>Commit Hash:</Box> {import.meta.env.REACT_APP_GIT_SHORT_HASH}</Typography>
-                        <Typography variant="body1"><Box component="span" sx={{ fontWeight: "medium" }}>Commit Date:</Box> {import.meta.env.REACT_APP_GIT_COMMIT_DATE}</Typography>
+                        <Typography variant="body1"><Box component="span" sx={{ fontWeight: "medium" }}>PV Info Version:</Box> {config.VERSION}</Typography>
+                        <Typography variant="body1"><Box component="span" sx={{ fontWeight: "medium" }}>Commit Hash:</Box> {config.GIT_SHORT_HASH}</Typography>
+                        <Typography variant="body1"><Box component="span" sx={{ fontWeight: "medium" }}>Commit Date:</Box> {config.GIT_COMMIT_DATE}</Typography>
                     </Box>
                 </Box>
                 <Box sx={{ overflow: "auto", border: 1, borderColor: "#D1D5DB", borderRadius: 1, pt: 2, pb: 3, px: 1.5 }}>
@@ -131,7 +125,7 @@ function Services() {
                             }}
                         />
                         {
-                            useAL === "true" ? (
+                            config.USE_AL ? (
                                 <Service servName="Alarm Logger" connected={alConnected}
                                     data={{
                                         "Elastic Status": aliData?.elastic?.status,
@@ -141,7 +135,7 @@ function Services() {
                             ) : null
                         }
                         {
-                            useOLOG === "true" ? (
+                            config.USE_OLOG ? (
                                 <Service servName="Online Log" connected={ologConnected}
                                     data={{
                                         "Elastic Status": oliData?.elastic?.status,
@@ -151,7 +145,7 @@ function Services() {
                             ) : null
                         }
                         {
-                            usePVWS === "true" ? (
+                            config.USE_PVWS ? (
                                 <Service servName="PV Web Socket" connected={pvwsConnected} sockets={pvwsSummary?.sockets}
                                     data={{
                                         "Start Time": pvwsInfo?.start_time,
@@ -163,10 +157,10 @@ function Services() {
                             ) : null
                         }
                         {
-                            useCaputlog === "true" ? (
+                            config.USE_CAPUTLOG ? (
                                 <Service servName="Caput Log" connected={caputLogConnected}
                                     data={
-                                        isCaputLogProxy === "true"
+                                        config.USE_CAPUT_API_PROXY_CONNNECTOR
                                         ? {
                                             "Elastic Status": caputLogData?.elasticsearch?.connection,
                                             "Elastic Health": caputLogData?.elasticsearch?.health?.status,

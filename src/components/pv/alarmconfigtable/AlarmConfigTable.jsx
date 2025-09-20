@@ -4,6 +4,7 @@ import { CustomTableContainer, TableHeaderCell } from "../customtablecells/Custo
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import api from "../../../api";
 import PropTypes from "prop-types";
+import config from "../../../config";
 
 const propTypes = {
     pvName: PropTypes.string
@@ -65,8 +66,8 @@ function AlarmConfigTable(props) {
                 <AccordionSummary>
                     <Typography sx={{ fontSize: 18, fontWeight: "medium" }}>{noConfigMessage}</Typography>
                     {
-                        import.meta.env.REACT_APP_AL_START_TIME_DAYS !== '' ?
-                            <Typography sx={{ fontSize: 18, fontWeight: "medium" }}>&nbsp;Within {import.meta.env.REACT_APP_AL_START_TIME_DAYS} Days</Typography>
+                        config.AL_START_TIME_DAYS !== null ?
+                            <Typography sx={{ fontSize: 18, fontWeight: "medium" }}>&nbsp;Within {config.AL_START_TIME_DAYS} Days</Typography>
                             : null
                     }
                 </AccordionSummary>

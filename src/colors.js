@@ -1,9 +1,15 @@
-const okCol = "#" + import.meta.env.REACT_APP_OK_SEVERITY_COLOR;
-const minorCol = "#" + import.meta.env.REACT_APP_MINOR_SEVERITY_COLOR;
-const majorCol = "#" + import.meta.env.REACT_APP_MAJOR_SEVERITY_COLOR;
-const invalidCol = "#" + import.meta.env.REACT_APP_INVALID_SEVERITY_COLOR;
-const undefinedCol = "#" + import.meta.env.REACT_APP_UNDEFINED_SEVERITY_COLOR;
+import config from "./config";
 
+const handleColor = (value) => {
+  if (!value) return null;
+  return value.startsWith("#") ? value : `#${value}`;
+};
+
+const okCol = handleColor(config.OK_SEVERITY_COLOR);
+const minorCol = handleColor(config.MINOR_SEVERITY_COLOR);
+const majorCol = handleColor(config.MAJOR_SEVERITY_COLOR);
+const invalidCol = handleColor(config.INVALID_SEVERITY_COLOR);
+const undefinedCol = handleColor(config.UNDEFINED_SEVERITY_COLOR);
 
 // modBrightness function sourced from https://natclark.com/tutorials/javascript-lighten-darken-hex-color/
 const modBrightness = (hexColor, magnitude) => {
@@ -39,6 +45,6 @@ const severityColors = {
 
 const colors = {
     SEV_COLORS: severityColors,
-}
+};
 
 export default colors;
