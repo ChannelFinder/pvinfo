@@ -29,7 +29,7 @@ function Plot() {
   return (
     <Fragment>
         <Grid item xs={12} style={{display: "flex"}}>
-            <Button style={{marginTop: 10, marginBottom: 20}} target="_blank" href={api.AA_VIEWER} variant="contained" color="secondary" endIcon={<TimelineIcon />} >Click Here to Plot PVs</Button>
+            <Button style={{marginTop: 10, marginBottom: 20}} target="_blank" href={config.AA_VIEWER} variant="contained" color="secondary" endIcon={<TimelineIcon />} >Click Here to Plot PVs</Button>
         </Grid>
         <Grid item xs={12} style={{display: "flex"}}>
             <Typography variant='h4'>Archiver Storage Policies</Typography>

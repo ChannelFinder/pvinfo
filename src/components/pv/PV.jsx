@@ -26,7 +26,7 @@ function PV(props) {
     const [pvMonitoring, setPVMonitoring] = useState(false);
     const [snapshot, setSnapshot] = useState(true);
     const [isLoading, setIsLoading] = useState(true);
-    const pvHTMLString = encodeURI(`${api.AA_VIEWER}?pv=${id}`);
+    const pvHTMLString = encodeURI(`${config.AA_VIEWER}?pv=${id}`);
     const [displayAllVars, setDisplayAllVars] = useState(false);
     const [dataNamesMapping, setDataNamesMapping] = useState({});
     const [dataOrder, setDataOrder] = useState([])

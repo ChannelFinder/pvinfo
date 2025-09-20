@@ -20,7 +20,7 @@ function ValueCheckbox(props) {
     // filter all messages as false since we don't need to read anything in parent component
     // This still is in QueryResults so even with USE_PVWS===false it will try to connect, would be better to move to ValueCheckbox?
     const [enabled, setEnabled] = useState(true);
-    const { sendJsonMessage } = useWebSocket(api.PVWS_URL, {
+    const { sendJsonMessage } = useWebSocket(config.PVWS_URL, {
         share: true,
         filter: (message) => false,
     });

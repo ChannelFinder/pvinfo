@@ -35,7 +35,7 @@ function ValueTable(props) {
     const [snapshot, setSnapshot] = useState(true);
     const [subscribed, setSubscribed] = useState(false);
 
-    const { sendJsonMessage, lastJsonMessage } = useWebSocket(api.PVWS_URL, {
+    const { sendJsonMessage, lastJsonMessage } = useWebSocket(config.PVWS_URL, {
         onClose: () => {
             if (props.snapshot && !props.pvMonitoring) return;
             setPVValue(null);

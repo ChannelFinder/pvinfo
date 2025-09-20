@@ -151,7 +151,7 @@ function QueryResults(props) {
                         color="primary"
                         target="_blank"
                         variant="contained"
-                        href={encodeURI(`${api.AA_VIEWER}?pv=${params.row.name}`)}
+                        href={encodeURI(`${config.AA_VIEWER}?pv=${params.row.name}`)}
                         size="large">
                         <TimelineIcon />
                     </IconButton>

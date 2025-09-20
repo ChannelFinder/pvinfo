@@ -23,7 +23,7 @@ function Value(props) {
 
     // https://github.com/robtaussig/react-use-websocket/issues/40#issuecomment-616676102
     // pattern for sharing web socket among components
-    const { lastJsonMessage } = useWebSocket(api.PVWS_URL, {
+    const { lastJsonMessage } = useWebSocket(config.PVWS_URL, {
         share: true,
         filter: message => JSON.parse(message.data).pv === props.pvName,
     });

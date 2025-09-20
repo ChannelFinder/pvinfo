@@ -89,7 +89,7 @@ function OLOGTable(props) {
                                         key={row.id}
                                         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                     >
-                                        <TableBodyCell><Link href={`${api.OLOG_WEB_URL}/logs/${row.id}`} target="_blank" underline="always">{new Date(row.createdDate).toLocaleString()}</Link></TableBodyCell>
+                                        <TableBodyCell><Link href={`${config.OLOG_WEB_URL}/logs/${row.id}`} target="_blank" underline="always">{new Date(row.createdDate).toLocaleString()}</Link></TableBodyCell>
                                         <TableBodyCell>
                                             {
                                                 row.tags.map(function (tag, index) {

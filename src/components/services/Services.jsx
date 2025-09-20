@@ -23,7 +23,7 @@ function Services() {
     const [caputLogConnected, setCaputLogConnected] = useState(false);
     const [caputLogData, setCaputLogData] = useState(false);
 
-    const { sendJsonMessage, lastJsonMessage } = useWebSocket(api.PVWS_URL, {
+    const { sendJsonMessage, lastJsonMessage } = useWebSocket(config.PVWS_URL, {
         shouldReconnect: (closeEvent) => true
     })
 
@@ -181,7 +181,7 @@ function Services() {
                     </Grid>
                 </Box>
             </Box>
-            <Accordion sx={{ mt: 3 }}>
+            <Accordion sx={{ border: 1, borderColor: '#D1D5DB', borderRadius: 1, mt: 4, mb: 2, overflow: "hidden" }}>
                 <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="preferences-content" id="preferences-header">
                     <Typography sx={{ fontSize: 18, fontWeight: "medium" }}>Preference Settings</Typography>
                 </AccordionSummary>
