@@ -1,8 +1,9 @@
 import './App.css';
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { Grid, Snackbar, Alert } from '@mui/material';
-import React, { useState } from "react";
+import { useState } from "react";
 
+import config from "../config";
 import Home from '../components/home';
 import PV from '../components/pv';
 import IOC from '../components/ioc';
@@ -39,7 +40,7 @@ function App() {
             <Route path="/plot" exact={true} element={<Plot />} />
             <Route path="/services" exact={true} element={<Services />} />
             {
-              import.meta.env.REACT_APP_USE_CAPUTLOG === "true" ? <Route path="/caputlog" exact={true} element={<CaputLogPage />} /> : null
+              config.USE_CAPUTLOG ? <Route path="/caputlog" exact={true} element={<CaputLogPage />} /> : null
             }
             <Route path="/help" exact={true} element={<Help />} />
             <Route path="/" exact={true} element={<Home handleOpenErrorAlert={setOpenErrorAlert} handleErrorMessage={setErrorMessage} handleSeverity={setSeverity} />} />

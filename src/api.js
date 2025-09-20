@@ -1,43 +1,19 @@
-import { ApiProxyConnector } from "@elastic/search-ui-elasticsearch-connector";
 import { toByteArray } from "base64-js";
-import CustomElasticSearchAPIConnector from "./components/caputlog/CustomElasticSearchAPIConnector";
+import config from "./config";
 
-const channelFinderURL = import.meta.env.PROD ? import.meta.env.REACT_APP_CF_URL : import.meta.env.REACT_APP_CF_URL_DEV;
-const cfMaxResults = parseInt(import.meta.env.REACT_APP_CF_MAX_RESULTS);
-const ologURL = import.meta.env.PROD ? import.meta.env.REACT_APP_OLOG_URL : import.meta.env.REACT_APP_OLOG_URL_DEV;
-const ologWebURL = import.meta.env.PROD ? import.meta.env.REACT_APP_OLOG_WEB_CLIENT_URL : import.meta.env.REACT_APP_OLOG_WEB_CLIENT_URL_DEV;
-const aaViewerURL = import.meta.env.PROD ? import.meta.env.REACT_APP_AA_URL : import.meta.env.REACT_APP_AA_URL_DEV;
-const pvwsURL = import.meta.env.PROD ? import.meta.env.REACT_APP_PVWS_URL : import.meta.env.REACT_APP_PVWS_URL_DEV;
-const pvwsHTTPURL = import.meta.env.PROD ? import.meta.env.REACT_APP_PVWS_HTTP_URL : import.meta.env.REACT_APP_PVWS_HTTP_URL_DEV;
-const serverURL = import.meta.env.PROD ? import.meta.env.REACT_APP_BASE_URL : import.meta.env.REACT_APP_BASE_URL_DEV;
-const alarmLogURL = import.meta.env.PROD ? import.meta.env.REACT_APP_AL_URL : import.meta.env.REACT_APP_AL_URL_DEV;
-const caputlogURL = import.meta.env.PROD ? import.meta.env.REACT_APP_CAPUTLOG_URL : import.meta.env.REACT_APP_CAPUTLOG_URL_DEV;
-const ologStartDays = import.meta.env.REACT_APP_OLOG_START_TIME_DAYS !== '' ?
-    `&start=${import.meta.env.REACT_APP_OLOG_START_TIME_DAYS}days&end=now`
+const cfMaxResults = config.CF_MAX_RESULTS;
+const ologStartDays = config.OLOG_START_TIME_DAYS !== null
+    ? `&start=${config.OLOG_START_TIME_DAYS}days&end=now`
     : "";
-const ologMaxResults = import.meta.env.REACT_APP_OLOG_MAX_RESULTS !== '' ?
-    `&size=${import.meta.env.REACT_APP_OLOG_MAX_RESULTS}`
+const ologMaxResults = config.OLOG_MAX_RESULTS !== null
+    ? `&size=${config.OLOG_MAX_RESULTS}`
     : "";
-const alarmLogStartDays = import.meta.env.REACT_APP_AL_START_TIME_DAYS !== '' ?
-    `&start=${import.meta.env.REACT_APP_AL_START_TIME_DAYS}days&end=now`
+const alarmLogStartDays = config.AL_START_TIME_DAYS !== null
+    ? `&start=${config.AL_START_TIME_DAYS}days&end=now`
     : "";
-const alarmLogMaxResults = import.meta.env.REACT_APP_AL_MAX_RESULTS !== '' ?
-    `&size=${import.meta.env.REACT_APP_AL_MAX_RESULTS}`
+const alarmLogMaxResults = config.AL_MAX_RESULTS !== null
+    ? `&size=${config.AL_MAX_RESULTS}`
     : "";
-
-const elasticIndexName = import.meta.env.REACT_APP_ELASTICSEARCH_INDEX_NAME;
-const elasticApikey = import.meta.env.REACT_APP_ELASTICSEARCH_API_KEY;
-// Choice to use Elasticsearch directly or an API Proxy
-const useProxy = import.meta.env.REACT_APP_USE_CAPUT_API_PROXY_CONNNECTOR ?? "false";
-const caputLogConnector = (useProxy === "true")
-        ? new ApiProxyConnector({
-                basePath: `${caputlogURL}`
-            })
-        : CustomElasticSearchAPIConnector({
-                host: `${caputlogURL}`,
-                index: `${elasticIndexName}`,
-                apiKey: `${elasticApikey}`
-            });
 
 function handleParams(params) {
     let urlParams = { "pvName": "*", "params": "" };
@@ -64,11 +40,11 @@ function handleParams(params) {
 
 function standardParse(params) {
     let noWildcard = new Set(["pvStatus", "recordType"]);
-    if (import.meta.env.REACT_APP_EXTRA_PROP && import.meta.env.REACT_APP_EXTRA_PROP_DROPDOWN_LABELS) {
-        noWildcard.add(import.meta.env.REACT_APP_EXTRA_PROP);
+    if (config.EXTRA_PROP && config.EXTRA_PROP_DROPDOWN_LABELS) {
+        noWildcard.add(config.EXTRA_PROP);
     }
-    if (import.meta.env.REACT_APP_SECOND_EXTRA_PROP && import.meta.env.REACT_APP_SECOND_EXTRA_PROP_DROPDOWN_LABELS) {
-        noWildcard.add(import.meta.env.REACT_APP_SECOND_EXTRA_PROP);
+    if (config.SECOND_EXTRA_PROP && config.SECOND_EXTRA_PROP_DROPDOWN_LABELS) {
+        noWildcard.add(config.SECOND_EXTRA_PROP);
     }
 
     let addOn = "";
@@ -111,11 +87,10 @@ function freeformParse(params) {
 async function queryChannelFinder(params) {
     let urlParams = handleParams(params);
     let maxResults = cfMaxResults ? `&~size=${cfMaxResults}` : "";
-    let requestURI = `${channelFinderURL}/resources/channels?~name=${urlParams.pvName}${urlParams.params}${maxResults}`;
-    let options = {};
-    options = { method: 'GET' }
-    if (import.meta.env.REACT_APP_SEND_CREDENTIALS === "true") {
-        if (import.meta.env.PROD) {
+    let requestURI = `${config.CF_URL}/resources/channels?~name=${urlParams.pvName}${urlParams.params}${maxResults}`;
+    let options = { method: 'GET' }
+    if (config.SEND_CREDENTIALS) {
+        if (config.IS_PROD) {
             // credentials header would help if CF, AA, etc are behind a SSO
             options['credentials'] = 'include';
         }
@@ -130,9 +105,9 @@ async function queryLog(logType, pvName, extraParams) {
 
     let requestURI = ""
     if (logType === logEnum.ONLINE_LOG) {
-        requestURI = encodeURI(`${ologURL}/logs/search?text=${pvName}${ologStartDays}${ologMaxResults}`);
+        requestURI = encodeURI(`${config.OLOG_URL}/logs/search?text=${pvName}${ologStartDays}${ologMaxResults}`);
     } else if (logType === logEnum.ALARM_LOG) {
-        requestURI = encodeURI(`${alarmLogURL}/search/alarm?pv=${pvName}${alarmLogStartDays}${alarmLogMaxResults}${extraParams}`);
+        requestURI = encodeURI(`${config.AL_URL}/search/alarm?pv=${pvName}${alarmLogStartDays}${alarmLogMaxResults}${extraParams}`);
     } else {
         return new Promise((resolve, reject) => {
             reject();
@@ -145,9 +120,9 @@ async function getQueryHelpers(helperType) {
     let requestURI = ""
 
     if (helperType === queryHelperEnum.PROPERTIES) {
-        requestURI = `${channelFinderURL}/resources/properties`
+        requestURI = `${config.CF_URL}/resources/properties`
     } else if (helperType === queryHelperEnum.TAGS) {
-        requestURI = `${channelFinderURL}/resources/tags`
+        requestURI = `${config.CF_URL}/resources/tags`
     } else {
         return new Promise((resolve, reject) => {
             reject();
@@ -167,34 +142,34 @@ async function getQueryHelpers(helperType) {
 
 async function getCount(params = {}) {
     let urlParams = handleParams(params)
-    let requestURI = `${channelFinderURL}/resources/channels/count?~name=${urlParams.pvName}${urlParams.params}`;
+    let requestURI = `${config.CF_URL}/resources/channels/count?~name=${urlParams.pvName}${urlParams.params}`;
 
     return await standardQuery(requestURI);
 }
 
 async function getCFInfo() {
-    return await standardQuery(channelFinderURL);
+    return await standardQuery(config.CF_URL);
 }
 
 async function getALInfo() {
-    const requestURI = alarmLogURL + "/"
+    const requestURI = config.AL_URL + "/"
     return await standardQuery(requestURI);
 }
 
 async function getOLOGInfo() {
-    return await standardQuery(ologURL);
+    return await standardQuery(config.OLOG_URL);
 }
 
 async function getCaputLogInfo() {
-    return await standardQuery(caputlogURL);
+    return await standardQuery(config.CAPUTLOG_URL);
 }
 
 async function getPVWSInfo(path) {
-    if (pvwsHTTPURL === "") return;
-    if (pvwsHTTPURL.slice(-1) !== "/") {
+    if (config.PVWS_HTTP_URL === "") return;
+    if (config.PVWS_HTTP_URL.slice(-1) !== "/") {
         path = "/" + path;
     }
-    const requestURI = pvwsHTTPURL + path;
+    const requestURI = config.PVWS_HTTP_URL + path;
     return await standardQuery(requestURI);
 }
 
@@ -203,8 +178,8 @@ async function standardQuery(requestURI, options = null, handleData = null) {
     let error = "";
     let errorFlag = false;
 
-    if (import.meta.env.REACT_APP_SEND_CREDENTIALS === "true") {
-        if (import.meta.env.PROD) {
+    if (config.SEND_CREDENTIALS) {
+        if (config.IS_PROD) {
             if (options === null) options = {};
             // credentials header would help if CF, AA, etc are behind a SSO
             options['credentials'] = 'include';
@@ -291,16 +266,16 @@ function parseWebSocketMessage(jsonMessage, fixedPrecision = null) {
             pvData.pv_value = Array.prototype.slice.call(value_array);
         } else if ("b64byt" in pvData) {
             let bytes = toByteArray(pvData.b64byt);
-            if (import.meta.env.REACT_APP_PVWS_TREAT_BYTE_ARRAY_AS_STRING === "false") {
-                let value_array = new Uint8Array(bytes.buffer);
-                pvData.pv_value = Array.prototype.slice.call(value_array);
-            } else {
+            if (config.PVWS_TREAT_BYTE_ARRAY_AS_STRING) {
                 try {
                     const decoder = new TextDecoder('utf-8');
                     pvData.pv_value = decoder.decode(bytes);
                 } catch (error) {
                     console.log("Error decoding byte array: ", error.message);
                 }
+            } else {
+                let value_array = new Uint8Array(bytes.buffer);
+                pvData.pv_value = Array.prototype.slice.call(value_array);
             }
         } else if ("b64flt" in pvData) {
             let bytes = toByteArray(pvData.b64flt);
@@ -359,16 +334,8 @@ const api = {
     OLI_QUERY: getOLOGInfo,
     CAPUTLOG_QUERY: getCaputLogInfo,
     PVWSI_QUERY: getPVWSInfo,
-    CF_URL: channelFinderURL,
-    OLOG_URL: ologURL,
-    OLOG_WEB_URL: ologWebURL,
-    AA_VIEWER: aaViewerURL,
-    PVWS_URL: pvwsURL,
-    SERVER_URL: serverURL,
     LOG_ENUM: logEnum,
     HELPERS_ENUM: queryHelperEnum,
-    CAPUTLOG_URL: caputlogURL,
-    CAPUTLOG_CONNECTOR: caputLogConnector,
     PARSE_WEBSOCKET_MSG: parseWebSocketMessage,
 }
 

@@ -9,6 +9,7 @@ import ValueCheckbox from './valuecheckbox/ValueCheckbox';
 import Value from "./value";
 import Logo from "./logo";
 import PropTypes from "prop-types";
+import config from "../../../config";
 
 const propTypes = {
     isLoading: PropTypes.bool,
@@ -20,16 +21,13 @@ const propTypes = {
 
 function QueryResults(props) {
     const navigate = useNavigate();
-    const pageSizeEnvValue = import.meta.env.REACT_APP_RESULTS_TABLE_SIZE ? parseInt(import.meta.env.REACT_APP_RESULTS_TABLE_SIZE.trim()) : 50;
+    const pageSizeEnvValue = config.RESULTS_TABLE_SIZE;
     const [pageSize, setPageSize] = useState(pageSizeEnvValue);
     const [pvs, setPVs] = useState([]);
-    const defaultTableDensity = import.meta.env.REACT_APP_RESULTS_TABLE_DENSITY ? import.meta.env.REACT_APP_RESULTS_TABLE_DENSITY : "standard";
-    let tablePageSizeOptions = [5, 10, 20, 50, 100];
-    if (import.meta.env.REACT_APP_RESULTS_TABLE_SIZE_OPTIONS) {
-        tablePageSizeOptions = import.meta.env.REACT_APP_RESULTS_TABLE_SIZE_OPTIONS.split(',').filter(item => item.trim().length && !isNaN(item)).map(Number);
-        if (!tablePageSizeOptions.includes(pageSizeEnvValue)) {
-            tablePageSizeOptions.push(pageSizeEnvValue);
-        }
+    const defaultTableDensity = config.RESULTS_TABLE_DENSITY;
+    let tablePageSizeOptions = config.RESULTS_TABLE_SIZE_OPTIONS;
+    if (!tablePageSizeOptions.includes(pageSizeEnvValue)) {
+        tablePageSizeOptions.push(pageSizeEnvValue);
         tablePageSizeOptions.sort(function (a, b) { return a - b; });
     }
     const [columnVisibilityModel, setColumnVisibilityModel] = useState();
@@ -38,8 +36,8 @@ function QueryResults(props) {
     const [checked, setChecked] = useState([]);
     const [currentChecked, setCurrentChecked] = useState(new Set());
     const [monitorAllChecked, setMonitorAllChecked] = useState(false);
-    const liveMonitorMax = import.meta.env.REACT_APP_LIVE_MONITOR_MAX ? import.meta.env.REACT_APP_LIVE_MONITOR_MAX : 100;
-    const liveMonitorWarn = import.meta.env.REACT_APP_LIVE_MONITOR_WARN ? import.meta.env.REACT_APP_LIVE_MONITOR_WARN : 50;
+    const liveMonitorMax = config.LIVE_MONITOR_MAX;
+    const liveMonitorWarn = config.LIVE_MONITOR_WARN;
 
     let { handleErrorMessage, handleOpenErrorAlert, handleSeverity } = props;
 
@@ -92,7 +90,7 @@ function QueryResults(props) {
         for (let i = firstRow; i <= lastRow; ++i) {
             // only check mark active PVs, unless we are ignoring CF PV status
             // matters now that we show "Disconnected" for PVs that are not connected to their IOC
-            if (import.meta.env.REACT_APP_PVWS_IGNORE_CF_PVSTATUS === "true" || pvs[i].pvStatus === "Active") {
+            if (config.PVWS_IGNORE_CF_PVSTATUS || pvs[i].pvStatus === "Active") {
                 updateCurrentChecked(i, event.target.checked);
             }
         }
@@ -153,14 +151,13 @@ function QueryResults(props) {
                         color="primary"
                         target="_blank"
                         variant="contained"
-                        href={encodeURI(`${api.AA_VIEWER}?pv=${params.row.name}`)}
+                        href={encodeURI(`${config.AA_VIEWER}?pv=${params.row.name}`)}
                         size="large">
                         <TimelineIcon />
                     </IconButton>
                 </Tooltip>
                 {
-                    // if PVWS is on, show checkbox for live monitoring, else nothing
-                    import.meta.env.REACT_APP_USE_PVWS === "true" ? <ValueCheckbox pvName={params.row.name} id={params.row.id}
+                    config.USE_PVWS ? <ValueCheckbox pvName={params.row.name} id={params.row.id}
                         pvStatus={params.row.pvStatus} recordType={params.row.recordType} checked={checked}
                         currentChecked={currentChecked} updateCurrentChecked={updateCurrentChecked} />
                         : <div></div>
@@ -174,7 +171,7 @@ function QueryResults(props) {
             <div>
                 <Typography display="inline" variant="subtitle2">Actions</Typography>
                 {
-                    import.meta.env.REACT_APP_USE_PVWS === "true" ? <Tooltip arrow title="Monitor All PVs">
+                    config.USE_PVWS ? <Tooltip arrow title="Monitor All PVs">
                         <Checkbox checked={monitorAllChecked} onChange={handleMonitorSelectAll()} sx={{ ml: ".5rem" }}></Checkbox>
                     </Tooltip>
                         : <div></div>
@@ -208,7 +205,8 @@ function QueryResults(props) {
     }
 
     const renderValue = (params) => {
-        if (import.meta.env.REACT_APP_USE_PVWS === "true") {
+        // if PVWS is on, show checkbox for live monitoring, else nothing
+        if (config.USE_PVWS) {
             return (
                 <Value pvName={params.row.name} id={params.row.id} isChecked={currentChecked.has(params.row.id)} pvRecordType={params.row.recordType} pvStatus={params.row.pvStatus} />
             );
@@ -223,7 +221,7 @@ function QueryResults(props) {
     let columns = [
         { field: "name", headerName: 'PV Name', flex: 15, minWidth: 175, maxWidth: 300, renderCell: renderPVNameLink }
     ]
-    if (import.meta.env.REACT_APP_CF_RECORD_DESC === "true") {
+    if (config.CF_RECORD_DESC) {
         columns.push({ field: "recordDesc", headerName: 'Description', flex: 18, minWidth: 175, maxWidth: 300 })
     }
     columns.push(
@@ -231,19 +229,19 @@ function QueryResults(props) {
         { field: "iocName", headerName: 'IOC', flex: 8.5, minWidth: 125, maxWidth: 170, renderCell: renderIOCLink },
         { field: "pvStatus", headerName: 'Status', flex: 7.5, minWidth: 125, maxWidth: 170 }
     )
-    if (import.meta.env.REACT_APP_CF_RECORD_TYPE === "true") {
+    if (config.CF_RECORD_TYPE) {
         columns.push({ field: "recordType", headerName: 'Type', flex: 7.5, minWidth: 125, maxWidth: 170 })
     }
-    if (import.meta.env.REACT_APP_EXTRA_PROP_SHOW_IN_RESULTS.toLowerCase() === "true" && import.meta.env.REACT_APP_EXTRA_PROP !== "") {
-        columns.push({ field: import.meta.env.REACT_APP_EXTRA_PROP, headerName: import.meta.env.REACT_APP_EXTRA_PROP_LABEL, flex: 7.5, minWidth: 125, maxWidth: 170 })
+    if (config.EXTRA_PROP_SHOW_IN_RESULTS && config.EXTRA_PROP) {
+        columns.push({ field: config.EXTRA_PROP, headerName: config.EXTRA_PROP_LABEL, flex: 7.5, minWidth: 125, maxWidth: 170 })
     }
-    if (import.meta.env.REACT_APP_SECOND_EXTRA_PROP_SHOW_IN_RESULTS.toLowerCase() === "true" && import.meta.env.REACT_APP_SECOND_EXTRA_PROP !== "") {
-        columns.push({ field: import.meta.env.REACT_APP_SECOND_EXTRA_PROP, headerName: import.meta.env.REACT_APP_SECOND_EXTRA_PROP_LABEL, flex: 7.5, minWidth: 125, maxWidth: 170 })
+    if (config.SECOND_EXTRA_PROP_SHOW_IN_RESULTS && config.SECOND_EXTRA_PROP) {
+        columns.push({ field: config.SECOND_EXTRA_PROP, headerName: config.SECOND_EXTRA_PROP_LABEL, flex: 7.5, minWidth: 125, maxWidth: 170 })
     }
-    if (import.meta.env.REACT_APP_CF_ALIAS === "true") {
+    if (config.CF_RECORD_ALIAS) {
         columns.push({ field: "alias", headerName: 'Alias Of', flex: 10.5, minWidth: 175, maxWidth: 300, renderCell: renderAliasLink })
     }
-    if (import.meta.env.REACT_APP_USE_PVWS === "true") {
+    if (config.USE_PVWS) {
         columns.push({ field: "value", headerName: 'Value', flex: 7.5, minWidth: 120, maxWidth: 140, renderCell: renderValue })
     }
     columns.push({ field: "button", headerName: 'Actions', flex: 9.5, minWidth: 160, maxWidth: 200, disableClickEventBubbling: true, renderCell: renderButtons, renderHeader: renderActionsHeader })
@@ -271,16 +269,16 @@ function QueryResults(props) {
     }
 
     useEffect(() => {
-        setCurrentBreakpoint(parseInt(import.meta.env.REACT_APP_LG_BREAKPOINT));
-        setPrevBreakpoint(parseInt(import.meta.env.REACT_APP_LG_BREAKPOINT));
+        setCurrentBreakpoint(config.LG_BREAKPOINT);
+        setPrevBreakpoint(config.LG_BREAKPOINT);
     }, []);
 
     useEffect(() => {
         const handleWindowResize = () => {
             const windowWidth = window.innerWidth;
-            const sm = import.meta.env.REACT_APP_SM_BREAKPOINT ? parseInt(import.meta.env.REACT_APP_SM_BREAKPOINT) : 600;
-            const md = import.meta.env.REACT_APP_MD_BREAKPOINT ? parseInt(import.meta.env.REACT_APP_MD_BREAKPOINT) : 900;
-            const lg = import.meta.env.REACT_APP_LG_BREAKPOINT ? parseInt(import.meta.env.REACT_APP_LG_BREAKPOINT) : 1536;
+            const sm = config.SM_BREAKPOINT;
+            const md = config.MD_BREAKPOINT;
+            const lg = config.LG_BREAKPOINT;
 
             const breakpoint = roundToBreakpoint(windowWidth, [0, sm, md, lg]);
             setCurrentBreakpoint(breakpoint);
@@ -288,9 +286,9 @@ function QueryResults(props) {
             if (breakpoint !== prevBreakpoint) {
                 setPrevBreakpoint(currentBreakpoint);
 
-                const omitExtraSmall = import.meta.env.REACT_APP_OMIT_IN_TABLE_X_SMALL ? import.meta.env.REACT_APP_OMIT_IN_TABLE_X_SMALL.split(',').map(item => item.trim()) : [];
-                const omitSmall = import.meta.env.REACT_APP_OMIT_IN_TABLE_SMALL ? import.meta.env.REACT_APP_OMIT_IN_TABLE_SMALL.split(',').map(item => item.trim()) : [];
-                const omitMedium = import.meta.env.REACT_APP_OMIT_IN_TABLE_MEDIUM ? import.meta.env.REACT_APP_OMIT_IN_TABLE_MEDIUM.split(',').map(item => item.trim()) : [];
+                const omitExtraSmall = config.OMIT_IN_TABLE_X_SMALL;
+                const omitSmall = config.OMIT_IN_TABLE_SMALL;
+                const omitMedium = config.OMIT_IN_TABLE_MEDIUM;
 
                 if (windowWidth <= sm) {
                     for (let i = 0; i < omitExtraSmall.length; ++i) {

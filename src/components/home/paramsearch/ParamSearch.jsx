@@ -3,6 +3,7 @@ import { Grid, TextField, MenuItem, Tooltip } from '@mui/material';
 import SearchActions from '../searchactions/SearchActions';
 import Autocomplete from '@mui/material/Autocomplete';
 import PropTypes from "prop-types";
+import config from "../../../config";
 
 const propTypes = {
     pvName: PropTypes.string,
@@ -43,7 +44,7 @@ const pvRecordTypes = ['aai', 'aao', 'ai', 'ao', 'aSub', 'bi', 'bo', 'calcout', 
 
 function ParamSearch(props) {
     const recordDescSearchRender = () => {
-        if (import.meta.env.REACT_APP_CF_RECORD_DESC === "true") {
+        if (config.CF_RECORD_DESC) {
             return (
                 <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
                     <TextField
@@ -63,7 +64,7 @@ function ParamSearch(props) {
         }
     }
     const recordTypeSearchRender = () => {
-        if (import.meta.env.REACT_APP_CF_RECORD_TYPE === "true") {
+        if (config.CF_RECORD_TYPE) {
             return (
                 // <Box sx={{ display: "flex" }}>
                 <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
@@ -93,7 +94,7 @@ function ParamSearch(props) {
         }
     }
     const aliasOfSearchRender = () => {
-        if (import.meta.env.REACT_APP_CF_ALIAS === "true") {
+        if (config.CF_RECORD_ALIAS) {
             return (
                 <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
                     <TextField
@@ -114,7 +115,7 @@ function ParamSearch(props) {
     }
     const extraPropARender = () => {
         if (props.extraPropAName !== null) {
-            if (import.meta.env.REACT_APP_EXTRA_PROP_DROPDOWN_LABELS !== "") {
+            if (config.EXTRA_PROP_DROPDOWN_LABELS.length > 0) {
                 return (
                     // <Box sx={{ display: "flex" }}>
                     <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
@@ -122,16 +123,16 @@ function ParamSearch(props) {
                             sx={{ display: "flex", flexGrow: 1, minWidth: { xs: '50%', md: '25%', lg: '8%' } }}
                             freeSolo
                             disableClearable
-                            options={import.meta.env.REACT_APP_EXTRA_PROP_DROPDOWN_LABELS.split(",")}
+                            options={config.EXTRA_PROP_DROPDOWN_LABELS}
                             key={props.recordTypeAutocompleteKey}
                             value={props.extraPropAValue}
                             renderInput={(params) =>
                                 <TextField
                                     id={props.extraPropAName}
                                     {...params}
-                                    label={import.meta.env.REACT_APP_EXTRA_PROP_LABEL}
+                                    label={config.EXTRA_PROP_LABEL}
                                     name={props.extraPropAName}
-                                    placeholder={import.meta.env.REACT_APP_EXTRA_PROP_LABEL}
+                                    placeholder={config.EXTRA_PROP_LABEL}
                                     type="search"
                                     variant="outlined"
                                     onChange={props.handleInputChange}
@@ -148,11 +149,11 @@ function ParamSearch(props) {
                         <TextField
                             sx={{ display: "flex", flexGrow: 1, minWidth: { xs: '50%', md: '25%', lg: '8%' } }}
                             id={props.extraPropAName}
-                            label={import.meta.env.REACT_APP_EXTRA_PROP_LABEL}
+                            label={config.EXTRA_PROP_LABEL}
                             autoComplete="off"
                             name={props.extraPropAName}
                             value={props.extraPropAValue}
-                            placeholder={import.meta.env.REACT_APP_EXTRA_PROP_LABEL}
+                            placeholder={config.EXTRA_PROP_LABEL}
                             type="search"
                             variant="outlined"
                             onChange={props.handleInputChange}
@@ -164,7 +165,7 @@ function ParamSearch(props) {
     }
     const extraPropBRender = () => {
         if (props.extraPropBName !== null) {
-            if (import.meta.env.REACT_APP_SECOND_EXTRA_PROP_DROPDOWN_LABELS !== "") {
+            if (config.SECOND_EXTRA_PROP_DROPDOWN_LABELS.length > 0) {
                 return (
                     // <Box sx={{ display: "flex" }}>
                     <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
@@ -172,16 +173,16 @@ function ParamSearch(props) {
                             sx={{ display: "flex", flexGrow: 1, minWidth: { xs: '50%', md: '25%', lg: '8%' } }}
                             freeSolo
                             disableClearable
-                            options={import.meta.env.REACT_APP_SECOND_EXTRA_PROP_DROPDOWN_LABELS.split(",")}
+                            options={config.SECOND_EXTRA_PROP_DROPDOWN_LABELS}
                             key={props.recordTypeAutocompleteKey}
                             value={props.extraPropBValue}
                             renderInput={(params) =>
                                 <TextField
                                     id={props.extraPropBName}
                                     {...params}
-                                    label={import.meta.env.REACT_APP_SECOND_EXTRA_PROP_LABEL}
+                                    label={config.SECOND_EXTRA_PROP_LABEL}
                                     name={props.extraPropBName}
-                                    placeholder={import.meta.env.REACT_APP_SECOND_EXTRA_PROP_LABEL}
+                                    placeholder={config.SECOND_EXTRA_PROP_LABEL}
                                     type="search"
                                     variant="outlined"
                                     onChange={props.handleInputChange}
@@ -198,11 +199,11 @@ function ParamSearch(props) {
                         <TextField
                             sx={{ display: "flex", flexGrow: 1, minWidth: { xs: '50%', md: '25%', lg: '8%' } }}
                             id={props.extraPropBName}
-                            label={import.meta.env.REACT_APP_SECOND_EXTRA_PROP_LABEL}
+                            label={config.SECOND_EXTRA_PROP_LABEL}
                             autoComplete="off"
                             name={props.extraPropBName}
                             value={props.extraPropBValue}
-                            placeholder={import.meta.env.REACT_APP_SECOND_EXTRA_PROP_LABEL}
+                            placeholder={config.SECOND_EXTRA_PROP_LABEL}
                             type="search"
                             variant="outlined"
                             onChange={props.handleInputChange}

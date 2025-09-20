@@ -1,9 +1,9 @@
-import api from "../../api";
+import config from "../../config";
 
 export function getCaputLogSearchConfig({ filters = [], search_fields = {}, facets = {}, initialState = {} } = {}) {
   return {
     alwaysSearchOnInitialLoad: true,
-    apiConnector: api.CAPUTLOG_CONNECTOR,
+    apiConnector: config.CAPUTLOG_CONNECTOR,
     hasA11yNotifications: true,
     trackUrlState: false,
     searchQuery: {
