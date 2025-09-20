@@ -33,6 +33,7 @@ function CaputLogTable(props) {
                 <SearchProvider config={searchConfig} >
                     <CaputLogSearchLayout
                         showSearchBox={false}
+                        initialSearchTerm={ props.pvName ? `${props.pvName}.*` : "" }
                         facetFields={[
                             { field: "user.keyword", label: "User" },
                             { field: "client.keyword", label: "Client" },

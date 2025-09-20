@@ -9,8 +9,11 @@ import AppsIcon from '@mui/icons-material/Apps';
 import SsidChartIcon from '@mui/icons-material/SsidChart';
 import HelpIcon from '@mui/icons-material/Help';
 import InfoIcon from '@mui/icons-material/Info'
+import TroubleshootIcon from '@mui/icons-material/Troubleshoot';
 import MenuIcon from '@mui/icons-material/Menu';
 import { makeStyles } from 'tss-react/mui';
+
+import config from '../../config';
 
 const useStyles = makeStyles()((theme) => ({
   root: {
@@ -68,10 +71,10 @@ function Header() {
                     </ListItemIcon>
                     <ListItemText primary="Plotting" />
                   </ListItemButton>
-                  {(import.meta.env.REACT_APP_USE_CAPUTLOG || "").toLowerCase() === "true" &&
+                  {config.USE_CAPUTLOG &&
                     <ListItemButton key="CaputLog" component={NavLink} to="/caputlog" onClick={handleMenuToggle} divider color="primary">
                       <ListItemIcon>
-                        <InfoIcon color="primary" />
+                        <TroubleshootIcon color="primary" />
                       </ListItemIcon>
                       <ListItemText primary="CaputLog" />
                     </ListItemButton>
@@ -101,12 +104,12 @@ function Header() {
             <NavLink to="/ioc" style={{ textDecoration: "none", color: 'inherit', paddingRight: 40 }}>
               <Typography variant="h5">IOCs</Typography>
             </NavLink>
-            {(import.meta.env.REACT_APP_USE_AA || "").toLowerCase() === "true" &&
+            {config.USE_AA &&
               <NavLink to="/plot" style={{ textDecoration: "none", color: 'inherit', paddingRight: 40 }}>
                 <Typography variant="h5">Plotting</Typography>
               </NavLink>
             }
-            {(import.meta.env.REACT_APP_USE_CAPUTLOG || "").toLowerCase() === "true" &&
+            {config.USE_CAPUTLOG &&
               <NavLink to="/caputlog" style={{ textDecoration: "none", color: 'inherit', paddingRight: 40 }}>
                 <Typography variant="h5">Caput Log</Typography>
               </NavLink>
