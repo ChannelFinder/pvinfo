@@ -3,6 +3,10 @@ import useWebSocket from "react-use-websocket";
 import Service from "./service";
 import api from "../../api";
 import { Box, Grid, Typography } from "@mui/material";
+import { Accordion, AccordionSummary, AccordionDetails } from "@mui/material";
+import { Table, TableBody, TableCell, TableRow } from "@mui/material";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import config from "../../config";
 
 function Services() {
     const [pvCount, setPVCount] = useState(null);
@@ -177,6 +181,64 @@ function Services() {
                     </Grid>
                 </Box>
             </Box>
+            <Accordion sx={{ mt: 3 }}>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="preferences-content" id="preferences-header">
+                    <Typography sx={{ fontSize: 18, fontWeight: "medium" }}>Preference Settings</Typography>
+                </AccordionSummary>
+                <AccordionDetails sx={{ pt: 1, pb: 1 }}>
+                    <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                        <Typography variant="body2"><strong>PV Web Socket:</strong> {config.USE_PVWS ? "Enabled" : "Disabled"}</Typography>
+                        <Typography variant="body2"><strong>Archiver:</strong> {config.USE_AA ? "Enabled" : "Disabled"}</Typography>
+                        <Typography variant="body2"><strong>OLOG:</strong> {config.USE_OLOG ? "Enabled" : "Disabled"}</Typography>
+                        <Typography variant="body2"><strong>Alarm Logger:</strong> {config.USE_AL ? "Enabled" : "Disabled"}</Typography>
+                        <Typography variant="body2"><strong>CaputLog:</strong> {config.USE_CAPUTLOG ? "Enabled" : "Disabled"}</Typography>
+                        <Accordion sx={{ boxShadow: "none", border: "1px solid #ddd", mt: 1, '&:before': { display: 'none' } }}>
+                            <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ fontSize: 18 }} />}
+                                sx={{ minHeight: "32px !important", '& .MuiAccordionSummary-content': { margin: 0 } }}
+                            >
+                                <Typography variant="subtitle2" sx={{ fontWeight: "bold" }}>Page Settings</Typography>
+                            </AccordionSummary>
+                            <AccordionDetails sx={{ py: 1 }}>
+                                <Grid container spacing={2}>
+                                    <Grid item xs={12} md={6}>
+                                        <Typography variant="subtitle2" sx={{ fontWeight: "bold", mb: 1 }}>Home Page</Typography>
+                                        <Table size="small">
+                                            <TableBody>
+                                                <TableRow><TableCell>Channel Finder Max Results</TableCell><TableCell>{config.CF_MAX_RESULTS ?? "No Limit"}</TableCell></TableRow>
+                                                <TableRow><TableCell>Record Type</TableCell><TableCell>{config.CF_RECORD_TYPE ? "Enabled" : "Disabled"}</TableCell></TableRow>
+                                                <TableRow><TableCell>Record Description</TableCell><TableCell>{config.CF_RECORD_DESC ? "Enabled" : "Disabled"}</TableCell></TableRow>
+                                                <TableRow><TableCell>PV Alias</TableCell><TableCell>{config.CF_RECORD_ALIAS ? "Enabled" : "Disabled"}</TableCell></TableRow>
+                                                <TableRow><TableCell>Extra Property</TableCell><TableCell>{config.EXTRA_PROP || "None"}</TableCell></TableRow>
+                                                <TableRow><TableCell>Second Extra Property</TableCell><TableCell>{config.SECOND_EXTRA_PROP || "None"}</TableCell></TableRow>
+                                                <TableRow><TableCell>PV Results Table Size</TableCell><TableCell>{config.RESULTS_TABLE_SIZE}</TableCell></TableRow>
+                                                <TableRow><TableCell>PV Results Table Density</TableCell><TableCell>{config.RESULTS_TABLE_DENSITY}</TableCell></TableRow>
+                                                <TableRow><TableCell>Show Disconnected in Live Value Box</TableCell><TableCell>{config.SHOW_DISCONNECTED ? "Yes" : "No"}</TableCell></TableRow>
+                                                <TableRow><TableCell>Monitor All Warning Threshold</TableCell><TableCell>{config.LIVE_MONITOR_WARN}</TableCell></TableRow>
+                                                <TableRow><TableCell>Monitor All Maximum</TableCell><TableCell>{config.LIVE_MONITOR_MAX}</TableCell></TableRow>
+                                            </TableBody>
+                                        </Table>
+                                    </Grid>
+                                    <Grid item xs={12} md={6}>
+                                        <Typography variant="subtitle2" sx={{ fontWeight: "bold", mb: 1 }}>PV Details Page</Typography>
+                                        <Table size="small">
+                                            <TableBody>
+                                                <TableRow><TableCell>Enable Live Monitoring by Default</TableCell><TableCell>{config.DEFAULT_LIVE_MONITORING ? "Yes" : "No"}</TableCell></TableRow>
+                                                <TableRow><TableCell>Ignore Channel Finder PV Status for Monitoring</TableCell><TableCell>{config.PVWS_IGNORE_CF_PVSTATUS ? "Yes" : "No"}</TableCell></TableRow>
+                                                <TableRow><TableCell>Waveform Monitoring</TableCell><TableCell>{config.PVWS_ALLOW_WAVEFORMS ? "Enabled" : "Disabled"}</TableCell></TableRow>
+                                                <TableRow><TableCell>Treat Char Waveforms As Strings</TableCell><TableCell>{config.PVWS_TREAT_BYTE_ARRAY_AS_STRING ? "Yes" : "No"}</TableCell></TableRow>
+                                                <TableRow><TableCell>Number of Days to Include in Online Log Search</TableCell><TableCell>{config.OLOG_START_TIME_DAYS ?? "No Limit"}</TableCell></TableRow>
+                                                <TableRow><TableCell>Online Log Max Results</TableCell><TableCell>{config.OLOG_MAX_RESULTS ?? "No Limit"}</TableCell></TableRow>
+                                                <TableRow><TableCell>Number of Days to Include in Alarm Log Search</TableCell><TableCell>{config.AL_START_TIME_DAYS ?? "No Limit"}</TableCell></TableRow>
+                                                <TableRow><TableCell>Alarm Log Max Results</TableCell><TableCell>{config.AL_MAX_RESULTS ?? "No Limit"}</TableCell></TableRow>
+                                            </TableBody>
+                                        </Table>
+                                    </Grid>
+                                </Grid>
+                            </AccordionDetails>
+                        </Accordion>
+                    </Box>
+                </AccordionDetails>
+            </Accordion>
         </Fragment >
     )
 }
