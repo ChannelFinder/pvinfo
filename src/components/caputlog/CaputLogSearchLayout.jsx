@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Layout } from "@elastic/react-search-ui-views";
 import { ErrorBoundary, Facet, PagingInfo, ResultsPerPage, Paging, useSearch, SearchBox } from "@elastic/react-search-ui";
-import { Box, Button, TextField, InputAdornment } from "@mui/material";
+import { Box, Button, TextField, InputAdornment, Tooltip } from "@mui/material";
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import ClearRoundedIcon from '@mui/icons-material/ClearRounded';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import './CaputLogSearchLayout.css';
+import CustomSearchBoxView from "./CustomSearchBoxView";
 import moment from "moment";
 import PropTypes from "prop-types";
 
@@ -15,17 +17,19 @@ const propTypes = {
         field: PropTypes.string.isRequired,
         label: PropTypes.string.isRequired,
     })),
+    initialSearchTerm: PropTypes.string,
     children: PropTypes.func.isRequired,
 }
 
 function CaputLogSearchLayout({
     showSearchBox = false,
     facetFields = [],
+    initialSearchTerm = "",
     children
 }) {
     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState(null);
-    const { wasSearched, setFilter, removeFilter, results, setSort } = useSearch();
+    const { wasSearched, setFilter, removeFilter, results, setSort, setSearchTerm } = useSearch();
 
     // Set initial sort to @timestamp desc on mount
     useEffect(() => {
@@ -49,9 +53,10 @@ function CaputLogSearchLayout({
         }
     };
 
-    const clearDateFilters = () => {
+    const clearAllFilters = () => {
         setStartDate(null);
         setEndDate(null);
+        setSearchTerm(initialSearchTerm);
         removeFilter("@timestamp");
     };
 
@@ -67,7 +72,10 @@ function CaputLogSearchLayout({
                             flexDirection: "column",
                         }} >
                             {showSearchBox && (
-                                <SearchBox inputProps={{ placeholder: "Search by PV Name, User, or Client" }} />
+                                <SearchBox
+                                    inputProps={{ placeholder: "Search by PV Name, User, or Client" }}
+                                    view={CustomSearchBoxView}
+                                />
                             )}
                             <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1, width: '100%' }}>
                                 <Box sx={{ flex: 1 }}>
@@ -98,9 +106,17 @@ function CaputLogSearchLayout({
                                         }
                                     />
                                 </Box>
-                                <Button variant="contained" onClick={clearDateFilters}>
-                                    Clear
-                                </Button>
+                                <Tooltip arrow title="Clear All Filters">
+                                    <Button
+                                        variant="contained"
+                                        disableElevation
+                                        color="secondary"
+                                        onClick={clearAllFilters}
+                                        sx={{ minWidth: 56, height: 40 }}
+                                    >
+                                        CLEAR <ClearRoundedIcon sx={{ color: 'black' }} fontSize="medium" />
+                                    </Button>
+                                </Tooltip>
                             </Box>
                         </Box>
                     }
