@@ -4,14 +4,16 @@ import { Button, Typography, Grid } from "@mui/material";
 import { Table, TableCell, TableHead, TableBody, TableRow, TableContainer } from "@mui/material";
 import TimelineIcon from '@mui/icons-material/Timeline';
 import api from "../../api";
+import config from "../../config";
+
 
 function Plot() {
     const getAAPolicies = () => {
-        if(import.meta.env.REACT_APP_AA_POLICIES.length <= 0) {
+        if(config.AA_POLICIES.length <= 0) {
             return [];
         }
         let aaPolicies = [];
-        let policyList = import.meta.env.REACT_APP_AA_POLICIES.split(",");
+        let policyList = config.AA_POLICIES;
         policyList.forEach(policy => {
             let policyDetails = policy.split("|");
             let policyMap = {};
@@ -27,7 +29,7 @@ function Plot() {
   return (
     <Fragment>
         <Grid item xs={12} style={{display: "flex"}}>
-            <Button style={{marginTop: 10, marginBottom: 20}} target="_blank" href={api.AA_VIEWER} variant="contained" color="secondary" endIcon={<TimelineIcon />} >Click Here to Plot PVs</Button>
+            <Button style={{marginTop: 10, marginBottom: 20}} target="_blank" href={config.AA_VIEWER} variant="contained" color="secondary" endIcon={<TimelineIcon />} >Click Here to Plot PVs</Button>
         </Grid>
         <Grid item xs={12} style={{display: "flex"}}>
             <Typography variant='h4'>Archiver Storage Policies</Typography>

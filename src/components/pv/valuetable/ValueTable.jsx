@@ -5,6 +5,7 @@ import api from "../../../api";
 import colors from "../../../colors";
 import PropTypes from "prop-types";
 import KeyValuePair from "../KeyValuePair";
+import config from "../../../config";
 
 const propTypes = {
     pvMonitoring: PropTypes.bool,
@@ -34,7 +35,7 @@ function ValueTable(props) {
     const [snapshot, setSnapshot] = useState(true);
     const [subscribed, setSubscribed] = useState(false);
 
-    const { sendJsonMessage, lastJsonMessage } = useWebSocket(api.PVWS_URL, {
+    const { sendJsonMessage, lastJsonMessage } = useWebSocket(config.PVWS_URL, {
         onClose: () => {
             if (props.snapshot && !props.pvMonitoring) return;
             setPVValue(null);
@@ -57,12 +58,12 @@ function ValueTable(props) {
             }
             const status = props.pvData.pvStatus?.value || "Unknown";
 
-            if (import.meta.env.REACT_APP_PVWS_ALLOW_WAVEFORMS !== "true" && props.pvData.recordType?.value === "waveform") {
+            if (!config.PVWS_ALLOW_WAVEFORMS && props.pvData.recordType?.value === "waveform") {
                 handleErrorMessage("Can't show live PV values - Waveform record type not supported");
                 handleSeverity("warning");
                 handleOpenErrorAlert(true);
             }
-            else if (import.meta.env.REACT_APP_PVWS_IGNORE_CF_PVSTATUS === "true" || status === "Active") {
+            else if (config.PVWS_IGNORE_CF_PVSTATUS || status === "Active") {
                 if (!subscribed) {
                     sendJsonMessage({ "type": "subscribe", "pvs": [props.pvName] });
                     setSubscribed(true);

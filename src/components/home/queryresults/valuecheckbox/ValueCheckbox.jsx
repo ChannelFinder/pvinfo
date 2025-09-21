@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import useWebSocket from 'react-use-websocket';
 import { Checkbox, Tooltip } from '@mui/material';
 import api from '../../../../api';
+import config from '../../../../config';
 import PropTypes from "prop-types";
 
 const propTypes = {
@@ -19,7 +20,7 @@ function ValueCheckbox(props) {
     // filter all messages as false since we don't need to read anything in parent component
     // This still is in QueryResults so even with USE_PVWS===false it will try to connect, would be better to move to ValueCheckbox?
     const [enabled, setEnabled] = useState(true);
-    const { sendJsonMessage } = useWebSocket(api.PVWS_URL, {
+    const { sendJsonMessage } = useWebSocket(config.PVWS_URL, {
         share: true,
         filter: (message) => false,
     });
@@ -29,10 +30,10 @@ function ValueCheckbox(props) {
     }
 
     useEffect(() => {
-        if (props.pvStatus !== "Active" && import.meta.env.REACT_APP_PVWS_IGNORE_CF_PVSTATUS !== "true") {
+        if (props.pvStatus !== "Active" && !config.PVWS_IGNORE_CF_PVSTATUS) {
             setEnabled(false);
         }
-        else if (props.recordType === "waveform" && import.meta.env.REACT_APP_PVWS_ALLOW_WAVEFORMS !== "true") {
+        else if (props.recordType === "waveform" && !config.PVWS_ALLOW_WAVEFORMS) {
             setEnabled(false);
         }
         else {
