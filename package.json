@@ -3,6 +3,7 @@
   "homepage": "https://yourdomainhere/pvinfo",
   "version": "2.5.1",
   "private": true,
+  "type": "module",
   "dependencies": {
     "@elastic/react-search-ui": "^1.24.2",
     "@elastic/react-search-ui-views": "^1.24.2",
@@ -17,13 +18,11 @@
     "@testing-library/react": "^13.1.1",
     "@testing-library/user-event": "^14.1.1",
     "base64-js": "^1.5.1",
-    "dayjs": "^1.11.13",
     "he": "^1.2.0",
     "moment": "^2.30.1",
     "react": "^18.1.0",
     "react-datepicker": "^8.4.0",
     "react-dom": "^18.1.0",
-    "react-router": "^6.3.0",
     "react-router-dom": "^6.3.0",
     "react-use-websocket": "^4.0.0",
     "tss-react": "^3.6.2",
@@ -33,9 +32,11 @@
     "optionator": "^0.9.3"
   },
   "scripts": {
+    "dev": "vite",
     "start": "vite",
     "build": "vite build",
-    "serve": "vite preview"
+    "serve": "vite preview",
+    "preview": "vite preview"
   },
   "eslintConfig": {
     "extends": [
