@@ -34,7 +34,12 @@ const getEnv = (prodKey, devKey) => {
 // caputlog elasticsearch connector - either direct or via a back-end proxy service
 const elasticIndexName = import.meta.env.REACT_APP_ELASTICSEARCH_INDEX_NAME;
 const elasticApikey = import.meta.env.REACT_APP_ELASTICSEARCH_API_KEY;
-const useProxy = parseBoolean(import.meta.env.REACT_APP_USE_CAPUT_API_PROXY_CONNNECTOR, true);
+// typo in config name was fixed but this is for backward compatibility
+const useProxy = parseBoolean(
+    import.meta.env.REACT_APP_USE_CAPUT_API_PROXY_CONNECTOR ??
+    import.meta.env.REACT_APP_USE_CAPUT_API_PROXY_CONNNECTOR,
+    true
+);
 
 const caputlogURL = getEnv("REACT_APP_CAPUTLOG_URL", "REACT_APP_CAPUTLOG_URL_DEV");
 
@@ -137,7 +142,7 @@ const config = {
 
     // CaputLog
     USE_CAPUTLOG: parseBoolean(import.meta.env.REACT_APP_USE_CAPUTLOG, false),
-    USE_CAPUT_API_PROXY_CONNNECTOR: useProxy,
+    USE_CAPUT_API_PROXY_CONNECTOR: useProxy,
 
     // Severity colors
     OK_SEVERITY_COLOR: import.meta.env.REACT_APP_OK_SEVERITY_COLOR,

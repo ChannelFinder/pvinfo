@@ -164,7 +164,7 @@ function Services() {
                             config.USE_CAPUTLOG ? (
                                 <Service servName="Caput Log" connected={caputLogConnected}
                                     data={
-                                        config.USE_CAPUT_API_PROXY_CONNNECTOR
+                                        config.USE_CAPUT_API_PROXY_CONNECTOR
                                         ? {
                                             "Elastic Status": caputLogData?.elasticsearch?.connection,
                                             "Elastic Health": caputLogData?.elasticsearch?.health?.status,
