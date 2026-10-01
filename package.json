@@ -19,7 +19,7 @@
     "@testing-library/user-event": "^14.1.1",
     "base64-js": "^1.5.1",
     "he": "^1.2.0",
-    "moment": "^2.30.1",
+    "moment": "^2.31.0",
     "react": "^18.1.0",
     "react-datepicker": "^8.4.0",
     "react-dom": "^18.1.0",
