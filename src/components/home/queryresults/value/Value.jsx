@@ -1,17 +1,8 @@
 import React, { useState, useEffect } from "react";
-import useWebSocket from 'react-use-websocket';
+import useWebSocket from '../../../../useWebSocket';
 import api from '../../../../api';
 import config from "../../../../config";
 import colors from '../../../../colors';
-import PropTypes from "prop-types";
-
-const propTypes = {
-    pvName: PropTypes.string,
-    pvRecordType: PropTypes.string,
-    pvStatus: PropTypes.string,
-    id: PropTypes.number,
-    isChecked: PropTypes.bool,
-}
 
 function Value(props) {
     const [pvValue, setPVValue] = useState(null);
@@ -114,5 +105,4 @@ function Value(props) {
     }
 }
 
-Value.propTypes = propTypes;
 export default Value;

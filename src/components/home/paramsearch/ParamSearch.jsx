@@ -2,26 +2,7 @@ import React, { Fragment } from 'react';
 import { Grid, TextField, MenuItem, Tooltip } from '@mui/material';
 import SearchActions from '../searchactions/SearchActions';
 import Autocomplete from '@mui/material/Autocomplete';
-import PropTypes from "prop-types";
 import config from "../../../config";
-
-const propTypes = {
-    pvName: PropTypes.string,
-    hostName: PropTypes.string,
-    iocName: PropTypes.string,
-    pvStatus: PropTypes.string,
-    aliasOf: PropTypes.string,
-    recordType: PropTypes.string,
-    recordTypeAutocompleteKey: PropTypes.number,
-    recordDesc: PropTypes.string,
-    extraPropAName: PropTypes.string,
-    extraPropBName: PropTypes.string,
-    extraPropAValue: PropTypes.string,
-    extraPropBValue: PropTypes.string,
-    handleInputChange: PropTypes.func,
-    handleClear: PropTypes.func,
-    setIsLoading: PropTypes.func
-}
 
 const pvStatusOptions = [
     {
@@ -216,7 +197,10 @@ function ParamSearch(props) {
 
     return (
         <Fragment>
-            <Grid item container xs={12} sx={{ display: 'flex', flexWrap: { xs: 'wrap', lg: 'nowrap' } }}>
+            <Grid
+                container
+                sx={{ display: 'flex', flexWrap: { xs: 'wrap', lg: 'nowrap' } }}
+                size={12}>
                 {/* <Box className="main-query-box" sx={{ flex: 1 }}> */}
                 <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />= at beginning for exactly equal</div>}>
                     <TextField
@@ -291,5 +275,4 @@ function ParamSearch(props) {
     );
 }
 
-ParamSearch.propTypes = propTypes
 export default ParamSearch;

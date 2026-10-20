@@ -1,24 +1,27 @@
 import { Fragment } from "react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink } from "react-router";
 import { Grid, Link, Typography } from "@mui/material";
-import PropTypes from 'prop-types';
-
-const propTypes = {
-    title: PropTypes.string,
-    url: PropTypes.string,
-    textColor: PropTypes.string,
-    value: PropTypes.any,
-}
 
 function KeyValuePair(props) {
     let style = { px: 2, py: 1, borderBottom: 1, borderColor: '#D1D5DB' }
 
     return (
         <Fragment>
-            <Grid item xs={6} sm={2} sx={style} style={{ backgroundColor: "#F3F4F6" }}>
+            <Grid
+                sx={style}
+                style={{ backgroundColor: "#F3F4F6" }}
+                size={{
+                    xs: 6,
+                    sm: 2
+                }}>
                 <Typography variant="subtitle2">{props.title}</Typography>
             </Grid>
-            <Grid item xs={6} sm={4} sx={style}>
+            <Grid
+                sx={style}
+                size={{
+                    xs: 6,
+                    sm: 4
+                }}>
                 <Typography variant="body2" style={{ color: props.textColor }}>
                     {Array.isArray(props.value) && props.title === "Tags" ? (
                         props.value.map((item, i) => (
@@ -40,5 +43,4 @@ function KeyValuePair(props) {
     );
 }
 
-KeyValuePair.propTypes = propTypes;
 export default KeyValuePair;

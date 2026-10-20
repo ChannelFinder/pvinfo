@@ -1,7 +1,6 @@
 import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
 import envCompatible from "vite-plugin-env-compatible";
-import svgrPlugin from "vite-plugin-svgr";
 import path from "path";
 import * as child from "child_process";
 
@@ -63,16 +62,15 @@ export default defineConfig(({ command, mode }) => {
         plugins: [
             react(),
             envCompatible(),
-            svgrPlugin({
-                svgrOptions: {
-                    icon: true,
-                    // ...svgr options (https://react-svgr.com/docs/options/)
-                },
-            }),
         ],
         server: {
             host: "localhost", // change to 0.0.0.0 or true to listen on all addresses
             port: 3000,
+        },
+        test: {
+            environment: "jsdom",
+            globals: true,
+            setupFiles: "./src/setupTests.js",
         },
     };
 })

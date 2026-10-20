@@ -1,17 +1,7 @@
 import { Grid, Box, IconButton, InputAdornment, Popover, TextField, Tooltip, Typography } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add';
 import SearchActions from '../searchactions/SearchActions';
-import PropTypes from "prop-types";
 import { useRef, useState } from 'react';
-
-const propTypes = {
-    freeformQuery: PropTypes.string,
-    setFreeformQuery: PropTypes.func,
-    handleFreeformChange: PropTypes.func,
-    handleClear: PropTypes.func,
-    searchProperties: PropTypes.array,
-    searchTags: PropTypes.array
-}
 
 function FreeSearch(props) {
     const [anchorEl, setAnchorEl] = useState(null);
@@ -37,7 +27,10 @@ function FreeSearch(props) {
     const id = open ? 'properties-popover' : undefined;
 
     return (
-        <Grid item container xs={12} sx={{ display: 'flex', flexWrap: { xs: 'wrap', lg: 'nowrap' } }}>
+        <Grid
+            container
+            sx={{ display: 'flex', flexWrap: { xs: 'wrap', lg: 'nowrap' } }}
+            size={12}>
             <Tooltip arrow title={<div>Space delimited string<br />PV name (with * and ?)<br />Followed by property=value pairs<br />Followed by tag names</div>}>
                 <TextField
                     sx={{ display: "flex", flexGrow: 1, minWidth: { xs: '60%', md: '75%' }, textOverflow: 'ellipsis' }}
@@ -52,17 +45,19 @@ function FreeSearch(props) {
                     type="search"
                     variant="outlined"
                     onChange={props.handleFreeformChange}
-                    InputProps={{
-                        endAdornment: (
-                            <InputAdornment position="end">
-                                <IconButton onClick={(event) => handleOpenAtts(event, "props")}
-                                    disableRipple
-                                    sx={{ '&:hover': { backgroundColor: 'white', color: 'black' } }}
-                                >
-                                    <AddIcon />
-                                </IconButton>
-                            </InputAdornment>
-                        )
+                    slotProps={{
+                        input: {
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <IconButton onClick={(event) => handleOpenAtts(event, "props")}
+                                        disableRipple
+                                        sx={{ '&:hover': { backgroundColor: 'white', color: 'black' } }}
+                                    >
+                                        <AddIcon />
+                                    </IconButton>
+                                </InputAdornment>
+                            )
+                        }
                     }}
                 />
             </Tooltip>
@@ -105,8 +100,7 @@ function FreeSearch(props) {
             </Popover>
             <SearchActions handleClear={props.handleClear} minWidth={{ xs: '40%', md: '25%' }} />
         </Grid>
-    )
+    );
 }
 
-FreeSearch.propTypes = propTypes;
 export default FreeSearch;

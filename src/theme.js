@@ -45,6 +45,27 @@ const theme = createTheme({
         }
       }
     },
+    MuiDataGrid: {
+      styleOverrides: {
+        // the v8 default toolbar is right aligned with grey buttons and a 52px min height,
+        // make it left aligned, compact, and use the primary color like the pre-v8 toolbar.
+        // the label and quick filter search box are also kept on the left next to the buttons
+        toolbar: ({ theme }) => ({
+          justifyContent: "flex-start",
+          minHeight: "auto",
+          padding: theme.spacing(0.25, 0.5),
+          "& .MuiIconButton-root": {
+            color: theme.palette.primary.main,
+            padding: theme.spacing(0.75),
+          },
+          // the label grows to fill the toolbar by default, which pushes the buttons to the right
+          "& .MuiDataGrid-toolbarLabel": {
+            flex: "0 0 auto",
+            marginRight: theme.spacing(1),
+          },
+        }),
+      },
+    },
   },
 });
 

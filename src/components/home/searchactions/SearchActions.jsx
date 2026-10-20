@@ -1,13 +1,6 @@
 import { Box, Button, Tooltip } from '@mui/material';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import ClearRoundedIcon from '@mui/icons-material/ClearRounded';
-import PropTypes from "prop-types";
-
-
-const propTypes = {
-    handleClear: PropTypes.func,
-    minWidth: PropTypes.object
-}
 
 function SearchActions(props) {
     return (
@@ -39,5 +32,4 @@ function SearchActions(props) {
     )
 }
 
-SearchActions.propTypes = propTypes;
 export default SearchActions;

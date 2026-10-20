@@ -1,8 +1,9 @@
 import React, { Fragment, useEffect, useState } from "react";
 import './IOC.css';
 import { Typography, Link } from "@mui/material";
-import { useNavigate, Link as RouterLink } from "react-router-dom";
-import { DataGrid, GridToolbar } from '@mui/x-data-grid';
+import { useNavigate, Link as RouterLink } from "react-router";
+import { DataGrid } from '@mui/x-data-grid';
+import csvExportOptions from "../../csvExportOptions";
 import api from "../../api";
 
 const renderLink = (params) => {
@@ -14,15 +15,11 @@ const renderLink = (params) => {
 }
 
 const renderDate = (params) => {
-  return (
-      <div>
-          <p>{new Date(params.row.time).toLocaleString()}</p>
-      </div>
-  )
+  return new Date(params.row.time).toLocaleString();
 }
 
 const columns = [
-  { field: "ioc", headerName: 'IOC Name', renderCell: renderLink, flex: 16.5, minWidth: 175, maxWidth: 350 },
+  { field: "ioc", headerName: 'IOC Name', renderCell: renderLink, flex: 16.5, minWidth: 175 },
   { field: "host", headerName: 'Host', flex: 8.25, minWidth: 150, maxWidth: 275 },
   { field: "owner", headerName: 'Engineer', flex: 8.25, minWidth: 150, maxWidth: 275 },
   { field: "iocid", headerName: 'IP Address', flex: 8.25, minWidth: 150, maxWidth: 275 },
@@ -33,7 +30,7 @@ function IOC() {
   const navigate = useNavigate();
   const [cfPVData, setCFPVData] = useState(null); //object
   const [iocs, setIOCs] = useState([]);
-  const [pageSize, setPageSize] = useState(100);
+  const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 100 });
   const [isLoading, setIsLoading] = useState(true);
 
 
@@ -60,7 +57,7 @@ function IOC() {
       if ( cfPVData === null) {
         return;
       }
-      setIOCs(cfPVData.map((pv, index) => {
+      const iocList = cfPVData.map((pv, index) => {
         let iocObject = {};
         //iocObject.id = index;
         iocObject.owner = pv.owner;
@@ -80,7 +77,10 @@ function IOC() {
           }
         });
         return iocObject;
-      }));
+      });
+      // sort here instead of during render, DataGrid freezes the rows array in development so sorting it later throws
+      iocList.sort((a, b) => a.id > b.id ? 1 : -1);
+      setIOCs(iocList);
     }, [cfPVData]);
 
     const handleRowDoubleClick = (e) => {
@@ -105,19 +105,20 @@ function IOC() {
       );
     }
     else {
-      iocs.sort((a, b) => a.id > b.id ? 1 : -1);
       return (
         <Fragment>
             <DataGrid
                 rows={iocs}
                 columns={columns}
                 autoHeight={true}
-                pageSize={pageSize}
-                onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
+                paginationModel={paginationModel}
+                onPaginationModelChange={setPaginationModel}
                 onRowDoubleClick={handleRowDoubleClick}
-                rowsPerPageOptions={[5, 10, 20, 50, 100]}
+                pageSizeOptions={[5, 10, 20, 50, 100]}
                 pagination
-                components={{ Toolbar: GridToolbar }}
+                showToolbar
+                label="IOCs"
+                slotProps={{ toolbar: { csvOptions: csvExportOptions("IOCs") } }}
                 density={"compact"}
                 initialState={{
                   sorting: {

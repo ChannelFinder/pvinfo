@@ -27,38 +27,38 @@ function Plot() {
     }
 
   return (
-    <Fragment>
-        <Grid item xs={12} style={{display: "flex"}}>
-            <Button style={{marginTop: 10, marginBottom: 20}} target="_blank" href={config.AA_VIEWER} variant="contained" color="secondary" endIcon={<TimelineIcon />} >Click Here to Plot PVs</Button>
-        </Grid>
-        <Grid item xs={12} style={{display: "flex"}}>
-            <Typography variant='h4'>Archiver Storage Policies</Typography>
-        </Grid>
-        <TableContainer>
-            <Table>
-                <TableHead>
-                    <TableRow>
-                        <TableCell variant="head"><strong>Policy</strong></TableCell>
-                        <TableCell variant="head"><strong>Sampling Period (seconds)</strong></TableCell>
-                        <TableCell variant="head"><strong>Long Term Reduction (seconds)</strong></TableCell>
-                        <TableCell variant="head"><strong>Controlling PV</strong></TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                {getAAPolicies().map((row, index) => (
-                    <TableRow key={index}>
-                        <TableCell>{row.policy}</TableCell>
-                        <TableCell>{row.period}</TableCell>
-                        <TableCell>{row.ltsreduce}</TableCell>
-                        <TableCell>{row.control}</TableCell>
-                    </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-        </TableContainer>
+      <Fragment>
+          <Grid style={{display: "flex"}} size={12}>
+              <Button style={{marginTop: 10, marginBottom: 20}} target="_blank" href={config.AA_VIEWER} variant="contained" color="secondary" endIcon={<TimelineIcon />} >Click Here to Plot PVs</Button>
+          </Grid>
+          <Grid style={{display: "flex"}} size={12}>
+              <Typography variant='h4'>Archiver Storage Policies</Typography>
+          </Grid>
+          <TableContainer>
+              <Table>
+                  <TableHead>
+                      <TableRow>
+                          <TableCell variant="head"><strong>Policy</strong></TableCell>
+                          <TableCell variant="head"><strong>Sampling Period (seconds)</strong></TableCell>
+                          <TableCell variant="head"><strong>Long Term Reduction (seconds)</strong></TableCell>
+                          <TableCell variant="head"><strong>Controlling PV</strong></TableCell>
+                      </TableRow>
+                  </TableHead>
+                  <TableBody>
+                  {getAAPolicies().map((row, index) => (
+                      <TableRow key={index}>
+                          <TableCell>{row.policy}</TableCell>
+                          <TableCell>{row.period}</TableCell>
+                          <TableCell>{row.ltsreduce}</TableCell>
+                          <TableCell>{row.control}</TableCell>
+                      </TableRow>
+                      ))}
+                  </TableBody>
+              </Table>
+          </TableContainer>
 
-    </ Fragment>
-);
+      </ Fragment>
+  );
 }
 
 export default Plot;

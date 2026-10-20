@@ -1,5 +1,5 @@
 import React, { Fragment, useCallback, useEffect, useState } from "react";
-import useWebSocket from "react-use-websocket";
+import useWebSocket from "../../useWebSocket";
 import Service from "./service";
 import api from "../../api";
 import { Box, Grid, Typography } from "@mui/material";
@@ -200,7 +200,11 @@ function Services() {
                             </AccordionSummary>
                             <AccordionDetails sx={{ py: 1 }}>
                                 <Grid container spacing={2}>
-                                    <Grid item xs={12} md={6}>
+                                    <Grid
+                                        size={{
+                                            xs: 12,
+                                            md: 6
+                                        }}>
                                         <Typography variant="subtitle2" sx={{ fontWeight: "bold", mb: 1 }}>Home Page</Typography>
                                         <Table size="small">
                                             <TableBody>
@@ -218,7 +222,11 @@ function Services() {
                                             </TableBody>
                                         </Table>
                                     </Grid>
-                                    <Grid item xs={12} md={6}>
+                                    <Grid
+                                        size={{
+                                            xs: 12,
+                                            md: 6
+                                        }}>
                                         <Typography variant="subtitle2" sx={{ fontWeight: "bold", mb: 1 }}>PV Details Page</Typography>
                                         <Table size="small">
                                             <TableBody>
@@ -240,7 +248,7 @@ function Services() {
                 </AccordionDetails>
             </Accordion>
         </Fragment >
-    )
+    );
 }
 
 export default Services;

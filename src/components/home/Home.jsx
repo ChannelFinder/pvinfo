@@ -2,22 +2,14 @@ import React, { Fragment, useEffect, useState } from 'react';
 import { Box, Grid, ToggleButton, ToggleButtonGroup, Typography, Tooltip } from '@mui/material';
 import QueryResults from "./queryresults";
 import api from "../../api";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router";
 import ManageSearchRoundedIcon from '@mui/icons-material/ManageSearchRounded';
 import PageviewRoundedIcon from '@mui/icons-material/PageviewRounded';
-import PropTypes from "prop-types";
-
 import ParamSearch from './paramsearch';
 import FreeSearch from './freesearch';
 // is this needed?
 import './Home.css';
 import config from "../../config";
-
-const propTypes = {
-    handleOpenErrorAlert: PropTypes.func,
-    handleErrorMessage: PropTypes.func,
-    handleSeverity: PropTypes.func,
-}
 
 function Home(props) {
     const [standardSearch, setStandardSearch] = useState(true);
@@ -249,7 +241,7 @@ function Home(props) {
     return (
         <Fragment>
             <form onSubmit={handleSubmit}>
-                <Grid item alignItems="center" sx={{ backgroundColor: '#d7e3f5' }} xs={12}>
+                <Grid alignItems="center" sx={{ backgroundColor: '#d7e3f5' }} size={12}>
                     <Typography
                         style={{ marginBottom: 10 }}
                         align="center"
@@ -307,7 +299,7 @@ function Home(props) {
                             handleClear={handleClear} searchProperties={searchProperties} searchTags={searchTags} />
                     )
                 }
-                <Grid container item xs={12} style={{ display: "flex" }}>
+                <Grid container style={{ display: "flex" }} size={12}>
                     <QueryResults isLoading={isLoading} cfData={cfData} handleErrorMessage={props.handleErrorMessage} handleOpenErrorAlert={props.handleOpenErrorAlert} handleSeverity={props.handleSeverity} />
                 </Grid>
             </form>
@@ -315,5 +307,4 @@ function Home(props) {
     );
 }
 
-Home.propTypes = propTypes;
 export default Home;

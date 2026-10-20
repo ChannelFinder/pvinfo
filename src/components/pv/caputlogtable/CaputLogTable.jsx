@@ -2,18 +2,12 @@ import React, { useState } from "react";
 import { SearchProvider } from "@elastic/react-search-ui";
 import { Accordion, AccordionDetails, AccordionSummary, Typography } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import PropTypes from "prop-types";
 import { getCaputLogSearchConfig } from "../../caputlog/caputlogSearchConfig";
 import CaputLogDataTable from "../../caputlog/CaputLogDataTable";
 import CaputLogSearchLayout from "../../caputlog/CaputLogSearchLayout";
 import "@elastic/react-search-ui-views/lib/styles/styles.css";
 
-const propTypes = {
-    pvName: PropTypes.string,
-}
-
 function CaputLogTable(props) {
-
     const [caputLogExpanded, setCaputLogExpanded] = useState(false);
     const handleCaputLogExpandedChange = () => (event, isExpanded) => {
         setCaputLogExpanded(isExpanded);
@@ -47,5 +41,4 @@ function CaputLogTable(props) {
     );
 }
 
-CaputLogTable.propTypes = propTypes;
 export default CaputLogTable;

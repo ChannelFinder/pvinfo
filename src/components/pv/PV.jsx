@@ -1,5 +1,5 @@
 import React, { Fragment, useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router";
 import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Checkbox, Grid, Typography, FormControlLabel } from "@mui/material";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import TimelineIcon from '@mui/icons-material/Timeline';
@@ -10,14 +10,7 @@ import OLOGTable from "./ologtable";
 import AlarmLogTable from "./alarmlogtable/AlarmLogTable";
 import AlarmConfigTable from "./alarmconfigtable/AlarmConfigTable";
 import CaputLogTable from "./caputlogtable/CaputLogTable";
-import PropTypes from "prop-types";
 import config from "../../config";
-
-const propTypes = {
-    handleOpenErrorAlert: PropTypes.func,
-    handleErrorMessage: PropTypes.func,
-    hanleSeverity: PropTypes.func
-}
 
 function PV(props) {
     let { id } = useParams();
@@ -247,5 +240,4 @@ function PV(props) {
     }
 }
 
-PV.propTypes = propTypes;
 export default PV;

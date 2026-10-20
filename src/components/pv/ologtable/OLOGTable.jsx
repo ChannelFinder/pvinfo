@@ -3,12 +3,7 @@ import { Accordion, AccordionDetails, AccordionSummary, Box, Typography, Table, 
 import { CustomTableContainer, TableBodyCell, TableHeaderCell } from "../customtablecells/CustomTable";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import api from "../../../api";
-import PropTypes from "prop-types";
 import config from "../../../config";
-
-const propTypes = {
-    pvName: PropTypes.string,
-}
 
 function OLOGTable(props) {
     const [ologData, setOLOGData] = useState(null);
@@ -116,5 +111,4 @@ function OLOGTable(props) {
     }
 }
 
-OLOGTable.propTypes = propTypes;
 export default OLOGTable;

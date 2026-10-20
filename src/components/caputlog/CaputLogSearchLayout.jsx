@@ -8,18 +8,6 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import './CaputLogSearchLayout.css';
 import CustomSearchBoxView from "./CustomSearchBoxView";
-import moment from "moment";
-import PropTypes from "prop-types";
-
-const propTypes = {
-    showSearchBox: PropTypes.bool,
-    facetFields: PropTypes.arrayOf(PropTypes.shape({
-        field: PropTypes.string.isRequired,
-        label: PropTypes.string.isRequired,
-    })),
-    initialSearchTerm: PropTypes.string,
-    children: PropTypes.func.isRequired,
-}
 
 function CaputLogSearchLayout({
     showSearchBox = false,
@@ -38,8 +26,8 @@ function CaputLogSearchLayout({
 
     const onDateChange = (dates) => {
         const [start, end] = dates;
-        const adjustedStartDate = start ? moment(start).startOf("day").toDate() : null;
-        const adjustedEndDate = end ? moment(end).endOf("day").toDate() : null;
+        const adjustedStartDate = start ? new Date(start.getFullYear(), start.getMonth(), start.getDate()) : null;
+        const adjustedEndDate = end ? new Date(end.getFullYear(), end.getMonth(), end.getDate(), 23, 59, 59, 999) : null;
         setStartDate(adjustedStartDate);
         setEndDate(adjustedEndDate);
         if (!adjustedStartDate || !adjustedEndDate) {
@@ -92,16 +80,18 @@ function CaputLogSearchLayout({
                                         customInput={
                                             <TextField
                                                 fullWidth
-                                                InputProps={{
-                                                    startAdornment: (
-                                                        <InputAdornment position="start">
-                                                            <CalendarMonthIcon />
-                                                        </InputAdornment>
-                                                    ),
-                                                }}
                                                 variant="outlined"
                                                 size="small"
                                                 placeholder="Date Range for Caput Log Data"
+                                                slotProps={{
+                                                    input: {
+                                                        startAdornment: (
+                                                            <InputAdornment position="start">
+                                                                <CalendarMonthIcon />
+                                                            </InputAdornment>
+                                                        ),
+                                                    }
+                                                }}
                                             />
                                         }
                                     />
@@ -155,5 +145,4 @@ function CaputLogSearchLayout({
     );
 }
 
-CaputLogSearchLayout.propTypes = propTypes;
 export default CaputLogSearchLayout;

@@ -1,18 +1,20 @@
 import './App.css';
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import { Grid, Snackbar, Alert } from '@mui/material';
-import { useState } from "react";
+import { BrowserRouter as Router, Route, Routes } from "react-router";
+import { Grid, Snackbar, Alert, CircularProgress } from '@mui/material';
+import { lazy, Suspense, useState } from "react";
 
 import config from "../config";
 import Home from '../components/home';
-import PV from '../components/pv';
-import IOC from '../components/ioc';
-import Plot from '../components/plot';
 import Header from '../components/header';
-import Help from '../components/help';
-import Services from '../components/services';
-import CaputLogPage from '../components/caputlog/CaputLogPage';
 import Page404 from '../Page404';
+
+// load pages other than home on demand to keep the initial bundle small
+const PV = lazy(() => import('../components/pv'));
+const IOC = lazy(() => import('../components/ioc'));
+const Plot = lazy(() => import('../components/plot'));
+const Help = lazy(() => import('../components/help'));
+const Services = lazy(() => import('../components/services'));
+const CaputLogPage = lazy(() => import('../components/caputlog/CaputLogPage'));
 
 function App() {
   const [openErrorAlert, setOpenErrorAlert] = useState(false);
@@ -33,18 +35,20 @@ function App() {
       </Grid>
       <Grid container spacing={0} direction="column" alignItems="center" style={{ marginTop: 30 }}>
         <main style={{ width: "90%" }}>
-          <Routes>
-            <Route path='*' element={<Page404 />} />
-            <Route path="/pv/:id" exact={true} element={<PV handleOpenErrorAlert={setOpenErrorAlert} handleErrorMessage={setErrorMessage} handleSeverity={setSeverity} />} />
-            <Route path="/ioc" exact={true} element={<IOC />} />
-            <Route path="/plot" exact={true} element={<Plot />} />
-            {
-              config.USE_CAPUTLOG ? <Route path="/caputlog" exact={true} element={<CaputLogPage />} /> : null
-            }
-            <Route path="/services" exact={true} element={<Services />} />
-            <Route path="/help" exact={true} element={<Help />} />
-            <Route path="/" exact={true} element={<Home handleOpenErrorAlert={setOpenErrorAlert} handleErrorMessage={setErrorMessage} handleSeverity={setSeverity} />} />
-          </Routes>
+          <Suspense fallback={<Grid container justifyContent="center"><CircularProgress /></Grid>}>
+            <Routes>
+              <Route path='*' element={<Page404 />} />
+              <Route path="/pv/:id" element={<PV handleOpenErrorAlert={setOpenErrorAlert} handleErrorMessage={setErrorMessage} handleSeverity={setSeverity} />} />
+              <Route path="/ioc" element={<IOC />} />
+              <Route path="/plot" element={<Plot />} />
+              {
+                config.USE_CAPUTLOG ? <Route path="/caputlog" element={<CaputLogPage />} /> : null
+              }
+              <Route path="/services" element={<Services />} />
+              <Route path="/help" element={<Help />} />
+              <Route path="/" element={<Home handleOpenErrorAlert={setOpenErrorAlert} handleErrorMessage={setErrorMessage} handleSeverity={setSeverity} />} />
+            </Routes>
+          </Suspense>
         </main>
       </Grid>
       <div>

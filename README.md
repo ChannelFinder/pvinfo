@@ -40,7 +40,7 @@ http://localhost:3000
 
 ## Required Packages
 
-- Node.js (>= v20) - https://nodejs.org/
+- Node.js (>= v22.22 or >= v24.15, v24 LTS recommended) - https://nodejs.org/
 
 ## Configuration
 
@@ -120,6 +120,14 @@ https://stackoverflow.com/questions/27928372/react-router-urls-dont-work-when-re
 ![Monitor All](docs/monitor-all.png?raw=true "Monitor All")
 
 See more screenshots here: [example.md](docs/example.md)
+
+## Version 3.x.x Notes
+
+Version 3.0.0 is a dependency upgrade release. PV Info now uses React 19, MUI 7, MUI X Data Grid 9, React Router 7, and Vite 8. There are no changes to the REACT_APP_* environment variables, so existing .env and .env.local files should continue to work.
+
+- Node.js >= v22.22 or >= v24.15 is now required (v24 LTS recommended)
+- Delete the node_modules directory and do an `npm install` to regenerate all the dependencies when upgrading an existing application to version 3.0.0
+- `npm test` now runs a basic test suite with [Vitest](https://vitest.dev/)
 
 ## Version 2.x.x Notes
 
