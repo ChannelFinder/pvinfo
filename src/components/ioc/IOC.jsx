@@ -1,10 +1,11 @@
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useEffect, useMemo, useState } from "react";
 import './IOC.css';
 import { Typography, Link } from "@mui/material";
 import { useNavigate, Link as RouterLink } from "react-router";
 import { DataGrid } from '@mui/x-data-grid';
 import csvExportOptions from "../../csvExportOptions";
 import api from "../../api";
+import config from "../../config";
 
 const renderLink = (params) => {
   return (
@@ -23,20 +24,19 @@ const columns = [
   { field: "host", headerName: 'Host', flex: 8.25, minWidth: 150, maxWidth: 275 },
   { field: "owner", headerName: 'Engineer', flex: 8.25, minWidth: 150, maxWidth: 275 },
   { field: "iocid", headerName: 'IP Address', flex: 8.25, minWidth: 150, maxWidth: 275 },
-  { field: "time", headerName: 'IOC Reboot Time', flex: 8.25, minWidth: 150, maxWidth: 275, renderCell: renderDate },
+  { field: "time", headerName: 'Last Recsync Update', flex: 8.25, minWidth: 150, maxWidth: 275, renderCell: renderDate },
 ]
 
 function IOC() {
   const navigate = useNavigate();
   const [cfPVData, setCFPVData] = useState(null); //object
-  const [iocs, setIOCs] = useState([]);
   const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 100 });
   const [isLoading, setIsLoading] = useState(true);
 
 
     // Get channel finder data for this PV
     useEffect(() => {
-      api.CF_QUERY({"pvName": "*:ENGINEER"})
+      api.CF_QUERY({"pvName": config.IOC_PAGE_PV_PATTERN})
       .then((data) => {
           if (data !== null) {
             setIsLoading(false);
@@ -52,35 +52,23 @@ function IOC() {
       })
     }, []);
 
-    // transform PV data from CF into JS object of IOC names and hosts. This should be moved to api.js!
-    useEffect(() => {
-      if ( cfPVData === null) {
-        return;
+    // the PV pattern can match more than one PV per IOC, keep one row per IOC name
+    const iocs = useMemo(() => {
+      if (cfPVData === null) {
+        return [];
       }
-      const iocList = cfPVData.map((pv, index) => {
-        let iocObject = {};
-        //iocObject.id = index;
-        iocObject.owner = pv.owner;
-        pv.properties.forEach((prop) => {
-          if (prop.name === "iocName") {
-            iocObject.ioc = prop.value;
-            iocObject.id = prop.value.toLowerCase();
-          }
-          else if (prop.name === "hostName") {
-            iocObject.host = prop.value;
-          }
-          else if (prop.name === "iocid") {
-            iocObject.iocid = prop.value;
-          }
-          else if (prop.name === "time") {
-            iocObject.time = prop.value;
-          }
-        });
-        return iocObject;
+      const iocMap = new Map();
+      cfPVData.forEach((pv) => {
+        const properties = Object.fromEntries(pv.properties.map((prop) => [prop.name, prop.value]));
+        if (!properties.iocName) {
+          return;
+        }
+        const id = properties.iocName.toLowerCase();
+        if (!iocMap.has(id)) {
+          iocMap.set(id, { id, ioc: properties.iocName, owner: pv.owner, host: properties.hostName, iocid: properties.iocid, time: properties.time });
+        }
       });
-      // sort here instead of during render, DataGrid freezes the rows array in development so sorting it later throws
-      iocList.sort((a, b) => a.id > b.id ? 1 : -1);
-      setIOCs(iocList);
+      return [...iocMap.values()].sort((a, b) => a.id > b.id ? 1 : -1);
     }, [cfPVData]);
 
     const handleRowDoubleClick = (e) => {
@@ -97,16 +85,23 @@ function IOC() {
             <div></div>
         );
     }
-    else if (cfPVData.length === 0) {
+    else if (iocs.length === 0) {
       return (
           <Fragment>
-              <Typography>No IOCs Found (something must be wrong with channel finder)</Typography>
+              <Typography variant="h6">No IOCs Found</Typography>
+              <Typography>
+                The IOC list comes from the PVs in Channel Finder matching <strong>{config.IOC_PAGE_PV_PATTERN}</strong>, which assumes every IOC has a PV
+                with that name (for example from iocStats). This pattern can be changed with REACT_APP_IOC_PAGE_PV_PATTERN.
+              </Typography>
           </Fragment>
       );
     }
     else {
       return (
         <Fragment>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+              IOCs are found from the PVs matching <strong>{config.IOC_PAGE_PV_PATTERN}</strong>
+            </Typography>
             <DataGrid
                 rows={iocs}
                 columns={columns}
