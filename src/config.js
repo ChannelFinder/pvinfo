@@ -121,6 +121,7 @@ const config = {
     USE_PVWS: parseBoolean(import.meta.env.REACT_APP_USE_PVWS, false),
     LIVE_MONITOR_WARN: parseIntOrDefault(import.meta.env.REACT_APP_LIVE_MONITOR_WARN, 50),
     LIVE_MONITOR_MAX: parseIntOrDefault(import.meta.env.REACT_APP_LIVE_MONITOR_MAX, 100),
+    DEFAULT_MONITOR_ALL: parseBoolean(import.meta.env.REACT_APP_DEFAULT_MONITOR_ALL, false),
     PVWS_TREAT_BYTE_ARRAY_AS_STRING: parseBoolean(import.meta.env.REACT_APP_PVWS_TREAT_BYTE_ARRAY_AS_STRING, true),
     PVWS_ALLOW_WAVEFORMS: parseBoolean(import.meta.env.REACT_APP_PVWS_ALLOW_WAVEFORMS, false),
     PVWS_IGNORE_CF_PVSTATUS: parseBoolean(import.meta.env.REACT_APP_PVWS_IGNORE_CF_PVSTATUS, false),

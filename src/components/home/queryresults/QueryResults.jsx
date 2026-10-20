@@ -1,6 +1,6 @@
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import { Typography, Checkbox, Link, IconButton, Tooltip } from '@mui/material';
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid, useGridApiRef, gridPaginatedVisibleSortedGridRowIdsSelector } from '@mui/x-data-grid';
 import { useNavigate, Link as RouterLink } from "react-router";
 import TimelineIcon from '@mui/icons-material/Timeline';
 import ReadMoreIcon from '@mui/icons-material/ReadMore';
@@ -13,6 +13,7 @@ import csvExportOptions from "../../../csvExportOptions";
 
 function QueryResults(props) {
     const navigate = useNavigate();
+    const apiRef = useGridApiRef();
     const pageSizeEnvValue = config.RESULTS_TABLE_SIZE;
     const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: pageSizeEnvValue });
     const [pvs, setPVs] = useState([]);
@@ -31,6 +32,8 @@ function QueryResults(props) {
     const [checked, setChecked] = useState([]);
     const [currentChecked, setCurrentChecked] = useState(new Set());
     const [monitorAllChecked, setMonitorAllChecked] = useState(false);
+    // set when the visible page changes and monitor all is checked, so the PVs on the new visible page get monitored
+    const [monitorVisiblePagePending, setMonitorVisiblePagePending] = useState(false);
     const liveMonitorMax = config.LIVE_MONITOR_MAX;
     const liveMonitorWarn = config.LIVE_MONITOR_WARN;
 
@@ -74,23 +77,39 @@ function QueryResults(props) {
         setCurrentChecked(newCurrentChecked);
     }, [currentChecked, updateCurrentChecked])
 
-    const handleMonitorSelectAll = useCallback((firstRow, lastRow) => (event) => {
-        setMonitorAllChecked(event.target.checked);
-
-        if (!firstRow && !lastRow) {
-            const rowsString = document.getElementsByClassName('MuiTablePagination-displayedRows')[0].innerHTML;
-            const [start, end] = rowsString.split('\u2013').map(s => s.trim().replace(" of", ""));
-            [firstRow, lastRow] = [parseInt(start) - 1, parseInt(end) - 1];
-        }
-        for (let i = firstRow; i <= lastRow; ++i) {
+    // check or uncheck every PV on the page the user is looking at. The grid's row ids are used
+    // so it is the sorted and filtered page and not just the first rows of the search results
+    const monitorVisiblePage = useCallback((checkedStatus) => {
+        gridPaginatedVisibleSortedGridRowIdsSelector(apiRef).forEach((id) => {
+            const row = apiRef.current.getRow(id);
             // only check mark active PVs, unless we are ignoring CF PV status
             // matters now that we show "Disconnected" for PVs that are not connected to their IOC
-            if (config.PVWS_IGNORE_CF_PVSTATUS || pvs[i].pvStatus === "Active") {
-                updateCurrentChecked(i, event.target.checked);
+            if (row && (config.PVWS_IGNORE_CF_PVSTATUS || row.pvStatus === "Active")) {
+                updateCurrentChecked(id, checkedStatus);
             }
+        });
+    }, [apiRef, updateCurrentChecked])
+
+    const handleMonitorSelectAll = (event) => {
+        setMonitorAllChecked(event.target.checked);
+        monitorVisiblePage(event.target.checked);
+    }
+
+    // the visible page changed (new search, page change, sort, filter), monitor the new page if monitor all should stay checked
+    const monitorAllOnNewPage = useCallback((keepMonitorAll) => {
+        if (config.USE_PVWS && keepMonitorAll) {
+            setMonitorAllChecked(true);
+            setMonitorVisiblePagePending(true);
         }
-        return
-    }, [updateCurrentChecked])
+    }, [])
+
+    // runs after the grid has rendered the new page so its sorted and filtered row ids are up to date
+    useEffect(() => {
+        if (monitorVisiblePagePending) {
+            setMonitorVisiblePagePending(false);
+            monitorVisiblePage(true);
+        }
+    }, [monitorVisiblePagePending, monitorVisiblePage])
 
     // Notify user if monitoring over warn or max PVs
     useEffect(() => {
@@ -169,7 +188,7 @@ function QueryResults(props) {
                 <Typography display="inline" variant="subtitle2">Actions</Typography>
                 {
                     config.USE_PVWS ? <Tooltip arrow title="Monitor All PVs">
-                        <Checkbox checked={monitorAllChecked} onChange={handleMonitorSelectAll()} sx={{ ml: ".5rem" }}></Checkbox>
+                        <Checkbox checked={monitorAllChecked} onChange={handleMonitorSelectAll} sx={{ ml: ".5rem" }}></Checkbox>
                     </Tooltip>
                         : <div></div>
                 }
@@ -261,7 +280,8 @@ function QueryResults(props) {
             return pvObject;
         }));
         setChecked(new Array(props.cfData.length).fill(false));
-    }, [props.cfData]);
+        monitorAllOnNewPage(config.DEFAULT_MONITOR_ALL);
+    }, [props.cfData, monitorAllOnNewPage]);
 
     function roundToBreakpoint(width, breakpoints) {
         const smallerBreakpoints = breakpoints.filter((item) => item <= width);
@@ -357,6 +377,7 @@ function QueryResults(props) {
     return (
         <Fragment>
             <DataGrid
+                apiRef={apiRef}
                 rows={pvs}
                 columns={columns}
                 autoHeight={true}
@@ -366,6 +387,19 @@ function QueryResults(props) {
                 onPaginationModelChange={(newPaginationModel) => {
                     setPaginationModel(newPaginationModel);
                     clearMonitoring();
+                    monitorAllOnNewPage(config.DEFAULT_MONITOR_ALL);
+                }}
+                onSortModelChange={() => {
+                    if (monitorAllChecked) {
+                        clearMonitoring();
+                        monitorAllOnNewPage(true);
+                    }
+                }}
+                onFilterModelChange={() => {
+                    if (monitorAllChecked) {
+                        clearMonitoring();
+                        monitorAllOnNewPage(true);
+                    }
                 }}
                 pageSizeOptions={tablePageSizeOptions}
                 pagination
