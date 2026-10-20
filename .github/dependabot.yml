@@ -1,0 +1,12 @@
+# Keep the commit SHA pinned GitHub Actions up to date
+# npm security updates are handled separately by the repository's Dependabot security updates setting
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
