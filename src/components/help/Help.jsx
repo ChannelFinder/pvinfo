@@ -15,41 +15,29 @@ function Help() {
           <Grid justifyContent="flex-end" size={12}>
 
             <Typography variant='h6' style={{marginBottom: 10}}><strong>Process Variables Described</strong></Typography>
-            <Typography variant='body1' sx={{
-              marginBottom: "16px"
-            }}>
+            <Typography variant='body1' sx={{ mb: 2 }}>
               Process Variable (PV) is the name applied to the Real-Time Database Records that contain control system information.
               Like most Database records it has a set of fields. Unlike conventional database records, Process Variables are 'connected' to the 'real world',
               so they reflect or control values in the control system. For example, here is a PV at our facility:  <Link component={RouterLink} to={"/pv/" + config.HELP_EXAMPLE_PV} underline="always">{config.HELP_EXAMPLE_PV}</Link>
             </Typography>
-            <Typography variant='body1' sx={{
-              marginBottom: "16px"
-            }}>
+            <Typography variant='body1' sx={{ mb: 2 }}>
               The Control System is based on the Experimental Physics and Industrial Control System
               (<Link href="https://epics-controls.org/">EPICS</Link>).
             </Typography>
 
             <Typography variant='h6' style={{marginTop: 10, marginBottom: 10}}><strong>Using PV Info Search</strong></Typography>
-            <Typography variant='body1' sx={{
-              marginBottom: "16px"
-            }}>The application opens initially on the search page with all search fields blank. You may enter search terms under each
+            <Typography variant='body1' sx={{ mb: 2 }}>The application opens initially on the search page with all search fields blank. You may enter search terms under each
             column heading; after entering the desired terms, press the return key or the search button to execute your search.</Typography>
-            <Typography variant='body1' sx={{
-              marginBottom: "16px"
-            }}>Search terms are case-insensitive. Special characters are:</Typography>
+            <Typography variant='body1' sx={{ mb: 2 }}>Search terms are case-insensitive. Special characters are:</Typography>
             <ul>
               <li>* (asterisk) matches any number of any characters</li>
               <li>? (question mark) matches one of any character</li>
               <li>= (equals sign) at the beginning forces an exact match of the input string</li>
               <li>! (exclamation point) at the beginning is a not equal to search (not available for PV name field)</li>
             </ul>
-            <Typography variant='body1' sx={{
-              marginBottom: "16px"
-            }}>Also, if there are no asterisks at the beginning or end of the field search, then partial searches are enabled.
+            <Typography variant='body1' sx={{ mb: 2 }}>Also, if there are no asterisks at the beginning or end of the field search, then partial searches are enabled.
               For example "cmm:" is equivlent to "*cmm:*"</Typography>
-            <Typography variant='body1' sx={{
-              marginBottom: "16px"
-            }}>Here are some examples to illustrate the above rules:</Typography>
+            <Typography variant='body1' sx={{ mb: 2 }}>Here are some examples to illustrate the above rules:</Typography>
             <ul>
               <li>cmm: will match any PV name that contains "cmm:" such as "cmm:beam_current". This is equivalent to "*cmm:*"</li>
               <li>"cmm:* would match any PV that begins with cmm:, excluding, for example, testcmm:beam_current</li>
@@ -58,21 +46,15 @@ function Help() {
               <li>=cmm:beam_current will match cmm:beam_current exactly.</li>
             </ul>
             <Typography variant='h6' style={{marginTop: 10, marginBottom: 10}}><strong>Free Form Search</strong></Typography>
-            <Typography variant='body1' sx={{
-              marginBottom: "16px"
-            }}>
+            <Typography variant='body1' sx={{ mb: 2 }}>
               There is also an option on the home page to toggle on a "Free Form Search". This option allows you to create your own PV and property search. This operates similarly to the CS Studio Phoebus Channel Table application. It can be very useful if you have other ChannelFinder properties available that are not in the "standard" search boxes.
             </Typography>
-            <Typography variant='body1' sx={{
-              marginBottom: "16px"
-            }}>
+            <Typography variant='body1' sx={{ mb: 2 }}>
               An example free form search would be: <strong>TEST*PV* Sector=5 Acc=SR iocName=test*</strong><br />
               Which will result in a Channel Finder query like so: <strong>~name=TEST*PV*&Sector=5&Acc=SR&iocName=test*</strong>
             </Typography>
             <Typography variant='h6' style={{marginTop: 10, marginBottom: 10}}><strong>Viewing Search Results</strong></Typography>
-            <Typography variant='body1' sx={{
-              marginBottom: "16px"
-            }}>The search results display a table with the matching PVs with the following fields:</Typography>
+            <Typography variant='body1' sx={{ mb: 2 }}>The search results display a table with the matching PVs with the following fields:</Typography>
             <ul>
               <li><strong>PV Name</strong></li>
               <ul>
@@ -161,9 +143,7 @@ function Help() {
             </ul>
 
             <Typography variant='h6' style={{marginTop: 10, marginBottom: 10}}><strong>PV Details Page</strong></Typography>
-            <Typography variant='body1' sx={{
-              marginBottom: "16px"
-            }}>
+            <Typography variant='body1' sx={{ mb: 2 }}>
               When you click on a PV name, the PV details button, or double click on a PV row in the search table, it brings you to the PV details page.
               The PV details page will show you all the fields in the Channel Finder database for that PV and allows you to check the Monitor PV values button to get live EPICS values.
             </Typography>
@@ -180,9 +160,7 @@ function Help() {
             </ul>
 
             <Typography variant='h6' style={{marginTop: 10, marginBottom: 10}}><strong>IOCs Page</strong></Typography>
-            <Typography variant='body1' sx={{
-              marginBottom: "16px"
-            }}>
+            <Typography variant='body1' sx={{ mb: 2 }}>
               The IOCs page lists all the IOCs in alphabetical order. The host where the IOC runs, the engineer in charge of the IOC,
               the IOC IP address, and the date when the IOC was last connected to recsync (often the IOC reboot time).
               Double clicking or clicking the IOC name will open the PV search for all the PVs in that IOC.
