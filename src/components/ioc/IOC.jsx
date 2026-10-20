@@ -3,6 +3,7 @@ import './IOC.css';
 import { Typography, Link } from "@mui/material";
 import { useNavigate, Link as RouterLink } from "react-router";
 import { DataGrid } from '@mui/x-data-grid';
+import csvExportOptions from "../../csvExportOptions";
 import api from "../../api";
 
 const renderLink = (params) => {
@@ -114,6 +115,8 @@ function IOC() {
                 pageSizeOptions={[5, 10, 20, 50, 100]}
                 pagination
                 showToolbar
+                label="IOCs"
+                slotProps={{ toolbar: { csvOptions: csvExportOptions("IOCs") } }}
                 density={"compact"}
                 initialState={{
                   sorting: {

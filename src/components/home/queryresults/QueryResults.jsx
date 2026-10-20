@@ -9,6 +9,7 @@ import ValueCheckbox from './valuecheckbox/ValueCheckbox';
 import Value from "./value";
 import Logo from "./logo";
 import config from "../../../config";
+import csvExportOptions from "../../../csvExportOptions";
 
 function QueryResults(props) {
     const navigate = useNavigate();
@@ -374,6 +375,8 @@ function QueryResults(props) {
                     setColumnWidths((prev) => ({ ...prev, [params.colDef.field]: params.width }))
                 }
                 showToolbar
+                label="Search Results"
+                slotProps={{ toolbar: { csvOptions: csvExportOptions("PVs") } }}
             />
         </ Fragment>
     );
