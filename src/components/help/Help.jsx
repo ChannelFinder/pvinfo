@@ -138,6 +138,7 @@ function Help() {
               <li><strong>Columns</strong>: Allows you to select which columns to view</li>
               <li><strong>Filters</strong>: Existing results can be filtered</li>
               <li><strong>Density</strong>: Grid can be made more compact or less if desired</li>
+              <li><strong>Column Resizing</strong>: Drag the divider between column headers to resize a column, or double click the divider to fit the column to its contents</li>
               <li><strong>Export</strong>: Allows you to export to a CSV or print the table</li>
               <li><strong>Column Sorting</strong>: Columns can be sorted ASC or DESC by clicking the arrow next to the column name</li>
             </ul>
