@@ -371,7 +371,7 @@ function QueryResults(props) {
                 onPageChange={() => {
                     clearMonitoring();
                 }}
-                rowsPerPageOptions={tablePageSizeOptions}
+                pageSizeOptions={tablePageSizeOptions}
                 pagination
                 columnVisibilityModel={columnVisibilityModel}
                 onColumnVisibilityModelChange={(newModel) =>

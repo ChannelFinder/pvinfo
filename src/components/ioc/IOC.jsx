@@ -108,25 +108,25 @@ function IOC() {
       iocs.sort((a, b) => a.id > b.id ? 1 : -1);
       return (
         <Fragment>
-            <DataGrid
-                rows={iocs}
-                columns={columns}
-                autoHeight={true}
-                pageSize={pageSize}
-                onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
-                onRowDoubleClick={handleRowDoubleClick}
-                rowsPerPageOptions={[5, 10, 20, 50, 100]}
-                pagination
-                components={{ Toolbar: GridToolbar }}
-                density={"compact"}
-                initialState={{
-                  sorting: {
-                    sortModel: [{ field: 'id', sort: 'desc' }],
-                  },
-                }}
-            />
+          <DataGrid
+              rows={iocs}
+              columns={columns}
+              autoHeight={true}
+              pageSize={pageSize}
+              onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
+              onRowDoubleClick={handleRowDoubleClick}
+              pageSizeOptions={[5, 10, 20, 50, 100]}
+              pagination
+              components={{ Toolbar: GridToolbar }}
+              density={"compact"}
+              initialState={{
+                sorting: {
+                  sortModel: [{ field: 'id', sort: 'desc' }],
+                },
+              }}
+          />
         </ Fragment>
-    );
+      );
     }
 }
 
