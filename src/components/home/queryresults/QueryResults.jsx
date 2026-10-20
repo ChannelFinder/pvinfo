@@ -8,16 +8,7 @@ import api from "../../../api";
 import ValueCheckbox from './valuecheckbox/ValueCheckbox';
 import Value from "./value";
 import Logo from "./logo";
-import PropTypes from "prop-types";
 import config from "../../../config";
-
-const propTypes = {
-    isLoading: PropTypes.bool,
-    cfData: PropTypes.array,
-    handleErrorMessage: PropTypes.func,
-    handleOpenErrorAlert: PropTypes.func,
-    handleSeverity: PropTypes.func
-}
 
 function QueryResults(props) {
     const navigate = useNavigate();
@@ -382,5 +373,4 @@ function QueryResults(props) {
     );
 }
 
-QueryResults.propTypes = propTypes;
 export default QueryResults;

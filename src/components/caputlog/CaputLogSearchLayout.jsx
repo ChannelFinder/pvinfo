@@ -9,17 +9,6 @@ import "react-datepicker/dist/react-datepicker.css";
 import './CaputLogSearchLayout.css';
 import CustomSearchBoxView from "./CustomSearchBoxView";
 import moment from "moment";
-import PropTypes from "prop-types";
-
-const propTypes = {
-    showSearchBox: PropTypes.bool,
-    facetFields: PropTypes.arrayOf(PropTypes.shape({
-        field: PropTypes.string.isRequired,
-        label: PropTypes.string.isRequired,
-    })),
-    initialSearchTerm: PropTypes.string,
-    children: PropTypes.func.isRequired,
-}
 
 function CaputLogSearchLayout({
     showSearchBox = false,
@@ -157,5 +146,4 @@ function CaputLogSearchLayout({
     );
 }
 
-CaputLogSearchLayout.propTypes = propTypes;
 export default CaputLogSearchLayout;

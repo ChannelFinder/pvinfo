@@ -1,11 +1,4 @@
 import { Box, Typography } from "@mui/material";
-import PropTypes from "prop-types";
-
-const propTypes = {
-    title: PropTypes.string,
-    value: PropTypes.string,
-    color: PropTypes.string
-}
 
 function AlarmVariable(props) {
     return (
@@ -16,5 +9,4 @@ function AlarmVariable(props) {
     )
 }
 
-AlarmVariable.propTypes = propTypes;
 export default AlarmVariable;

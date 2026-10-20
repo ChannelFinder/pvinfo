@@ -1,17 +1,7 @@
 import { Grid, Box, IconButton, InputAdornment, Popover, TextField, Tooltip, Typography } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add';
 import SearchActions from '../searchactions/SearchActions';
-import PropTypes from "prop-types";
 import { useRef, useState } from 'react';
-
-const propTypes = {
-    freeformQuery: PropTypes.string,
-    setFreeformQuery: PropTypes.func,
-    handleFreeformChange: PropTypes.func,
-    handleClear: PropTypes.func,
-    searchProperties: PropTypes.array,
-    searchTags: PropTypes.array
-}
 
 function FreeSearch(props) {
     const [anchorEl, setAnchorEl] = useState(null);
@@ -113,5 +103,4 @@ function FreeSearch(props) {
     );
 }
 
-FreeSearch.propTypes = propTypes;
 export default FreeSearch;

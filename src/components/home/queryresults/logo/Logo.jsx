@@ -1,5 +1,5 @@
 import React from "react";
-import { Grid } from '@mui/material';
+import { Grid, Box } from '@mui/material';
 import bannerLogo from "../../../../assets/home-banner-logo.png";
 
 function Logo() {

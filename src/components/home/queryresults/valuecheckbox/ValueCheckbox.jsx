@@ -1,19 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import useWebSocket from 'react-use-websocket';
+import useWebSocket from '../../../../useWebSocket';
 import { Checkbox, Tooltip } from '@mui/material';
 import api from '../../../../api';
 import config from '../../../../config';
-import PropTypes from "prop-types";
-
-const propTypes = {
-    pvName: PropTypes.string,
-    id: PropTypes.number,
-    pvStatus: PropTypes.string,
-    recordType: PropTypes.string,
-    checked: PropTypes.array,
-    currentChecked: PropTypes.any,
-    updateCurrentChecked: PropTypes.func,
-}
 
 function ValueCheckbox(props) {
     // open web socket for sending subscribe/clear messages
@@ -64,5 +53,4 @@ function ValueCheckbox(props) {
     );
 }
 
-ValueCheckbox.propTypes = propTypes;
 export default ValueCheckbox;

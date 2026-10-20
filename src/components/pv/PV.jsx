@@ -10,14 +10,7 @@ import OLOGTable from "./ologtable";
 import AlarmLogTable from "./alarmlogtable/AlarmLogTable";
 import AlarmConfigTable from "./alarmconfigtable/AlarmConfigTable";
 import CaputLogTable from "./caputlogtable/CaputLogTable";
-import PropTypes from "prop-types";
 import config from "../../config";
-
-const propTypes = {
-    handleOpenErrorAlert: PropTypes.func,
-    handleErrorMessage: PropTypes.func,
-    hanleSeverity: PropTypes.func
-}
 
 function PV(props) {
     let { id } = useParams();
@@ -247,5 +240,4 @@ function PV(props) {
     }
 }
 
-PV.propTypes = propTypes;
 export default PV;

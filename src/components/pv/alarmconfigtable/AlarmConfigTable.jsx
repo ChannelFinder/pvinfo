@@ -3,12 +3,7 @@ import { Accordion, AccordionDetails, AccordionSummary, Box, Table, TableBody, T
 import { CustomTableContainer, TableHeaderCell } from "../customtablecells/CustomTable";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import api from "../../../api";
-import PropTypes from "prop-types";
 import config from "../../../config";
-
-const propTypes = {
-    pvName: PropTypes.string
-}
 
 const dateFormat = {
     year: "numeric",
@@ -128,5 +123,4 @@ function AlarmConfigTable(props) {
 
 }
 
-AlarmConfigTable.propTypes = propTypes;
 export default AlarmConfigTable;

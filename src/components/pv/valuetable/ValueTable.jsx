@@ -1,22 +1,10 @@
 import React, { Fragment, useState, useEffect } from "react";
 import { Typography } from "@mui/material";
-import useWebSocket from 'react-use-websocket';
+import useWebSocket from '../../../useWebSocket';
 import api from "../../../api";
 import colors from "../../../colors";
-import PropTypes from "prop-types";
 import KeyValuePair from "../KeyValuePair";
 import config from "../../../config";
-
-const propTypes = {
-    pvMonitoring: PropTypes.bool,
-    snapshot: PropTypes.bool,
-    pvData: PropTypes.object,
-    isLoading: PropTypes.bool,
-    pvName: PropTypes.string,
-    handleOpenErrorAlert: PropTypes.func,
-    handleErrorMessage: PropTypes.func,
-    handleSeverity: PropTypes.func
-}
 
 function ValueTable(props) {
     const [pvValue, setPVValue] = useState(null);
@@ -162,5 +150,4 @@ function ValueTable(props) {
     }
 }
 
-ValueTable.propTypes = propTypes;
 export default ValueTable;

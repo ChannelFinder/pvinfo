@@ -1,13 +1,6 @@
 import { Box, Chip, Grid, Typography } from "@mui/material";
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
 import ErrorRoundedIcon from '@mui/icons-material/ErrorRounded';
-import PropTypes from "prop-types";
-
-const propTypes = {
-    servName: PropTypes.string,
-    connected: PropTypes.bool,
-    data: PropTypes.object
-}
 
 function Service(props) {
     return (
@@ -30,5 +23,4 @@ function Service(props) {
     );
 }
 
-Service.propTypes = propTypes;
 export default Service;

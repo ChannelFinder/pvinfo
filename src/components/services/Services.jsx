@@ -1,5 +1,5 @@
 import React, { Fragment, useCallback, useEffect, useState } from "react";
-import useWebSocket from "react-use-websocket";
+import useWebSocket from "../../useWebSocket";
 import Service from "./service";
 import api from "../../api";
 import { Box, Grid, Typography } from "@mui/material";

@@ -4,12 +4,7 @@ import { CustomTableContainer, TableBodyCell, TableHeaderCell } from "../customt
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import api from "../../../api";
 import colors from "../../../colors";
-import PropTypes from "prop-types";
 import config from "../../../config";
-
-const propTypes = {
-    pvName: PropTypes.string,
-}
 
 const dateFormat = {
     year: "numeric",
@@ -136,5 +131,4 @@ function AlarmLogTable(props) {
 
 }
 
-AlarmLogTable.propTypes = propTypes;
 export default AlarmLogTable;

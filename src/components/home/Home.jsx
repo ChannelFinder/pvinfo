@@ -5,19 +5,11 @@ import api from "../../api";
 import { useSearchParams } from "react-router-dom";
 import ManageSearchRoundedIcon from '@mui/icons-material/ManageSearchRounded';
 import PageviewRoundedIcon from '@mui/icons-material/PageviewRounded';
-import PropTypes from "prop-types";
-
 import ParamSearch from './paramsearch';
 import FreeSearch from './freesearch';
 // is this needed?
 import './Home.css';
 import config from "../../config";
-
-const propTypes = {
-    handleOpenErrorAlert: PropTypes.func,
-    handleErrorMessage: PropTypes.func,
-    handleSeverity: PropTypes.func,
-}
 
 function Home(props) {
     const [standardSearch, setStandardSearch] = useState(true);
@@ -315,5 +307,4 @@ function Home(props) {
     );
 }
 
-Home.propTypes = propTypes;
 export default Home;
