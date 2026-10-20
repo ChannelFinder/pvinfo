@@ -2,7 +2,7 @@ import React, { Fragment, useEffect, useState } from 'react';
 import { Box, Grid, ToggleButton, ToggleButtonGroup, Typography, Tooltip } from '@mui/material';
 import QueryResults from "./queryresults";
 import api from "../../api";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router";
 import ManageSearchRoundedIcon from '@mui/icons-material/ManageSearchRounded';
 import PageviewRoundedIcon from '@mui/icons-material/PageviewRounded';
 import ParamSearch from './paramsearch';

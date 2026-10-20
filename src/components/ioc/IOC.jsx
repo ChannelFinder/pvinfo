@@ -1,7 +1,7 @@
 import React, { Fragment, useEffect, useState } from "react";
 import './IOC.css';
 import { Typography, Link } from "@mui/material";
-import { useNavigate, Link as RouterLink } from "react-router-dom";
+import { useNavigate, Link as RouterLink } from "react-router";
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import api from "../../api";
 

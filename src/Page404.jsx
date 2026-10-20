@@ -1,6 +1,6 @@
 import React, {Fragment} from 'react';
 import { Typography, Button } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 function Page404 () {
     const navigate = useNavigate();

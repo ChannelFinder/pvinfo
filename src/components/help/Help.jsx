@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
 import { Typography, Grid, Link } from "@mui/material";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink } from "react-router";
 import archivePlotOptions from "../../assets/archive-options.png";
 import config from "../../config";
 
