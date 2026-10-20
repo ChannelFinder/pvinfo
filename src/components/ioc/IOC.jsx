@@ -109,22 +109,22 @@ function IOC() {
       return (
         <Fragment>
           <DataGrid
-              rows={iocs}
-              columns={columns}
-              autoHeight={true}
-              pageSize={pageSize}
-              onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
-              onRowDoubleClick={handleRowDoubleClick}
-              pageSizeOptions={[5, 10, 20, 50, 100]}
-              pagination
-              slots={{ toolbar: GridToolbar }}
-              density={"compact"}
-              initialState={{
-                sorting: {
-                  sortModel: [{ field: 'id', sort: 'desc' }],
-                },
-              }}
-          />
+            rows={iocs}
+            columns={columns}
+            autoHeight={true}
+            pageSize={pageSize}
+            onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
+            onRowDoubleClick={handleRowDoubleClick}
+            pageSizeOptions={[5, 10, 20, 50, 100]}
+            pagination
+            slots={{ toolbar: GridToolbar }}
+            density={"compact"}
+            initialState={{
+              sorting: {
+                sortModel: [{ field: 'id', sort: 'desc' }],
+              },
+            }}
+            showToolbar />
         </ Fragment>
       );
     }

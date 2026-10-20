@@ -377,7 +377,7 @@ function QueryResults(props) {
                 onColumnVisibilityModelChange={(newModel) =>
                     setColumnVisibilityModel(newModel)
                 }
-            />
+                showToolbar />
         </ Fragment>
     );
 }
