@@ -13,7 +13,7 @@ import config from "../../../config";
 function QueryResults(props) {
     const navigate = useNavigate();
     const pageSizeEnvValue = config.RESULTS_TABLE_SIZE;
-    const [pageSize, setPageSize] = useState(pageSizeEnvValue);
+    const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: pageSizeEnvValue });
     const [pvs, setPVs] = useState([]);
     const defaultTableDensity = config.RESULTS_TABLE_DENSITY;
     let tablePageSizeOptions = config.RESULTS_TABLE_SIZE_OPTIONS;
@@ -235,7 +235,7 @@ function QueryResults(props) {
     if (config.USE_PVWS) {
         columns.push({ field: "value", headerName: 'Value', flex: 7.5, minWidth: 120, maxWidth: 140, renderCell: renderValue })
     }
-    columns.push({ field: "button", headerName: 'Actions', flex: 9.5, minWidth: 160, maxWidth: 200, disableClickEventBubbling: true, renderCell: renderButtons, renderHeader: renderActionsHeader })
+    columns.push({ field: "button", headerName: 'Actions', flex: 9.5, minWidth: 160, maxWidth: 200, renderCell: renderButtons, renderHeader: renderActionsHeader })
 
     useEffect(() => {
         if (props.cfData === null || Object.keys(props.cfData).length === 0) {
@@ -354,12 +354,9 @@ function QueryResults(props) {
                 density={defaultTableDensity}
                 onRowDoubleClick={handleRowDoubleClick}
                 slots={{ toolbar: GridToolbar }}
-                pageSize={pageSize}
-                onPageSizeChange={(newPageSize) => {
-                    setPageSize(newPageSize)
-                    clearMonitoring();
-                }}
-                onPageChange={() => {
+                paginationModel={paginationModel}
+                onPaginationModelChange={(newPaginationModel) => {
+                    setPaginationModel(newPaginationModel);
                     clearMonitoring();
                 }}
                 pageSizeOptions={tablePageSizeOptions}
@@ -368,7 +365,8 @@ function QueryResults(props) {
                 onColumnVisibilityModelChange={(newModel) =>
                     setColumnVisibilityModel(newModel)
                 }
-                showToolbar />
+                showToolbar
+            />
         </ Fragment>
     );
 }

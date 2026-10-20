@@ -14,11 +14,7 @@ const renderLink = (params) => {
 }
 
 const renderDate = (params) => {
-  return (
-      <div>
-          <p>{new Date(params.row.time).toLocaleString()}</p>
-      </div>
-  )
+  return new Date(params.row.time).toLocaleString();
 }
 
 const columns = [
@@ -33,7 +29,7 @@ function IOC() {
   const navigate = useNavigate();
   const [cfPVData, setCFPVData] = useState(null); //object
   const [iocs, setIOCs] = useState([]);
-  const [pageSize, setPageSize] = useState(100);
+  const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 100 });
   const [isLoading, setIsLoading] = useState(true);
 
 
@@ -108,25 +104,25 @@ function IOC() {
       iocs.sort((a, b) => a.id > b.id ? 1 : -1);
       return (
         <Fragment>
-          <DataGrid
-            rows={iocs}
-            columns={columns}
-            autoHeight={true}
-            pageSize={pageSize}
-            onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
-            onRowDoubleClick={handleRowDoubleClick}
-            pageSizeOptions={[5, 10, 20, 50, 100]}
-            pagination
-            slots={{ toolbar: GridToolbar }}
-            density={"compact"}
-            initialState={{
-              sorting: {
-                sortModel: [{ field: 'id', sort: 'desc' }],
-              },
-            }}
-            showToolbar />
+            <DataGrid
+                rows={iocs}
+                columns={columns}
+                autoHeight={true}
+                paginationModel={paginationModel}
+                onPaginationModelChange={setPaginationModel}
+                onRowDoubleClick={handleRowDoubleClick}
+                pageSizeOptions={[5, 10, 20, 50, 100]}
+                pagination
+                showToolbar
+                density={"compact"}
+                initialState={{
+                  sorting: {
+                    sortModel: [{ field: 'id', sort: 'desc' }],
+                  },
+                }}
+            />
         </ Fragment>
-      );
+    );
     }
 }
 
