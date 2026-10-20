@@ -40,7 +40,7 @@ http://localhost:3000
 
 ## Required Packages
 
-- Node.js (>= v20) - https://nodejs.org/
+- Node.js (>= v22.12, v24 LTS recommended) - https://nodejs.org/
 
 ## Configuration
 

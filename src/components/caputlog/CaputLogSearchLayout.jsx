@@ -8,7 +8,6 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import './CaputLogSearchLayout.css';
 import CustomSearchBoxView from "./CustomSearchBoxView";
-import moment from "moment";
 
 function CaputLogSearchLayout({
     showSearchBox = false,
@@ -27,8 +26,8 @@ function CaputLogSearchLayout({
 
     const onDateChange = (dates) => {
         const [start, end] = dates;
-        const adjustedStartDate = start ? moment(start).startOf("day").toDate() : null;
-        const adjustedEndDate = end ? moment(end).endOf("day").toDate() : null;
+        const adjustedStartDate = start ? new Date(start.getFullYear(), start.getMonth(), start.getDate()) : null;
+        const adjustedEndDate = end ? new Date(end.getFullYear(), end.getMonth(), end.getDate(), 23, 59, 59, 999) : null;
         setStartDate(adjustedStartDate);
         setEndDate(adjustedEndDate);
         if (!adjustedStartDate || !adjustedEndDate) {

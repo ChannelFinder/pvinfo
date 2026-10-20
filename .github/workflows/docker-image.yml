@@ -16,6 +16,6 @@ jobs:
       contents: read
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v7
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag channelfinder-pvinfo:$(date +%s)
