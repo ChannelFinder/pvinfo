@@ -121,6 +121,14 @@ https://stackoverflow.com/questions/27928372/react-router-urls-dont-work-when-re
 
 See more screenshots here: [example.md](docs/example.md)
 
+## Version 3.x.x Notes
+
+Version 3.0.0 is a dependency upgrade release. PV Info now uses React 19, MUI 7, MUI X Data Grid 8, React Router 7, and Vite 8. There are no changes to the REACT_APP_* environment variables, so existing .env and .env.local files should continue to work.
+
+- Node.js >= v22.12 is now required (v24 LTS recommended)
+- Delete the node_modules directory and do an `npm install` to regenerate all the dependencies when upgrading an existing application to version 3.0.0
+- `npm test` now runs a basic test suite with [Vitest](https://vitest.dev/)
+
 ## Version 2.x.x Notes
 
 In version 2.0.0 the PV Info build tool was changed from [Create React App](https://github.com/facebook/create-react-app) to [Vite](https://github.com/vitejs/vite). Create React App has been deprecated by Facebook and is no longer maintained. This can cause some issues with security vulnerabilities and isn't good for the long term so we have switched to Vite. Vite is mostly a drop-in replacement but see here for differences in PV Info 1.x.x and 2.x.x - [Version 2 notes](docs/v2-migration.md).
