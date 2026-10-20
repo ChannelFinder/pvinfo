@@ -25,7 +25,7 @@
     "react-dom": "^18.1.0",
     "react-router-dom": "^6.30.4",
     "react-use-websocket": "^4.0.0",
-    "tss-react": "^3.6.2",
+    "tss-react": "^4.9.21",
     "web-vitals": "^2.1.4"
   },
   "resolutions": {
