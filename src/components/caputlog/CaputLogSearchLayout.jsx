@@ -92,16 +92,18 @@ function CaputLogSearchLayout({
                                         customInput={
                                             <TextField
                                                 fullWidth
-                                                InputProps={{
-                                                    startAdornment: (
-                                                        <InputAdornment position="start">
-                                                            <CalendarMonthIcon />
-                                                        </InputAdornment>
-                                                    ),
-                                                }}
                                                 variant="outlined"
                                                 size="small"
                                                 placeholder="Date Range for Caput Log Data"
+                                                slotProps={{
+                                                    input: {
+                                                        startAdornment: (
+                                                            <InputAdornment position="start">
+                                                                <CalendarMonthIcon />
+                                                            </InputAdornment>
+                                                        ),
+                                                    }
+                                                }}
                                             />
                                         }
                                     />

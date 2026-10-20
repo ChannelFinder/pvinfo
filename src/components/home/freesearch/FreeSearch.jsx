@@ -52,17 +52,19 @@ function FreeSearch(props) {
                     type="search"
                     variant="outlined"
                     onChange={props.handleFreeformChange}
-                    InputProps={{
-                        endAdornment: (
-                            <InputAdornment position="end">
-                                <IconButton onClick={(event) => handleOpenAtts(event, "props")}
-                                    disableRipple
-                                    sx={{ '&:hover': { backgroundColor: 'white', color: 'black' } }}
-                                >
-                                    <AddIcon />
-                                </IconButton>
-                            </InputAdornment>
-                        )
+                    slotProps={{
+                        input: {
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <IconButton onClick={(event) => handleOpenAtts(event, "props")}
+                                        disableRipple
+                                        sx={{ '&:hover': { backgroundColor: 'white', color: 'black' } }}
+                                    >
+                                        <AddIcon />
+                                    </IconButton>
+                                </InputAdornment>
+                            )
+                        }
                     }}
                 />
             </Tooltip>
@@ -105,7 +107,7 @@ function FreeSearch(props) {
             </Popover>
             <SearchActions handleClear={props.handleClear} minWidth={{ xs: '40%', md: '25%' }} />
         </Grid>
-    )
+    );
 }
 
 FreeSearch.propTypes = propTypes;
