@@ -34,6 +34,7 @@ function Help() {
               <li>? (question mark) matches one of any character</li>
               <li>= (equals sign) at the beginning forces an exact match of the input string</li>
               <li>! (exclamation point) at the beginning is a not equal to search (not available for PV name field)</li>
+              <li>| (vertical bar) or ; (semicolon) between patterns matches any of the patterns (OR)</li>
             </ul>
             <Typography variant='body1' sx={{ mb: 2 }}>Also, if there are no asterisks at the beginning or end of the field search, then partial searches are enabled.
               For example "cmm:" is equivlent to "*cmm:*"</Typography>
@@ -44,7 +45,10 @@ function Help() {
               <li>*beam_current would match any PV that ends with beam_current, excluding, for example, cmm:beamcurrenttest</li>
               <li>cmm:beam_current will match any PV name containing that term; however (as of this writing) there is only one such PV.</li>
               <li>=cmm:beam_current will match cmm:beam_current exactly.</li>
+              <li>LTB_*VVR*|LN_*VVR* will match any PV that begins with LTB_ or LN_ and contains VVR. Each pattern follows the rules above, so VVR|BPM is equivalent to *VVR*|*BPM*</li>
             </ul>
+            <Typography variant='body1' sx={{ mb: 2 }}>Commas in the PV name field do not work as an OR, they match any single character (like ?) so that PV names containing commas can be found. Use | or ; instead.
+              The OR patterns can not be combined with ! (not equal), Channel Finder will match nearly all PVs for a query like !test|sim.</Typography>
             <Typography variant='h6' style={{marginTop: 10, marginBottom: 10}}><strong>Free Form Search</strong></Typography>
             <Typography variant='body1' sx={{ mb: 2 }}>
               There is also an option on the home page to toggle on a "Free Form Search". This option allows you to create your own PV and property search. This operates similarly to the CS Studio Phoebus Channel Table application. It can be very useful if you have other ChannelFinder properties available that are not in the "standard" search boxes.
@@ -52,6 +56,9 @@ function Help() {
             <Typography variant='body1' sx={{ mb: 2 }}>
               An example free form search would be: <strong>TEST*PV* Sector=5 Acc=SR iocName=test*</strong><br />
               Which will result in a Channel Finder query like so: <strong>~name=TEST*PV*&Sector=5&Acc=SR&iocName=test*</strong>
+            </Typography>
+            <Typography variant='body1' sx={{ mb: 2 }}>
+              Patterns can be combined with | or ; to match any of them, for example: <strong>TEST*PV* Sector=5|6</strong> will match PVs in Sector 5 or 6.
             </Typography>
             <Typography variant='h6' style={{marginTop: 10, marginBottom: 10}}><strong>Viewing Search Results</strong></Typography>
             <Typography variant='body1' sx={{ mb: 2 }}>The search results display a table with the matching PVs with the following fields:</Typography>
