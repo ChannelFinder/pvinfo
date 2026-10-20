@@ -109,6 +109,8 @@ function QueryResults(props) {
     useEffect(() => {
         if (props.isLoading) {
             clearMonitoring();
+            // go back to the first page for a new search but keep the user's page size
+            setPaginationModel((prev) => ({ ...prev, page: 0 }));
         }
     }, [props.isLoading, clearMonitoring])
 
