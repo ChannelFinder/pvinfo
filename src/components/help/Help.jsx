@@ -9,7 +9,7 @@ function Help() {
     return (
       <Fragment>
         <Grid size={12}>
-          <Grid align="center" justifyContent="center" size={12}>
+          <Grid sx={{ textAlign: "center" }} justifyContent="center" size={12}>
               <Typography style={{marginBottom: 20}} variant='h4'><strong>PV Info Help</strong></Typography>
           </Grid>
           <Grid justifyContent="flex-end" size={12}>

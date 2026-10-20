@@ -1,6 +1,6 @@
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import { Typography, Checkbox, Link, IconButton, Tooltip } from '@mui/material';
-import { DataGrid, GridToolbar } from '@mui/x-data-grid';
+import { DataGrid } from '@mui/x-data-grid';
 import { useNavigate, Link as RouterLink } from "react-router";
 import TimelineIcon from '@mui/icons-material/Timeline';
 import ReadMoreIcon from '@mui/icons-material/ReadMore';
@@ -353,7 +353,6 @@ function QueryResults(props) {
                 autoHeight={true}
                 density={defaultTableDensity}
                 onRowDoubleClick={handleRowDoubleClick}
-                slots={{ toolbar: GridToolbar }}
                 paginationModel={paginationModel}
                 onPaginationModelChange={(newPaginationModel) => {
                     setPaginationModel(newPaginationModel);
