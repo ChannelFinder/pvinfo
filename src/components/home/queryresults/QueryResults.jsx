@@ -362,7 +362,7 @@ function QueryResults(props) {
                 autoHeight={true}
                 density={defaultTableDensity}
                 onRowDoubleClick={handleRowDoubleClick}
-                components={{ Toolbar: GridToolbar }}
+                slots={{ toolbar: GridToolbar }}
                 pageSize={pageSize}
                 onPageSizeChange={(newPageSize) => {
                     setPageSize(newPageSize)

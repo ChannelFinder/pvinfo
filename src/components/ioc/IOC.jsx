@@ -117,7 +117,7 @@ function IOC() {
               onRowDoubleClick={handleRowDoubleClick}
               pageSizeOptions={[5, 10, 20, 50, 100]}
               pagination
-              components={{ Toolbar: GridToolbar }}
+              slots={{ toolbar: GridToolbar }}
               density={"compact"}
               initialState={{
                 sorting: {
