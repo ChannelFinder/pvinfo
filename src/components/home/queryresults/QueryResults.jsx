@@ -22,6 +22,9 @@ function QueryResults(props) {
         tablePageSizeOptions.sort(function (a, b) { return a - b; });
     }
     const [columnVisibilityModel, setColumnVisibilityModel] = useState();
+    // widths of columns the user has resized, keyed by field. columns is rebuilt every render,
+    // so without this the grid would reset resized columns back to their flex width
+    const [columnWidths, setColumnWidths] = useState({});
     const [currentBreakpoint, setCurrentBreakpoint] = useState();
     const [prevBreakpoint, setPrevBreakpoint] = useState();
     const [checked, setChecked] = useState([]);
@@ -210,32 +213,35 @@ function QueryResults(props) {
     }
 
     let columns = [
-        { field: "name", headerName: 'PV Name', flex: 15, minWidth: 175, maxWidth: 300, renderCell: renderPVNameLink }
+        { field: "name", headerName: 'PV Name', flex: 15, minWidth: 175, renderCell: renderPVNameLink }
     ]
     if (config.CF_RECORD_DESC) {
-        columns.push({ field: "recordDesc", headerName: 'Description', flex: 18, minWidth: 175, maxWidth: 300 })
+        columns.push({ field: "recordDesc", headerName: 'Description', flex: 18, minWidth: 175 })
     }
     columns.push(
-        { field: "hostName", headerName: 'Host', flex: 8.5, minWidth: 125, maxWidth: 170 },
-        { field: "iocName", headerName: 'IOC', flex: 8.5, minWidth: 125, maxWidth: 170, renderCell: renderIOCLink },
+        { field: "hostName", headerName: 'Host', flex: 8.5, minWidth: 125 },
+        { field: "iocName", headerName: 'IOC', flex: 8.5, minWidth: 125, renderCell: renderIOCLink },
         { field: "pvStatus", headerName: 'Status', flex: 7.5, minWidth: 125, maxWidth: 170 }
     )
     if (config.CF_RECORD_TYPE) {
         columns.push({ field: "recordType", headerName: 'Type', flex: 7.5, minWidth: 125, maxWidth: 170 })
     }
     if (config.EXTRA_PROP_SHOW_IN_RESULTS && config.EXTRA_PROP) {
-        columns.push({ field: config.EXTRA_PROP, headerName: config.EXTRA_PROP_LABEL, flex: 7.5, minWidth: 125, maxWidth: 170 })
+        columns.push({ field: config.EXTRA_PROP, headerName: config.EXTRA_PROP_LABEL, flex: 7.5, minWidth: 125 })
     }
     if (config.SECOND_EXTRA_PROP_SHOW_IN_RESULTS && config.SECOND_EXTRA_PROP) {
-        columns.push({ field: config.SECOND_EXTRA_PROP, headerName: config.SECOND_EXTRA_PROP_LABEL, flex: 7.5, minWidth: 125, maxWidth: 170 })
+        columns.push({ field: config.SECOND_EXTRA_PROP, headerName: config.SECOND_EXTRA_PROP_LABEL, flex: 7.5, minWidth: 125 })
     }
     if (config.CF_RECORD_ALIAS) {
-        columns.push({ field: "alias", headerName: 'Alias Of', flex: 10.5, minWidth: 175, maxWidth: 300, renderCell: renderAliasLink })
+        columns.push({ field: "alias", headerName: 'Alias Of', flex: 10.5, minWidth: 175, renderCell: renderAliasLink })
     }
     if (config.USE_PVWS) {
-        columns.push({ field: "value", headerName: 'Value', flex: 7.5, minWidth: 120, maxWidth: 140, renderCell: renderValue })
+        columns.push({ field: "value", headerName: 'Value', width: 140, resizable: false, renderCell: renderValue })
     }
-    columns.push({ field: "button", headerName: 'Actions', flex: 9.5, minWidth: 160, maxWidth: 200, renderCell: renderButtons, renderHeader: renderActionsHeader })
+    columns.push({ field: "button", headerName: 'Actions', width: config.USE_PVWS ? 160 : 120, resizable: false, sortable: false, disableColumnMenu: true, renderCell: renderButtons, renderHeader: renderActionsHeader })
+    columns = columns.map((column) =>
+        column.field in columnWidths ? { ...column, flex: 0, width: columnWidths[column.field] } : column
+    )
 
     useEffect(() => {
         if (props.cfData === null || Object.keys(props.cfData).length === 0) {
@@ -363,6 +369,9 @@ function QueryResults(props) {
                 columnVisibilityModel={columnVisibilityModel}
                 onColumnVisibilityModelChange={(newModel) =>
                     setColumnVisibilityModel(newModel)
+                }
+                onColumnWidthChange={(params) =>
+                    setColumnWidths((prev) => ({ ...prev, [params.colDef.field]: params.width }))
                 }
                 showToolbar
             />

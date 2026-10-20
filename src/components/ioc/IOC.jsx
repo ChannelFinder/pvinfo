@@ -18,7 +18,7 @@ const renderDate = (params) => {
 }
 
 const columns = [
-  { field: "ioc", headerName: 'IOC Name', renderCell: renderLink, flex: 16.5, minWidth: 175, maxWidth: 350 },
+  { field: "ioc", headerName: 'IOC Name', renderCell: renderLink, flex: 16.5, minWidth: 175 },
   { field: "host", headerName: 'Host', flex: 8.25, minWidth: 150, maxWidth: 275 },
   { field: "owner", headerName: 'Engineer', flex: 8.25, minWidth: 150, maxWidth: 275 },
   { field: "iocid", headerName: 'IP Address', flex: 8.25, minWidth: 150, maxWidth: 275 },
