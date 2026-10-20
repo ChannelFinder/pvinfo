@@ -12,7 +12,7 @@
     "@emotion/styled": "^11.8.1",
     "@mui/icons-material": "^7.3.11",
     "@mui/material": "^7.3.11",
-    "@mui/x-data-grid": "^8.29.5",
+    "@mui/x-data-grid": "^9.16.0",
     "base64-js": "^1.5.1",
     "react": "19.3.1",
     "react-datepicker": "^8.4.0",
