@@ -129,6 +129,7 @@ const config = {
     // IOCs Page
     USE_IOC_PAGE: parseBoolean(import.meta.env.REACT_APP_USE_IOC_PAGE, true),
     IOC_PAGE_PV_PATTERN: import.meta.env.REACT_APP_IOC_PAGE_PV_PATTERN || "*:ENGINEER",
+    IOC_PAGE_EXTRA_COLUMNS: parseList(import.meta.env.REACT_APP_IOC_PAGE_EXTRA_COLUMNS ?? "iocIP:IOC IP,caPort:CA Port,pvaPort:PVA Port"),
 
     // Archiver
     USE_AA: parseBoolean(import.meta.env.REACT_APP_USE_AA, false),

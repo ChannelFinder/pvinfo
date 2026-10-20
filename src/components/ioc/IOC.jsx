@@ -10,7 +10,7 @@ import config from "../../config";
 const renderLink = (params) => {
   return (
       <div>
-          <Link component={RouterLink} to={`/?iocName=${params.row.ioc}`} underline="hover">{params.row.ioc}</Link>
+          <Link component={RouterLink} to={`/?iocName=${params.row.iocName}`} underline="hover">{params.row.iocName}</Link>
       </div>
   )
 }
@@ -19,12 +19,15 @@ const renderDate = (params) => {
   return new Date(params.row.time).toLocaleString();
 }
 
-const columns = [
-  { field: "ioc", headerName: 'IOC Name', renderCell: renderLink, flex: 16.5, minWidth: 175 },
-  { field: "host", headerName: 'Host', flex: 8.25, minWidth: 150, maxWidth: 275 },
-  { field: "owner", headerName: 'Engineer', flex: 8.25, minWidth: 150, maxWidth: 275 },
-  { field: "iocid", headerName: 'IP Address', flex: 8.25, minWidth: 150, maxWidth: 275 },
-  { field: "time", headerName: 'Last Recsync Update', flex: 8.25, minWidth: 150, maxWidth: 275, renderCell: renderDate },
+const getColumns = () => [
+  { field: "iocName", headerName: 'IOC Name', renderCell: renderLink, flex: 16.5, minWidth: 175 },
+  { field: "hostName", headerName: 'Host', flex: 8.25, minWidth: 150 },
+  { field: "owner", headerName: 'Engineer', flex: 8.25, minWidth: 150 },
+  ...config.IOC_PAGE_EXTRA_COLUMNS.map((column) => {
+    const [field, label] = column.split(':').map((part) => part.trim());
+    return { field, headerName: label || field, flex: 6, minWidth: 100 };
+  }),
+  { field: "time", headerName: 'Last Recsync Update', flex: 8.25, minWidth: 150, renderCell: renderDate },
 ]
 
 function IOC() {
@@ -32,6 +35,7 @@ function IOC() {
   const [cfPVData, setCFPVData] = useState(null); //object
   const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 100 });
   const [isLoading, setIsLoading] = useState(true);
+  const columns = useMemo(getColumns, []);
 
 
     // Get channel finder data for this PV
@@ -65,14 +69,14 @@ function IOC() {
         }
         const id = properties.iocName.toLowerCase();
         if (!iocMap.has(id)) {
-          iocMap.set(id, { id, ioc: properties.iocName, owner: pv.owner, host: properties.hostName, iocid: properties.iocid, time: properties.time });
+          iocMap.set(id, { ...properties, id, owner: pv.owner });
         }
       });
       return [...iocMap.values()].sort((a, b) => a.id > b.id ? 1 : -1);
     }, [cfPVData]);
 
     const handleRowDoubleClick = (e) => {
-      navigate(`/?iocName=${e.row.ioc}`);
+      navigate(`/?iocName=${e.row.iocName}`);
     }
 
     if (isLoading) {

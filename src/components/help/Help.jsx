@@ -163,7 +163,7 @@ function Help() {
               <Typography variant='h6' style={{marginTop: 10, marginBottom: 10}}><strong>IOCs Page</strong></Typography>
               <Typography variant='body1' sx={{ mb: 2 }}>
                 The IOCs page lists all the IOCs in alphabetical order. The host where the IOC runs, the engineer in charge of the IOC,
-                the IOC IP address, and the last time recsync updated the IOC's PVs in Channel Finder. This is when the IOC last connected to recsync,
+                the IOC IP address, the Channel Access and PV Access server ports, and the last time recsync updated the IOC's PVs in Channel Finder. This is when the IOC last connected to recsync,
                 for example after an IOC reboot or a recsync restart, or when it disconnected and its PVs became Inactive.
                 Double clicking or clicking the IOC name will open the PV search for all the PVs in that IOC.
               </Typography>
