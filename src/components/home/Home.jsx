@@ -249,7 +249,7 @@ function Home(props) {
     return (
         <Fragment>
             <form onSubmit={handleSubmit}>
-                <Grid item alignItems="center" sx={{ backgroundColor: '#d7e3f5' }} xs={12}>
+                <Grid alignItems="center" sx={{ backgroundColor: '#d7e3f5' }} size={12}>
                     <Typography
                         style={{ marginBottom: 10 }}
                         align="center"
@@ -307,7 +307,7 @@ function Home(props) {
                             handleClear={handleClear} searchProperties={searchProperties} searchTags={searchTags} />
                     )
                 }
-                <Grid container item xs={12} style={{ display: "flex" }}>
+                <Grid container style={{ display: "flex" }} size={12}>
                     <QueryResults isLoading={isLoading} cfData={cfData} handleErrorMessage={props.handleErrorMessage} handleOpenErrorAlert={props.handleOpenErrorAlert} handleSeverity={props.handleSeverity} />
                 </Grid>
             </form>

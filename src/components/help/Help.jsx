@@ -8,11 +8,11 @@ function Help() {
 
     return (
       <Fragment>
-        <Grid item xs={12}>
-          <Grid item xs={12} align="center" justifyContent="center">
+        <Grid size={12}>
+          <Grid align="center" justifyContent="center" size={12}>
               <Typography style={{marginBottom: 20}} variant='h4'><strong>PV Info Help</strong></Typography>
           </Grid>
-          <Grid item xs={12} justifyContent="flex-end">
+          <Grid justifyContent="flex-end" size={12}>
 
             <Typography variant='h6' style={{marginBottom: 10}}><strong>Process Variables Described</strong></Typography>
             <Typography variant='body1' sx={{

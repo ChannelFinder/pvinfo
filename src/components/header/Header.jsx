@@ -36,7 +36,7 @@ function Header() {
   }
 
   return (
-    <Grid item className={classes.root}>
+    <Grid className={classes.root}>
       <AppBar position="static" color="primary">
         <Toolbar>
           <Hidden mdUp>

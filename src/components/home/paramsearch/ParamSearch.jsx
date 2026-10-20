@@ -216,7 +216,10 @@ function ParamSearch(props) {
 
     return (
         <Fragment>
-            <Grid item container xs={12} sx={{ display: 'flex', flexWrap: { xs: 'wrap', lg: 'nowrap' } }}>
+            <Grid
+                container
+                sx={{ display: 'flex', flexWrap: { xs: 'wrap', lg: 'nowrap' } }}
+                size={12}>
                 {/* <Box className="main-query-box" sx={{ flex: 1 }}> */}
                 <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />= at beginning for exactly equal</div>}>
                     <TextField

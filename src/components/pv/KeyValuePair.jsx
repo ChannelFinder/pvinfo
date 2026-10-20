@@ -15,10 +15,21 @@ function KeyValuePair(props) {
 
     return (
         <Fragment>
-            <Grid item xs={6} sm={2} sx={style} style={{ backgroundColor: "#F3F4F6" }}>
+            <Grid
+                sx={style}
+                style={{ backgroundColor: "#F3F4F6" }}
+                size={{
+                    xs: 6,
+                    sm: 2
+                }}>
                 <Typography variant="subtitle2">{props.title}</Typography>
             </Grid>
-            <Grid item xs={6} sm={4} sx={style}>
+            <Grid
+                sx={style}
+                size={{
+                    xs: 6,
+                    sm: 4
+                }}>
                 <Typography variant="body2" style={{ color: props.textColor }}>
                     {Array.isArray(props.value) && props.title === "Tags" ? (
                         props.value.map((item, i) => (

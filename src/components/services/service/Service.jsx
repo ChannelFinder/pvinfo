@@ -11,7 +11,7 @@ const propTypes = {
 
 function Service(props) {
     return (
-        <Grid item>
+        <Grid>
             <Box sx={{ display: "flex", flexDirection: "row", mb: 1, alignItems: "center" }}>
                 <Typography variant="h6" sx={{ mr: 4 }}>{props.servName}</Typography>
                 <Chip label={props.connected ? "Connected" : "Disconnected"} color={props.connected ? "success" : "error"} size="small" icon={props.connected ? <CheckCircleRoundedIcon /> : <ErrorRoundedIcon />} />
@@ -27,7 +27,7 @@ function Service(props) {
                 ) : null
             }
         </Grid>
-    )
+    );
 }
 
 Service.propTypes = propTypes;
