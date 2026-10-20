@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import './Header.css';
 import { NavLink } from 'react-router-dom';
-import { AppBar, Toolbar, Typography, Grid, Drawer, Hidden, Divider } from '@mui/material';
+import { AppBar, Toolbar, Typography, Grid, Drawer, Divider } from '@mui/material';
 import { List, ListItemText, ListItemIcon, ListItemButton } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import HomeIcon from '@mui/icons-material/Home';
@@ -39,7 +39,7 @@ function Header() {
     <Grid className={classes.root}>
       <AppBar position="static" color="primary">
         <Toolbar>
-          <Hidden mdUp>
+          <Box sx={{ display: { xs: 'block', md: 'none' } }}>
             <IconButton
               edge="start"
               color="inherit"
@@ -94,13 +94,13 @@ function Header() {
                 </List>
               </div>
             </Drawer>
-          </Hidden>
+          </Box>
           <NavLink to={"/"} className={classes.title} style={{ textDecoration: 'none', color: 'inherit' }}>
             <Typography variant="h3" component="h1" style={{ flexGrow: 1 }} noWrap>
               PV Info
             </Typography>
           </NavLink>
-          <Hidden mdDown>
+          <Box sx={{ display: { xs: 'none', md: 'block' } }}>
             <NavLink to="/ioc" style={{ textDecoration: "none", color: 'inherit', paddingRight: 40 }}>
               <Typography variant="h5">IOCs</Typography>
             </NavLink>
@@ -120,7 +120,7 @@ function Header() {
             <NavLink to="/help" style={{ textDecoration: "none", color: 'inherit', paddingRight: 40 }}>
               <Typography variant="h5">Help</Typography>
             </NavLink>
-          </Hidden>
+          </Box>
         </Toolbar>
       </AppBar>
     </Grid>
