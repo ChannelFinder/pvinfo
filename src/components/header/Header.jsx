@@ -21,8 +21,20 @@ const useStyles = makeStyles()((theme) => ({
     display: 'flex'
   },
   title: {
-    flexGrow: 1,
     marginLeft: theme.spacing(4),
+  },
+  // fills the space between the title and the nav links so clicking there doesn't go to the home page
+  spacer: {
+    flexGrow: 1,
+  },
+  // nav links fill the full toolbar height with even padding so the click area is centered on the text
+  navLink: {
+    textDecoration: "none",
+    color: "inherit",
+    alignSelf: "stretch",
+    display: "flex",
+    alignItems: "center",
+    padding: theme.spacing(0, 2.5),
   },
 }));
 
@@ -97,28 +109,29 @@ function Header() {
             </Drawer>
           </>}
           <NavLink to={"/"} className={classes.title} style={{ textDecoration: 'none', color: 'inherit' }}>
-            <Typography variant="h3" component="h1" style={{ flexGrow: 1 }} noWrap>
+            <Typography variant="h3" component="h1" noWrap>
               PV Info
             </Typography>
           </NavLink>
+          <div className={classes.spacer} />
           {isMdUp && <>
-            <NavLink to="/ioc" style={{ textDecoration: "none", color: 'inherit', paddingRight: 40 }}>
+            <NavLink to="/ioc" className={classes.navLink}>
               <Typography variant="h5">IOCs</Typography>
             </NavLink>
             {config.USE_AA &&
-              <NavLink to="/plot" style={{ textDecoration: "none", color: 'inherit', paddingRight: 40 }}>
+              <NavLink to="/plot" className={classes.navLink}>
                 <Typography variant="h5">Plotting</Typography>
               </NavLink>
             }
             {config.USE_CAPUTLOG &&
-              <NavLink to="/caputlog" style={{ textDecoration: "none", color: 'inherit', paddingRight: 40 }}>
+              <NavLink to="/caputlog" className={classes.navLink}>
                 <Typography variant="h5">Caput Log</Typography>
               </NavLink>
             }
-            <NavLink to="/services" style={{ textDecoration: "none", color: 'inherit', paddingRight: 40 }}>
+            <NavLink to="/services" className={classes.navLink}>
               <Typography variant="h5">Services</Typography>
             </NavLink>
-            <NavLink to="/help" style={{ textDecoration: "none", color: 'inherit', paddingRight: 40 }}>
+            <NavLink to="/help" className={classes.navLink}>
               <Typography variant="h5">Help</Typography>
             </NavLink>
           </>}

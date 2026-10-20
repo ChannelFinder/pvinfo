@@ -57,7 +57,7 @@ function IOC() {
       if ( cfPVData === null) {
         return;
       }
-      setIOCs(cfPVData.map((pv, index) => {
+      const iocList = cfPVData.map((pv, index) => {
         let iocObject = {};
         //iocObject.id = index;
         iocObject.owner = pv.owner;
@@ -77,7 +77,10 @@ function IOC() {
           }
         });
         return iocObject;
-      }));
+      });
+      // sort here instead of during render, DataGrid freezes the rows array in development so sorting it later throws
+      iocList.sort((a, b) => a.id > b.id ? 1 : -1);
+      setIOCs(iocList);
     }, [cfPVData]);
 
     const handleRowDoubleClick = (e) => {
@@ -102,7 +105,6 @@ function IOC() {
       );
     }
     else {
-      iocs.sort((a, b) => a.id > b.id ? 1 : -1);
       return (
         <Fragment>
             <DataGrid
