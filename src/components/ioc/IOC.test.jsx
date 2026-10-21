@@ -61,7 +61,8 @@ test('explains where the IOC list comes from when no IOCs are found', async () =
   expect(screen.getByText(/REACT_APP_IOC_PAGE_PV_PATTERN/)).toBeInTheDocument();
 });
 
-test('shows the IOC IP and CA and PVA ports by default', async () => {
+test('shows the IOC IP and CA and PVA ports', async () => {
+  configOverrides.IOC_PAGE_EXTRA_COLUMNS = ['iocIP:IOC IP', 'caPort:CA Port', 'pvaPort:PVA Port'];
   const ioc = channel('IOCA:ENGINEER', 'IOCA');
   ioc.properties.push({ name: 'iocIP', value: '10.0.0.1' }, { name: 'caPort', value: '5064' }, { name: 'pvaPort', value: '5075' }, { name: 'iocid', value: '10.0.0.1:41234' });
   const container = await renderIOC([ioc]);
@@ -82,4 +83,12 @@ test('shows only the required columns when REACT_APP_IOC_PAGE_EXTRA_COLUMNS is e
   configOverrides.IOC_PAGE_EXTRA_COLUMNS = [];
   const container = await renderIOC([channel('IOCA:ENGINEER', 'IOCA')]);
   expect(headers(container)).toEqual(['IOC Name', 'Host', 'Engineer', 'Last Recsync Update']);
+});
+
+test('shows an error when the IOCs can not be loaded from Channel Finder', async () => {
+  api.CF_QUERY.mockRejectedValue(new Error('error in fetch!'));
+  render(<ThemeProvider theme={theme}><MemoryRouter><IOC /></MemoryRouter></ThemeProvider>);
+  await act(async () => {});
+  expect(screen.getByText('Unable to Load IOCs')).toBeInTheDocument();
+  expect(screen.queryByText('Data Loading...')).not.toBeInTheDocument();
 });

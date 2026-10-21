@@ -35,6 +35,7 @@ function IOC() {
   const [cfPVData, setCFPVData] = useState(null); //object
   const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 100 });
   const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
   const columns = useMemo(getColumns, []);
 
 
@@ -42,17 +43,19 @@ function IOC() {
     useEffect(() => {
       api.CF_QUERY({"pvName": config.IOC_PAGE_PV_PATTERN})
       .then((data) => {
-          if (data !== null) {
-            setIsLoading(false);
+          if (Array.isArray(data)) {
             setCFPVData(data);
           }
           else {
-            console.log("data is NULL!")
+            setLoadError(true);
           }
       })
       .catch((err) => {
           console.log(err);
-          console.log("error in fetch of experiments");
+          setLoadError(true);
+      })
+      .finally(() => {
+          setIsLoading(false);
       })
     }, []);
 
@@ -84,9 +87,12 @@ function IOC() {
           <Typography variant="h6">Data Loading...</Typography>
       );
     }
-    else if (cfPVData === null) {
+    else if (loadError || cfPVData === null) {
         return (
-            <div></div>
+            <Fragment>
+                <Typography variant="h6">Unable to Load IOCs</Typography>
+                <Typography>Check the Services page to see if Channel Finder is reachable.</Typography>
+            </Fragment>
         );
     }
     else if (iocs.length === 0) {
