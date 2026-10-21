@@ -159,12 +159,18 @@ function Help() {
               <li>Link Icon: Get URL link to the exact graph you are viewing.</li>
             </ul>
 
-            <Typography variant='h6' style={{marginTop: 10, marginBottom: 10}}><strong>IOCs Page</strong></Typography>
-            <Typography variant='body1' sx={{ mb: 2 }}>
-              The IOCs page lists all the IOCs in alphabetical order. The host where the IOC runs, the engineer in charge of the IOC,
-              the IOC IP address, and the date when the IOC was last connected to recsync (often the IOC reboot time).
-              Double clicking or clicking the IOC name will open the PV search for all the PVs in that IOC.
-            </Typography>
+            {config.USE_IOC_PAGE && <>
+              <Typography variant='h6' style={{marginTop: 10, marginBottom: 10}}><strong>IOCs Page</strong></Typography>
+              <Typography variant='body1' sx={{ mb: 2 }}>
+                The IOCs page lists all the IOCs in alphabetical order. The host where the IOC runs, the engineer in charge of the IOC,
+                the IOC IP address, the Channel Access and PV Access server ports, and the last time recsync updated the IOC's PVs in Channel Finder. This is when the IOC last connected to recsync,
+                for example after an IOC reboot or a recsync restart, or when it disconnected and its PVs became Inactive.
+                Double clicking or clicking the IOC name will open the PV search for all the PVs in that IOC.
+              </Typography>
+              <Typography variant='body1' sx={{ mb: 2 }}>
+                The list of IOCs comes from the PVs matching <strong>{config.IOC_PAGE_PV_PATTERN}</strong>, so an IOC without a PV matching that name will not be listed.
+              </Typography>
+            </>}
 
           </Grid>
         </Grid>

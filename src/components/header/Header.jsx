@@ -72,12 +72,14 @@ function Header() {
                     </ListItemIcon>
                     <ListItemText primary="Home" />
                   </ListItemButton>
-                  <ListItemButton key="IOCs" component={NavLink} to="/ioc" onClick={handleMenuToggle} divider color="primary">
-                    <ListItemIcon>
-                      <AppsIcon color="primary" />
-                    </ListItemIcon>
-                    <ListItemText primary="IOCs" />
-                  </ListItemButton>
+                  {config.USE_IOC_PAGE &&
+                    <ListItemButton key="IOCs" component={NavLink} to="/ioc" onClick={handleMenuToggle} divider color="primary">
+                      <ListItemIcon>
+                        <AppsIcon color="primary" />
+                      </ListItemIcon>
+                      <ListItemText primary="IOCs" />
+                    </ListItemButton>
+                  }
                   <ListItemButton key="Plotting" component={NavLink} to="/plot" onClick={handleMenuToggle} divider color="primary">
                     <ListItemIcon>
                       <SsidChartIcon color="primary" />
@@ -115,9 +117,11 @@ function Header() {
           </NavLink>
           <div className={classes.spacer} />
           {isMdUp && <>
-            <NavLink to="/ioc" className={classes.navLink}>
-              <Typography variant="h5">IOCs</Typography>
-            </NavLink>
+            {config.USE_IOC_PAGE &&
+              <NavLink to="/ioc" className={classes.navLink}>
+                <Typography variant="h5">IOCs</Typography>
+              </NavLink>
+            }
             {config.USE_AA &&
               <NavLink to="/plot" className={classes.navLink}>
                 <Typography variant="h5">Plotting</Typography>

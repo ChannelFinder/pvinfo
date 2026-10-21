@@ -39,7 +39,9 @@ function App() {
             <Routes>
               <Route path='*' element={<Page404 />} />
               <Route path="/pv/:id" element={<PV handleOpenErrorAlert={setOpenErrorAlert} handleErrorMessage={setErrorMessage} handleSeverity={setSeverity} />} />
-              <Route path="/ioc" element={<IOC />} />
+              {
+                config.USE_IOC_PAGE ? <Route path="/ioc" element={<IOC />} /> : null
+              }
               <Route path="/plot" element={<Plot />} />
               {
                 config.USE_CAPUTLOG ? <Route path="/caputlog" element={<CaputLogPage />} /> : null
