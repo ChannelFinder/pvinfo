@@ -78,12 +78,14 @@ function Header() {
                     </ListItemIcon>
                     <ListItemText primary="IOCs" />
                   </ListItemButton>
-                  <ListItemButton key="Plotting" component={NavLink} to="/plot" onClick={handleMenuToggle} divider color="primary">
-                    <ListItemIcon>
-                      <SsidChartIcon color="primary" />
-                    </ListItemIcon>
-                    <ListItemText primary="Plotting" />
-                  </ListItemButton>
+                  {config.USE_AA &&
+                    <ListItemButton key="Plotting" component={NavLink} to="/plot" onClick={handleMenuToggle} divider color="primary">
+                      <ListItemIcon>
+                        <SsidChartIcon color="primary" />
+                      </ListItemIcon>
+                      <ListItemText primary="Plotting" />
+                    </ListItemButton>
+                  }
                   {config.USE_CAPUTLOG &&
                     <ListItemButton key="CaputLog" component={NavLink} to="/caputlog" onClick={handleMenuToggle} divider color="primary">
                       <ListItemIcon>
