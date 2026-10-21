@@ -266,11 +266,11 @@ function Home(props) {
                             aria-label="search type"
                             style={{ marginBottom: 15 }}
                         >
-                            <ToggleButton value={true} aria-label="param search">
+                            <ToggleButton value={true} aria-label="Standard search">
                                 <ManageSearchRoundedIcon />
                                 <Box component="span" sx={{ display: { xs: "none", sm: "inline" }, ml: 1 }}>Standard</Box>
                             </ToggleButton>
-                            <ToggleButton value={false} aria-label="free search">
+                            <ToggleButton value={false} aria-label="Free Form search">
                                 <PageviewRoundedIcon />
                                 <Box component="span" sx={{ display: { xs: "none", sm: "inline" }, ml: 1 }}>Free Form</Box>
                             </ToggleButton>
