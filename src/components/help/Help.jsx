@@ -53,7 +53,7 @@ function Help() {
               The OR patterns can not be combined with ! (not equal), Channel Finder will match nearly all PVs for a query like !test|sim.</Typography>
             <Typography variant='h6' style={{marginTop: 10, marginBottom: 10}}><strong>Free Form Search</strong></Typography>
             <Typography variant='body1' sx={{ mb: 2 }}>
-              There is also an option on the home page to toggle on a "Free Form Search". This option allows you to create your own PV and property search. This operates similarly to the CS Studio Phoebus Channel Table application. It can be very useful if you have other ChannelFinder properties available that are not in the "standard" search boxes.
+              There is also a "Free Form" search option, select it with the Free Form button next to the Standard button above the search fields on the home page. This option allows you to create your own PV and property search. This operates similarly to the CS Studio Phoebus Channel Table application. It can be very useful if you have other ChannelFinder properties available that are not in the "standard" search boxes.
             </Typography>
             <Typography variant='body1' sx={{ mb: 2 }}>
               An example free form search would be: <strong>TEST*PV* Sector=5 Acc=SR iocName=test*</strong><br />
