@@ -19,4 +19,5 @@ test('renders header', () => {
     </ThemeProvider>
   );
   expect(screen.getByRole('banner')).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'free search' })).toHaveTextContent('Free Form');
 });

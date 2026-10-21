@@ -268,9 +268,11 @@ function Home(props) {
                         >
                             <ToggleButton value={true} aria-label="param search">
                                 <ManageSearchRoundedIcon />
+                                <Box component="span" sx={{ display: { xs: "none", sm: "inline" }, ml: 1 }}>Standard</Box>
                             </ToggleButton>
                             <ToggleButton value={false} aria-label="free search">
                                 <PageviewRoundedIcon />
+                                <Box component="span" sx={{ display: { xs: "none", sm: "inline" }, ml: 1 }}>Free Form</Box>
                             </ToggleButton>
                         </ToggleButtonGroup>
                     </Tooltip>
@@ -296,7 +298,8 @@ function Home(props) {
                         ></ParamSearch>
                     ) : (
                         <FreeSearch freeformQuery={freeformQuery} setFreeformQuery={setFreeformQuery} handleFreeformChange={handleFreeformChange}
-                            handleClear={handleClear} searchProperties={searchProperties} searchTags={searchTags} />
+                            handleClear={handleClear} searchProperties={searchProperties} searchTags={searchTags}
+                            showHelp={cfData === null} />
                     )
                 }
                 <Grid container style={{ display: "flex" }} size={12}>
