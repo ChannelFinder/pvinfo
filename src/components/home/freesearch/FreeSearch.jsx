@@ -39,7 +39,7 @@ function FreeSearch(props) {
                     open={syntaxTooltipOpen && !addHovered}
                     onOpen={() => setSyntaxTooltipOpen(true)}
                     onClose={() => setSyntaxTooltipOpen(false)}
-                    title={<div>Space delimited string<br />PV name (with * and ?)<br />Followed by property=value pairs<br />Followed by tag names<br />Click + to add a property or tag</div>}>
+                    title={<div>Space delimited string<br />PV name (with * and ?)<br />Followed by property=value pairs<br />Followed by tag names<br />| between patterns for OR<br />Click + to add a property or tag</div>}>
                     <TextField
                         sx={{ display: "flex", flexGrow: 1, minWidth: { xs: '60%', md: '75%' }, textOverflow: 'ellipsis' }}
                         id="freeSearch"

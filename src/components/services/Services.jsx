@@ -188,6 +188,7 @@ function Services() {
                 <AccordionDetails sx={{ pt: 1, pb: 1 }}>
                     <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
                         <Typography variant="body2"><strong>PV Web Socket:</strong> {config.USE_PVWS ? "Enabled" : "Disabled"}</Typography>
+                        <Typography variant="body2"><strong>IOCs Page:</strong> {config.USE_IOC_PAGE ? `Enabled (${config.IOC_PAGE_PV_PATTERN})` : "Disabled"}</Typography>
                         <Typography variant="body2"><strong>Archiver:</strong> {config.USE_AA ? "Enabled" : "Disabled"}</Typography>
                         <Typography variant="body2"><strong>OLOG:</strong> {config.USE_OLOG ? "Enabled" : "Disabled"}</Typography>
                         <Typography variant="body2"><strong>Alarm Logger:</strong> {config.USE_AL ? "Enabled" : "Disabled"}</Typography>

@@ -23,11 +23,14 @@ const pvRecordTypes = ['aai', 'aao', 'ai', 'ao', 'aSub', 'bi', 'bo', 'calcout', 
     'fanout', 'histogram', 'int64in', 'int64out', 'longin', 'longout', 'lsi', 'lso', 'mbbi', 'mbbiDirect', 'mbbo', 'mbboDirect',
     'permissive', 'printf', 'sel', 'seq', 'state', 'stringin', 'stringout', 'subArray', 'sub', 'waveform']
 
+const pvNameTooltip = <div>* for any # character wildcard<br />? for single character wildcard<br />| between patterns for OR<br />space between patterns for AND<br />= at beginning for exactly equal</div>;
+const propertyTooltip = <div>* for any # character wildcard<br />? for single character wildcard<br />| between patterns for OR<br />! at beginning for not equal<br />= at beginning for exactly equal</div>;
+
 function ParamSearch(props) {
     const recordDescSearchRender = () => {
         if (config.CF_RECORD_DESC) {
             return (
-                <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
+                <Tooltip arrow title={propertyTooltip}>
                     <TextField
                         sx={{ display: "flex", flexGrow: 1, minWidth: { xs: '100%', md: '50%', lg: '16%' } }}
                         id="recordDsec"
@@ -48,7 +51,7 @@ function ParamSearch(props) {
         if (config.CF_RECORD_TYPE) {
             return (
                 // <Box sx={{ display: "flex" }}>
-                <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
+                <Tooltip arrow title={propertyTooltip}>
                     <Autocomplete
                         sx={{ display: "flex", flexGrow: 1, minWidth: { xs: '50%', md: '25%', lg: '8%' } }}
                         freeSolo
@@ -77,7 +80,7 @@ function ParamSearch(props) {
     const aliasOfSearchRender = () => {
         if (config.CF_RECORD_ALIAS) {
             return (
-                <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
+                <Tooltip arrow title={propertyTooltip}>
                     <TextField
                         sx={{ display: "flex", flexGrow: 1, minWidth: { xs: '50%', md: '25%', lg: '8%' } }}
                         id="alias"
@@ -99,7 +102,7 @@ function ParamSearch(props) {
             if (config.EXTRA_PROP_DROPDOWN_LABELS.length > 0) {
                 return (
                     // <Box sx={{ display: "flex" }}>
-                    <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
+                    <Tooltip arrow title={propertyTooltip}>
                         <Autocomplete
                             sx={{ display: "flex", flexGrow: 1, minWidth: { xs: '50%', md: '25%', lg: '8%' } }}
                             freeSolo
@@ -126,7 +129,7 @@ function ParamSearch(props) {
             }
             else {
                 return (
-                    <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
+                    <Tooltip arrow title={propertyTooltip}>
                         <TextField
                             sx={{ display: "flex", flexGrow: 1, minWidth: { xs: '50%', md: '25%', lg: '8%' } }}
                             id={props.extraPropAName}
@@ -149,7 +152,7 @@ function ParamSearch(props) {
             if (config.SECOND_EXTRA_PROP_DROPDOWN_LABELS.length > 0) {
                 return (
                     // <Box sx={{ display: "flex" }}>
-                    <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
+                    <Tooltip arrow title={propertyTooltip}>
                         <Autocomplete
                             sx={{ display: "flex", flexGrow: 1, minWidth: { xs: '50%', md: '25%', lg: '8%' } }}
                             freeSolo
@@ -176,7 +179,7 @@ function ParamSearch(props) {
             }
             else {
                 return (
-                    <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
+                    <Tooltip arrow title={propertyTooltip}>
                         <TextField
                             sx={{ display: "flex", flexGrow: 1, minWidth: { xs: '50%', md: '25%', lg: '8%' } }}
                             id={props.extraPropBName}
@@ -202,7 +205,7 @@ function ParamSearch(props) {
                 sx={{ display: 'flex', flexWrap: { xs: 'wrap', lg: 'nowrap' } }}
                 size={12}>
                 {/* <Box className="main-query-box" sx={{ flex: 1 }}> */}
-                <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />= at beginning for exactly equal</div>}>
+                <Tooltip arrow title={pvNameTooltip}>
                     <TextField
                         sx={{ display: "flex", flexGrow: 1, minWidth: { xs: '100%', md: '50%', lg: '16%' }, textOverflow: 'ellipsis' }}
                         id="pvName"
@@ -217,7 +220,7 @@ function ParamSearch(props) {
                     />
                 </Tooltip>
                 {recordDescSearchRender()}
-                <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
+                <Tooltip arrow title={propertyTooltip}>
                     <TextField
                         sx={{ display: "flex", flexGrow: 1, minWidth: { xs: '50%', md: '25%', lg: '8%' } }}
                         id="hostName"
@@ -231,7 +234,7 @@ function ParamSearch(props) {
                         onChange={props.handleInputChange}
                     />
                 </Tooltip>
-                <Tooltip arrow title={<div>* for any # character wildcard<br />? for single character wildcard<br />! at beginning for not equal<br />= at beginning for exactly equal</div>}>
+                <Tooltip arrow title={propertyTooltip}>
                     <TextField
                         sx={{ display: "flex", flexGrow: 1, minWidth: { xs: '50%', md: '25%', lg: '8%' } }}
                         id="iocName"
