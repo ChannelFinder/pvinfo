@@ -41,7 +41,7 @@ const cellText = (container, iocId, field) => container.querySelector(`.MuiDataG
 
 test('queries Channel Finder with the configured PV pattern', async () => {
   await renderIOC([channel('IOC1:ENGINEER', 'IOC1')]);
-  expect(api.CF_QUERY).toHaveBeenCalledWith({ pvName: '*:ENGINEER' });
+  expect(api.CF_QUERY).toHaveBeenCalledWith({ pvName: '=*:ENGINEER' });
 });
 
 test('lists each IOC once and skips PVs without an IOC name', async () => {
