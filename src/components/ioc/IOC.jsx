@@ -41,7 +41,7 @@ function IOC() {
 
     // Get channel finder data for this PV
     useEffect(() => {
-      api.CF_QUERY({"pvName": config.IOC_PAGE_PV_PATTERN})
+      api.CF_QUERY({"pvName": `=${config.IOC_PAGE_PV_PATTERN}`})
       .then((data) => {
           if (Array.isArray(data)) {
             setCFPVData(data);
