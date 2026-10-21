@@ -23,8 +23,8 @@ const pvRecordTypes = ['aai', 'aao', 'ai', 'ao', 'aSub', 'bi', 'bo', 'calcout', 
     'fanout', 'histogram', 'int64in', 'int64out', 'longin', 'longout', 'lsi', 'lso', 'mbbi', 'mbbiDirect', 'mbbo', 'mbboDirect',
     'permissive', 'printf', 'sel', 'seq', 'state', 'stringin', 'stringout', 'subArray', 'sub', 'waveform']
 
-const pvNameTooltip = <div>* for any # character wildcard<br />? for single character wildcard<br />| or ; between patterns to match any of them<br />= at beginning for exactly equal</div>;
-const propertyTooltip = <div>* for any # character wildcard<br />? for single character wildcard<br />| or ; between patterns to match any of them<br />! at beginning for not equal<br />= at beginning for exactly equal</div>;
+const pvNameTooltip = <div>* for any # character wildcard<br />? for single character wildcard<br />| between patterns for OR<br />space between patterns for AND<br />= at beginning for exactly equal</div>;
+const propertyTooltip = <div>* for any # character wildcard<br />? for single character wildcard<br />| between patterns for OR<br />! at beginning for not equal<br />= at beginning for exactly equal</div>;
 
 function ParamSearch(props) {
     const recordDescSearchRender = () => {

@@ -36,16 +36,23 @@ function addPartialMatchWildcards(value, separators, addWildcards = true) {
 }
 
 function handleParams(params) {
-    let urlParams = { "pvName": "*", "params": "" };
+    let urlParams = { "nameQuery": "~name=*", "params": "" };
     if ("pvName" in params && params.pvName !== "") {
+        let namePatterns = [];
         if (params.pvName.charAt(0) === "=") {
-            urlParams.pvName = params.pvName.substring(1);
+            namePatterns = [params.pvName.substring(1)];
         }
         else {
-            urlParams.pvName = addPartialMatchWildcards(params.pvName, PV_NAME_OR_SEPARATORS) || "*";
+            // PV names can't contain spaces, so space separated words are each sent as a ~name parameter which Channel Finder ANDs together
+            namePatterns = params.pvName.split(/\s+/)
+                .map((word) => addPartialMatchWildcards(word, PV_NAME_OR_SEPARATORS))
+                .filter((pattern) => pattern !== "");
+            if (namePatterns.length === 0) {
+                namePatterns = ["*"];
+            }
         }
         // Channel Finder treats commas as OR separators, replace with the single character wildcard to match PV names with commas
-        urlParams.pvName = encodeURIComponent(urlParams.pvName.replace(/,/g, '?'));
+        urlParams.nameQuery = namePatterns.map((pattern) => `~name=${encodeURIComponent(pattern.replace(/,/g, '?'))}`).join("&");
     }
     if (params['standardSearch']) {
         urlParams.params = standardParse(params);
@@ -107,7 +114,7 @@ function freeformParse(params) {
 async function queryChannelFinder(params) {
     let urlParams = handleParams(params);
     let maxResults = cfMaxResults ? `&~size=${cfMaxResults}` : "";
-    let requestURI = `${config.CF_URL}/resources/channels?~name=${urlParams.pvName}${urlParams.params}${maxResults}`;
+    let requestURI = `${config.CF_URL}/resources/channels?${urlParams.nameQuery}${urlParams.params}${maxResults}`;
     let options = { method: 'GET' }
     if (config.SEND_CREDENTIALS) {
         if (config.IS_PROD) {
@@ -162,7 +169,7 @@ async function getQueryHelpers(helperType) {
 
 async function getCount(params = {}) {
     let urlParams = handleParams(params)
-    let requestURI = `${config.CF_URL}/resources/channels/count?~name=${urlParams.pvName}${urlParams.params}`;
+    let requestURI = `${config.CF_URL}/resources/channels/count?${urlParams.nameQuery}${urlParams.params}`;
 
     return await standardQuery(requestURI);
 }

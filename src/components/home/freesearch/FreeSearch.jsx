@@ -31,7 +31,7 @@ function FreeSearch(props) {
             container
             sx={{ display: 'flex', flexWrap: { xs: 'wrap', lg: 'nowrap' } }}
             size={12}>
-            <Tooltip arrow title={<div>Space delimited string<br />PV name (with * and ?)<br />Followed by property=value pairs<br />Followed by tag names<br />| or ; between patterns to match any of them</div>}>
+            <Tooltip arrow title={<div>Space delimited string<br />PV name (with * and ?)<br />Followed by property=value pairs<br />Followed by tag names<br />| between patterns for OR</div>}>
                 <TextField
                     sx={{ display: "flex", flexGrow: 1, minWidth: { xs: '60%', md: '75%' }, textOverflow: 'ellipsis' }}
                     id="freeSearch"

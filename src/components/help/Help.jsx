@@ -35,6 +35,7 @@ function Help() {
               <li>= (equals sign) at the beginning forces an exact match of the input string</li>
               <li>! (exclamation point) at the beginning is a not equal to search (not available for PV name field)</li>
               <li>| (vertical bar) or ; (semicolon) between patterns matches any of the patterns (OR)</li>
+              <li>spaces between words in the PV name field match PV names containing all of the words in any order (AND)</li>
             </ul>
             <Typography variant='body1' sx={{ mb: 2 }}>Also, if there are no asterisks at the beginning or end of the field search, then partial searches are enabled.
               For example "cmm:" is equivlent to "*cmm:*"</Typography>
@@ -46,6 +47,7 @@ function Help() {
               <li>cmm:beam_current will match any PV name containing that term; however (as of this writing) there is only one such PV.</li>
               <li>=cmm:beam_current will match cmm:beam_current exactly.</li>
               <li>LTB_*VVR*|LN_*VVR* will match any PV that begins with LTB_ or LN_ and contains VVR. Each pattern follows the rules above, so VVR|BPM is equivalent to *VVR*|*BPM*</li>
+              <li>beam current will match any PV name containing both "beam" and "current" such as "cmm:beam_current" or "SR:current_beam_avg"</li>
             </ul>
             <Typography variant='body1' sx={{ mb: 2 }}>Commas in the PV name field do not work as an OR, they match any single character (like ?) so that PV names containing commas can be found. Use | or ; instead.
               The OR patterns can not be combined with ! (not equal), Channel Finder will match nearly all PVs for a query like !test|sim.</Typography>

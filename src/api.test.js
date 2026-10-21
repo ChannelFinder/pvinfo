@@ -31,6 +31,15 @@ describe('Channel Finder query parameters', () => {
     expect(await cfQueryString({ pvName: 'LTB_*VVR*;LN_*VVR*' })).toBe('?~name=LTB_*VVR*|LN_*VVR*');
   });
 
+  test('space separated words in a PV name must all match in any order', async () => {
+    expect(await cfQueryString({ pvName: 'beam current' })).toBe('?~name=*beam*&~name=*current*');
+    expect(await cfQueryString({ pvName: '  SR*  current|voltage ' })).toBe('?~name=SR*&~name=*current*|*voltage*');
+  });
+
+  test('a PV name of only spaces matches all PVs', async () => {
+    expect(await cfQueryString({ pvName: '   ' })).toBe('?~name=*');
+  });
+
   test('commas in a PV name are a single character wildcard instead of an OR', async () => {
     expect(await cfQueryString({ pvName: 'SR01C,BPM' })).toBe('?~name=*SR01C?BPM*');
   });
