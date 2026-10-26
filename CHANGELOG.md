@@ -19,6 +19,7 @@ Version 3 updates the libraries and tools PV Info is built on. Node.js >= v22.22
 - Data grid toolbar is left aligned, compact, and uses the primary theme color, tables have a label in the toolbar, and the density selector is removed ([#173](https://github.com/ChannelFinder/pvinfo/pull/173))
 - CSV exports include the table name and a timestamp in the file name ([#173](https://github.com/ChannelFinder/pvinfo/pull/173))
 - Pages other than the home page are loaded on demand to reduce the initial bundle size ([#173](https://github.com/ChannelFinder/pvinfo/pull/173))
+- The Advanced search properties and tags dropdown is wider and taller, sorted, and shows property names from `REACT_APP_DETAILS_PAGE_PROPERTIES` and the extra property labels. Lists that are empty are hidden, and the add button is hidden if there are no properties or tags
 - IOCs page column "IOC Reboot Time" is renamed to "Last Recsync Update" ([#176](https://github.com/ChannelFinder/pvinfo/pull/176))
 - IOCs page shows IOC IP, CA Port, and PVA Port columns by default instead of the IP address from `iocid` ([#176](https://github.com/ChannelFinder/pvinfo/pull/176))
 
