@@ -8,6 +8,7 @@ import api from "../../../api";
 import ValueCheckbox from './valuecheckbox/ValueCheckbox';
 import Value from "./value";
 import Logo from "./logo";
+import ResultsToolbar from "./resultstoolbar";
 import config from "../../../config";
 import csvExportOptions from "../../../csvExportOptions";
 
@@ -405,7 +406,10 @@ function QueryResults(props) {
                 }}
                 slotProps={{
                     baseCheckbox: { size: "small" },
-                    toolbar: { csvOptions: csvExportOptions("PVs") }
+                    toolbar: {
+                        csvOptions: csvExportOptions("PVs"),
+                        mainControls: <ResultsToolbar handleErrorMessage={handleErrorMessage} handleOpenErrorAlert={handleOpenErrorAlert} handleSeverity={handleSeverity} />
+                    }
                 }}
             />
         </ Fragment>

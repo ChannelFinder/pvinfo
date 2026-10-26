@@ -11,6 +11,7 @@ Version 3 updates the libraries and tools PV Info is built on. Node.js >= v22.22
 - Added `REACT_APP_USE_IOC_PAGE` (default `true`) to show or hide the IOCs page ([#176](https://github.com/ChannelFinder/pvinfo/pull/176))
 - Added `REACT_APP_IOC_PAGE_PV_PATTERN` (default `*:ENGINEER`), the PV name pattern used to find the IOCs listed on the IOCs page. It is used as an exact pattern, no partial match wildcards are added ([#176](https://github.com/ChannelFinder/pvinfo/pull/176))
 - Added `REACT_APP_IOC_PAGE_EXTRA_COLUMNS` (default `iocIP:IOC IP,caPort:CA Port,pvaPort:PVA Port`), extra Channel Finder properties shown as columns on the IOCs page. Set it to empty for no extra columns ([#176](https://github.com/ChannelFinder/pvinfo/pull/176))
+- Added `REACT_APP_AA_MAX_PLOT_PVS` (default `20`), the most selected PVs that can be plotted together from the search results
 - Changed the default `REACT_APP_DETAILS_PAGE_PROPERTIES` to use `iocIP:IOC IP Address` instead of `iocid:IOC IP Address` ([#176](https://github.com/ChannelFinder/pvinfo/pull/176))
 
 ### Changed
@@ -32,6 +33,7 @@ Version 3 updates the libraries and tools PV Info is built on. Node.js >= v22.22
 - Options to hide the IOCs page, change its PV name pattern, and add columns ([#176](https://github.com/ChannelFinder/pvinfo/pull/176), fixes [#134](https://github.com/ChannelFinder/pvinfo/issues/134))
 - Copy PV name button on the PV details page
 - Checkboxes to select PVs in the search results, hidden at phone width
+- Search results toolbar buttons to copy PV names to the clipboard (the selected PVs, or all results if none are selected) and to plot the selected PVs together in the archiver viewer, hidden at phone width
 - "Standard" and "Free Form" labels on the search type buttons ([#177](https://github.com/ChannelFinder/pvinfo/pull/177))
 
 ### Fixed
