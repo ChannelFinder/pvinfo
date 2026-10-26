@@ -31,6 +31,7 @@ Version 3 updates the libraries and tools PV Info is built on. Node.js >= v22.22
 - Space separated words in the PV name search match PV names containing all of the words in any order ([#174](https://github.com/ChannelFinder/pvinfo/pull/174))
 - Options to hide the IOCs page, change its PV name pattern, and add columns ([#176](https://github.com/ChannelFinder/pvinfo/pull/176), fixes [#134](https://github.com/ChannelFinder/pvinfo/issues/134))
 - Copy PV name button on the PV details page
+- Checkboxes to select PVs in the search results, hidden at phone width
 - "Standard" and "Free Form" labels on the search type buttons ([#177](https://github.com/ChannelFinder/pvinfo/pull/177))
 
 ### Fixed
