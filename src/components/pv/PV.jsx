@@ -1,8 +1,9 @@
 import React, { Fragment, useState, useEffect } from "react";
 import { useParams } from "react-router";
-import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Checkbox, Grid, Typography, FormControlLabel } from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Checkbox, Grid, IconButton, Tooltip, Typography, FormControlLabel } from "@mui/material";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import TimelineIcon from '@mui/icons-material/Timeline';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import api from "../../api";
 import KeyValuePair from "./KeyValuePair";
 import ValueTable from "./valuetable";
@@ -11,6 +12,7 @@ import AlarmLogTable from "./alarmlogtable/AlarmLogTable";
 import AlarmConfigTable from "./alarmconfigtable/AlarmConfigTable";
 import CaputLogTable from "./caputlogtable/CaputLogTable";
 import config from "../../config";
+import copyToClipboard from "../../clipboard";
 
 function PV(props) {
     let { id } = useParams();
@@ -27,6 +29,19 @@ function PV(props) {
 
     let { handleErrorMessage, handleOpenErrorAlert, handleSeverity } = props;
     const omitVariables = config.DETAILS_PAGE_PROPERTIES_BLOCKLIST ? new Set(config.DETAILS_PAGE_PROPERTIES_BLOCKLIST) : new Set();
+
+    const handleCopyPVName = async () => {
+        try {
+            await copyToClipboard(id);
+            props.handleErrorMessage(`Copied ${id} to the clipboard`);
+            props.handleSeverity("success");
+        } catch (err) {
+            console.log(err);
+            props.handleErrorMessage("Error: Could not copy the PV name to the clipboard");
+            props.handleSeverity("error");
+        }
+        props.handleOpenErrorAlert(true);
+    }
 
     const handleDetailExpandedChange = () => (event, isExpanded) => {
         setDetailsExpanded(isExpanded);
@@ -163,7 +178,14 @@ function PV(props) {
         return (
             <Fragment>
                 <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, justifyContent: "space-between" }}>
-                    <Typography variant="h3" sx={{ fontSize: { xs: 32, sm: 48 } }}>{id}</Typography>
+                    <Box sx={{ display: "flex", alignItems: "center", minWidth: 0 }}>
+                        <Typography variant="h3" sx={{ fontSize: { xs: 32, sm: 48 }, overflowWrap: "anywhere" }}>{id}</Typography>
+                        <Tooltip arrow title="Copy PV name">
+                            <IconButton aria-label="Copy PV name" color="primary" onClick={handleCopyPVName} sx={{ ml: 1 }}>
+                                <ContentCopyIcon />
+                            </IconButton>
+                        </Tooltip>
+                    </Box>
                     {
                         config.USE_AA ? <Button style={{ marginTop: 10, marginBottom: 10 }} target="_blank" href={pvHTMLString} variant="contained" color="secondary" endIcon={<TimelineIcon />} >Plot This PV</Button> : <div></div>
                     }
