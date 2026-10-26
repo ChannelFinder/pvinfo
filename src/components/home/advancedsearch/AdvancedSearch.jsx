@@ -2,25 +2,8 @@ import { Grid, Box, Button, IconButton, InputAdornment, List, ListItemButton, Li
 import AddIcon from '@mui/icons-material/Add';
 import SearchActions from '../searchactions/SearchActions';
 import { Fragment, useMemo, useRef, useState } from 'react';
-import config from '../../../config';
-
-// friendly names for Channel Finder properties, from the PV details page and extra property labels
-function getPropertyLabels() {
-    let labels = {};
-    (config.DETAILS_PAGE_PROPERTIES || "").split(",").forEach((pair) => {
-        const [name, label] = pair.split(":");
-        if (name && label) {
-            labels[name.trim()] = label.trim();
-        }
-    });
-    if (config.EXTRA_PROP && config.EXTRA_PROP_LABEL) {
-        labels[config.EXTRA_PROP] = config.EXTRA_PROP_LABEL;
-    }
-    if (config.SECOND_EXTRA_PROP && config.SECOND_EXTRA_PROP_LABEL) {
-        labels[config.SECOND_EXTRA_PROP] = config.SECOND_EXTRA_PROP_LABEL;
-    }
-    return labels;
-}
+import QueryPreview from './QueryPreview';
+import { getPropertyLabels } from './advancedQuery';
 
 // upper case before lower case, so friendly labels are listed before raw lower case Channel Finder names
 const byLabel = (a, b) => (a.label < b.label ? -1 : a.label > b.label ? 1 : 0);
@@ -161,6 +144,7 @@ function AdvancedSearch(props) {
                 </Popover>
                 <SearchActions handleClear={props.handleClear} minWidth={{ xs: '40%', md: '25%' }} />
             </Grid>
+            <QueryPreview query={props.advancedQuery} />
             {props.showHelp &&
                 <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
                     Search by PV name pattern, optionally followed by <strong>property=value</strong> pairs and <strong>tag</strong> names. {hasAttributes && <Fragment>Use <strong>+</strong> to browse the available {browseDescription}.</Fragment>}
