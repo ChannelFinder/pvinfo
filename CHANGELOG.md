@@ -21,6 +21,7 @@ Version 3 updates the libraries and tools PV Info is built on. Node.js >= v22.22
 - Pages other than the home page are loaded on demand to reduce the initial bundle size ([#173](https://github.com/ChannelFinder/pvinfo/pull/173))
 - IOCs page column "IOC Reboot Time" is renamed to "Last Recsync Update" ([#176](https://github.com/ChannelFinder/pvinfo/pull/176))
 - IOCs page shows IOC IP, CA Port, and PVA Port columns by default instead of the IP address from `iocid` ([#176](https://github.com/ChannelFinder/pvinfo/pull/176))
+- Search results live monitoring uses toggle switches instead of checkboxes. Switches for PVs that can't be monitored are faded and their tooltip says why
 
 ### Added
 

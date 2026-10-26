@@ -1,5 +1,5 @@
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
-import { Typography, Checkbox, Link, IconButton, Tooltip } from '@mui/material';
+import { Typography, Switch, Link, IconButton, Tooltip } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import { useNavigate, Link as RouterLink } from "react-router";
 import TimelineIcon from '@mui/icons-material/Timeline';
@@ -169,7 +169,8 @@ function QueryResults(props) {
                 <Typography display="inline" variant="subtitle2">Actions</Typography>
                 {
                     config.USE_PVWS ? <Tooltip arrow title="Monitor All PVs">
-                        <Checkbox checked={monitorAllChecked} onChange={handleMonitorSelectAll()} sx={{ ml: ".5rem" }}></Checkbox>
+                        <Switch size="small" checked={monitorAllChecked} onChange={handleMonitorSelectAll()} sx={{ ml: ".5rem" }}
+                            slotProps={{ input: { "aria-label": "Monitor all PVs" } }}></Switch>
                     </Tooltip>
                         : <div></div>
                 }
