@@ -28,6 +28,7 @@ Version 3 updates the libraries and tools PV Info is built on. Node.js >= v22.22
 - Resizable data grid columns that keep their width when the table updates ([#172](https://github.com/ChannelFinder/pvinfo/pull/172))
 - Vitest tests, run in CI ([#173](https://github.com/ChannelFinder/pvinfo/pull/173))
 - Advanced search shows a preview of how the query will be searched, as chips below the search box
+- Advanced search does not search a property without a value after the `=`, it shows how to fix the query instead
 - OR searches with `|` (or `;`) are documented in the help page and search tooltips ([#174](https://github.com/ChannelFinder/pvinfo/pull/174), fixes [#148](https://github.com/ChannelFinder/pvinfo/issues/148))
 - Space separated words in the PV name search match PV names containing all of the words in any order ([#174](https://github.com/ChannelFinder/pvinfo/pull/174))
 - Options to hide the IOCs page, change its PV name pattern, and add columns ([#176](https://github.com/ChannelFinder/pvinfo/pull/176), fixes [#134](https://github.com/ChannelFinder/pvinfo/issues/134))

@@ -12,11 +12,11 @@ vi.mock('../../../config', async (importOriginal) => {
   return { default: new Proxy({ ...actual }, { get: (target, key) => (key in configOverrides ? configOverrides[key] : target[key]) }) };
 });
 
-function renderSearch({ searchProperties = [], searchTags = [], advancedQuery = '' } = {}) {
+function renderSearch({ searchProperties = [], searchTags = [], advancedQuery = '', queryError = '' } = {}) {
   const setAdvancedQuery = vi.fn();
   render(
     <AdvancedSearch advancedQuery={advancedQuery} setAdvancedQuery={setAdvancedQuery} handleAdvancedChange={() => {}}
-      handleClear={() => {}} searchProperties={searchProperties} searchTags={searchTags} showHelp={true} />
+      handleClear={() => {}} searchProperties={searchProperties} searchTags={searchTags} showHelp={true} queryError={queryError} />
   );
   return { setAdvancedQuery };
 }
@@ -51,4 +51,10 @@ test('the add button is hidden when there are no properties or tags', () => {
   renderSearch();
   expect(screen.queryByRole('button', { name: /Props\/Tags|Properties|Tags/ })).not.toBeInTheDocument();
   expect(screen.queryByText(/to browse the available/)).not.toBeInTheDocument();
+});
+
+test('a query error is shown on the search box', () => {
+  renderSearch({ advancedQuery: 'SR* iocName=', queryError: 'Enter a value after iocName=, or use iocName=* to match any value' });
+  expect(screen.getByText('Enter a value after iocName=, or use iocName=* to match any value')).toBeInTheDocument();
+  expect(screen.getByRole('searchbox')).toHaveAttribute('aria-invalid', 'true');
 });

@@ -15,9 +15,10 @@ test('shows a chip for each part of the query with friendly property names', () 
   expect(chips(container)).toEqual(['PV name: SR*beam', 'IOC Name = test*', 'Sector = 5', 'archived']);
 });
 
-test('shows any PV name for * and marks a property without a value', () => {
+test('shows any PV name for * and marks a property without a value as a warning', () => {
   const { container } = render(<QueryPreview query="* iocName=" />);
   expect(chips(container)).toEqual(['PV name: any', 'IOC Name = …']);
+  expect(container.querySelectorAll('.MuiChip-colorWarning')).toHaveLength(1);
 });
 
 test('shows nothing for an empty query', () => {

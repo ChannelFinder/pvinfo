@@ -85,6 +85,8 @@ function AdvancedSearch(props) {
                         placeholder="Search Query"
                         type="search"
                         variant="outlined"
+                        error={Boolean(props.queryError)}
+                        helperText={props.queryError || undefined}
                         onChange={props.handleAdvancedChange}
                         slotProps={{
                             input: {

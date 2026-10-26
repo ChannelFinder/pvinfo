@@ -1,4 +1,4 @@
-import { parseAdvancedQuery } from './advancedQuery';
+import { parseAdvancedQuery, getAdvancedQueryError } from './advancedQuery';
 
 describe('Advanced search query parsing', () => {
   test('PV name, then properties and tags', () => {
@@ -19,5 +19,16 @@ describe('Advanced search query parsing', () => {
 
   test('an empty query has no params', () => {
     expect(parseAdvancedQuery('   ')).toEqual({});
+  });
+});
+
+describe('Advanced search query errors', () => {
+  test('a property without a value is an error', () => {
+    expect(getAdvancedQueryError(parseAdvancedQuery('SR* iocName='))).toBe('Enter a value after iocName=, or use iocName=* to match any value');
+  });
+
+  test('PV names, property values, and tags are fine', () => {
+    expect(getAdvancedQueryError(parseAdvancedQuery('SR* iocName=test* archived'))).toBe('');
+    expect(getAdvancedQueryError(parseAdvancedQuery(''))).toBe('');
   });
 });

@@ -15,7 +15,10 @@ function QueryPreview({ query }) {
             if (key.includes("tag")) {
                 return { key, label: value, tag: true };
             }
-            return { key, label: `${labels[key] || key} = ${value === "" ? "…" : value}` };
+            // a property without a value can't be searched, see getAdvancedQueryError
+            return value === ""
+                ? { key, label: `${labels[key] || key} = …`, color: "warning" }
+                : { key, label: `${labels[key] || key} = ${value}` };
         });
     }, [query]);
 
