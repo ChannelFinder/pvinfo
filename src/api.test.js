@@ -69,7 +69,7 @@ describe('Channel Finder query parameters', () => {
     expect(fetchMock.mock.calls[0][0]).toContain('&hostName=*a*%7C*b%23c%26d*');
   });
 
-  test('free form property values and tags are passed through without wildcards', async () => {
+  test('advanced search property values and tags are passed through without wildcards', async () => {
     expect(await cfQueryString({ standardSearch: false, pvName: 'TEST*', Sector: '5|6', tag1: 'archived' }))
       .toBe('?~name=TEST*&Sector=5|6&~tag=archived');
   });
