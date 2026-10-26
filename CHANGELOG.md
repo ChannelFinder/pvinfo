@@ -44,6 +44,7 @@ Version 3 updates the libraries and tools PV Info is built on. Node.js >= v22.22
 - Search property values are URL encoded ([#174](https://github.com/ChannelFinder/pvinfo/pull/174))
 - IOCs page stayed on "Data Loading..." if the Channel Finder query failed ([#176](https://github.com/ChannelFinder/pvinfo/pull/176))
 - The mobile menu showed the Plotting link when the archiver was disabled ([#177](https://github.com/ChannelFinder/pvinfo/pull/177))
+- The caput log section on the PV details page opened to an empty table when the PV had no caput log data, it now shows "No Caput Log Data" like the online log and alarm log sections
 
 ### Removed
 
