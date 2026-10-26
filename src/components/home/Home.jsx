@@ -7,6 +7,7 @@ import ManageSearchRoundedIcon from '@mui/icons-material/ManageSearchRounded';
 import PageviewRoundedIcon from '@mui/icons-material/PageviewRounded';
 import ParamSearch from './paramsearch';
 import AdvancedSearch from './advancedsearch';
+import { parseAdvancedQuery } from './advancedsearch/advancedQuery';
 // is this needed?
 import './Home.css';
 import config from "../../config";
@@ -188,25 +189,6 @@ function Home(props) {
         return params;
     }
 
-    const parseAdvancedSearch = (e) => {
-        const keyValuePairs = e.target.advancedSearch.value.split(' ');
-        let params = {};
-        let numTags = 1;
-
-        for (let pair of keyValuePairs) {
-            const [key, value] = pair.split('=');
-            if (key === keyValuePairs[0]) {
-                params['pvName'] = key;
-            } else if (value !== undefined) {
-                params[key] = value;
-            } else {
-                params[`tag${numTags}`] = key;
-                ++numTags;
-            }
-        }
-        return params;
-    }
-
     const handleSubmit = (e) => {
         e.preventDefault();
         setIsLoading(true);
@@ -214,7 +196,7 @@ function Home(props) {
         if (standardSearch) {
             params = parseParamSearch(e);
         } else {
-            params = parseAdvancedSearch(e);
+            params = parseAdvancedQuery(advancedQuery);
         }
         params['standardSearch'] = standardSearch;
         fetchData(api.CF_QUERY, params, setCFData, "PV", true, true);

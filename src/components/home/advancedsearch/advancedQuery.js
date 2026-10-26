@@ -1,0 +1,21 @@
+// Parse an Advanced search query into Channel Finder search params:
+// an optional PV name pattern first, then property=value pairs and tag names, separated by spaces
+function parseAdvancedQuery(query) {
+    let params = {};
+    let numTags = 1;
+    const terms = query.split(/\s+/).filter((term) => term !== "");
+    terms.forEach((term, index) => {
+        const equalsIndex = term.indexOf("=");
+        if (equalsIndex !== -1) {
+            params[term.substring(0, equalsIndex)] = term.substring(equalsIndex + 1);
+        } else if (index === 0) {
+            params["pvName"] = term;
+        } else {
+            params[`tag${numTags}`] = term;
+            ++numTags;
+        }
+    });
+    return params;
+}
+
+export { parseAdvancedQuery };

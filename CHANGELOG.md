@@ -38,6 +38,7 @@ Version 3 updates the libraries and tools PV Info is built on. Node.js >= v22.22
 - Clicking next to a header link navigated to the home page ([#173](https://github.com/ChannelFinder/pvinfo/pull/173))
 - OR searches without wildcards only added partial match wildcards to the first and last pattern ([#174](https://github.com/ChannelFinder/pvinfo/pull/174))
 - Search property values are URL encoded ([#174](https://github.com/ChannelFinder/pvinfo/pull/174))
+- Advanced search queries with extra spaces searched for empty tags or treated the PV name as a tag, and property values containing `=` were cut off
 - IOCs page stayed on "Data Loading..." if the Channel Finder query failed ([#176](https://github.com/ChannelFinder/pvinfo/pull/176))
 - The mobile menu showed the Plotting link when the archiver was disabled ([#177](https://github.com/ChannelFinder/pvinfo/pull/177))
 
