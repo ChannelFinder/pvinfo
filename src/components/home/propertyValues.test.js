@@ -1,4 +1,4 @@
-import { getPropertyValues, pvRecordTypes } from './propertyValues';
+import { getPropertyValues, getExactMatchProperties, pvRecordTypes } from './propertyValues';
 
 const configOverrides = vi.hoisted(() => ({}));
 vi.mock('../../config', async (importOriginal) => {
@@ -49,4 +49,9 @@ test('property values replace other values for the same property', () => {
     PROPERTY_VALUES: 'archive:VeryFast',
   });
   expect(getPropertyValues()).toEqual({ archive: ['VeryFast'] });
+});
+
+test('properties with known values are an exact match', () => {
+  configOverrides.PROPERTY_VALUES = 'Acc:SR';
+  expect(getExactMatchProperties()).toEqual(new Set(['pvStatus', 'recordType', 'Acc']));
 });

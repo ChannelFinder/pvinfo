@@ -99,7 +99,7 @@ function AdvancedSearch(props) {
                     open={syntaxTooltipOpen && !addHovered}
                     onOpen={() => setSyntaxTooltipOpen(true)}
                     onClose={() => setSyntaxTooltipOpen(false)}
-                    title={<div>Space delimited string<br />PV name (with * and ?)<br />Followed by property=value pairs<br />Followed by tag names<br />| between patterns for OR{hasAttributes && <Fragment><br />Click + to add {addDescription}</Fragment>}</div>}>
+                    title={<div>Space delimited string<br />PV name (with * and ?)<br />Followed by property=value pairs<br />Followed by tag names<br />| between patterns for OR<br />property==value for exactly equal<br />property!=value for not equal{hasAttributes && <Fragment><br />Click + to add {addDescription}</Fragment>}</div>}>
                     <TextField
                         sx={{ display: "flex", flexGrow: 1, minWidth: { xs: '60%', md: '75%' }, textOverflow: 'ellipsis' }}
                         id="advancedSearch"

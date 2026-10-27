@@ -59,11 +59,20 @@ function Help() {
               There is also an "Advanced" search option, select it with the Advanced button next to the Standard button above the search fields on the home page. This option allows you to create your own PV and property search. This operates similarly to the CS Studio Phoebus Channel Table application. It can be very useful if you have other ChannelFinder properties available that are not in the "standard" search boxes.
             </Typography>
             <Typography variant='body1' sx={{ mb: 2 }}>
-              An example advanced search would be: <strong>TEST*PV* Sector=5 Acc=SR iocName=test*</strong><br />
-              Which will result in a Channel Finder query like so: <strong>~name=TEST*PV*&Sector=5&Acc=SR&iocName=test*</strong>
+              An example advanced search would be: <strong>TEST*PV* recordDesc=temp iocName=test*</strong><br />
+              Which will result in a Channel Finder query like so: <strong>~name=*TEST*PV*&recordDesc=*temp*&iocName=test*</strong>
             </Typography>
+            <Typography variant='body1' sx={{ mb: 2 }}>Property values follow the same rules as the standard search fields:</Typography>
+            <ul>
+              <li><strong>recordDesc=temp</strong> matches descriptions containing temp, the same as recordDesc=*temp*</li>
+              <li><strong>recordDesc=temp*</strong> matches descriptions beginning with temp, values with a leading or trailing * are searched as typed</li>
+              <li><strong>recordDesc==temp</strong> matches descriptions that are exactly temp</li>
+              <li><strong>recordDesc!=temp</strong> or <strong>recordDesc=!temp</strong> matches descriptions not containing temp</li>
+              <li>PV status, record type, and properties with a › in the properties list have known values, so they are always an exact match. For example, if Sector has known values, Sector=1 does not match Sector 10</li>
+            </ul>
             <Typography variant='body1' sx={{ mb: 2 }}>
-              Patterns can be combined with | or ; to match any of them, for example: <strong>TEST*PV* Sector=5|6</strong> will match PVs in Sector 5 or 6.
+              Patterns can be combined with | or ; to match any of them, for example: <strong>TEST*PV* iocName=ioc1|ioc2</strong> will match PVs from either IOC.
+              The "Searching for:" row below the search box shows exactly what will be searched.
             </Typography>
             <Typography variant='h6' style={{marginTop: 10, marginBottom: 10}}><strong>Viewing Search Results</strong></Typography>
             <Typography variant='body1' sx={{ mb: 2 }}>The search results display a table with the matching PVs with the following fields:</Typography>

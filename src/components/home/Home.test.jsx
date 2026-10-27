@@ -5,8 +5,9 @@ import theme from '../../theme';
 import api from '../../api';
 import Home from './Home';
 
-vi.mock('../../api', () => ({
+vi.mock('../../api', async (importOriginal) => ({
   default: {
+    ...(await importOriginal()).default,
     CF_QUERY: vi.fn(() => Promise.resolve([])),
     COUNT_QUERY: vi.fn(() => Promise.resolve(0)),
     HELPERS_QUERY: vi.fn(() => Promise.resolve([])),

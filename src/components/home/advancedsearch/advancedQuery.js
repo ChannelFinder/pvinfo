@@ -2,7 +2,9 @@ import config from '../../../config';
 
 // Parse an Advanced search query into Channel Finder search params:
 // an optional PV name pattern first, then property=value pairs and tag names, separated by spaces.
-// Tags are a list in params.tag, which becomes tag=a&tag=b in the URL
+// Tags are a list in params.tag, which becomes tag=a&tag=b in the URL.
+// property==value is an exact match and property!=value is not equal, which become the =value and !value
+// used by the Standard search fields
 function parseAdvancedQuery(query) {
     let params = {};
     let tags = [];
@@ -12,9 +14,14 @@ function parseAdvancedQuery(query) {
         if (equalsIndex !== -1) {
             const key = term.substring(0, equalsIndex);
             const value = term.substring(equalsIndex + 1);
-            // tag=name is the same as the tag name on its own, so params.tag is always a list
+            // tag=name is the same as the tag name on its own, so params.tag is always a list.
+            // Tags are always an exact match so tag==name is the same too, and not equal tags can't be searched
             if (key === "tag") {
-                tags.push(value);
+                tags.push(value.charAt(0) === "=" ? value.substring(1) : value);
+            } else if (key === "tag!") {
+                params["tag!"] = value;
+            } else if (key.endsWith("!")) {
+                params[key.slice(0, -1)] = "!" + value;
             } else {
                 params[key] = value;
             }
@@ -54,12 +61,16 @@ function readSearchParams(searchParams) {
 // Error message for params from parseAdvancedQuery that can't be searched, or "" if they are fine.
 // The most likely mistake is picking a property from the dropdown and not typing a value after the =
 function getAdvancedQueryError(params) {
-    const emptyProperty = Object.keys(params).find((key) => key !== "pvName" && key !== "tag" && params[key] === "");
+    // = and ! are the exact and not equal operators, see parseAdvancedQuery
+    const emptyProperty = Object.keys(params).find((key) => !["pvName", "tag", "tag!"].includes(key) && ["", "=", "!"].includes(params[key]));
     if (emptyProperty !== undefined) {
         return `Enter a value after ${emptyProperty}=, or use ${emptyProperty}=* to match any value`;
     }
     if (params["tag"]?.includes("")) {
         return "Enter a tag name after tag=";
+    }
+    if ("tag!" in params) {
+        return "Tags can't be searched for not equal, remove tag!= from the query";
     }
     return "";
 }
