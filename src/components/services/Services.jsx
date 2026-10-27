@@ -2,7 +2,8 @@ import React, { Fragment, useCallback, useEffect, useState } from "react";
 import useWebSocket from "../../useWebSocket";
 import Service from "./service";
 import api from "../../api";
-import { Box, Grid, Typography } from "@mui/material";
+import { Box, Button, Grid, Typography } from "@mui/material";
+import { Link as RouterLink } from "react-router";
 import { Accordion, AccordionSummary, AccordionDetails } from "@mui/material";
 import { Table, TableBody, TableCell, TableRow } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -113,7 +114,12 @@ function Services() {
                 <Box sx={{ mb: 2, display: "flex", flexDirection: { xs: "column", sm: "row" }, alignItems: { xs: "start", sm: "start" }, justifyContent: "space-between" }}>
                     <Typography variant="h4" sx={{ fontWeight: "medium", mb: { xs: 1, sm: 0 } }}>Services</Typography>
                     <Box>
-                        <Typography variant="body1"><Box component="span" sx={{ fontWeight: "medium" }}>PV Info Version:</Box> {config.VERSION}</Typography>
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                            <Typography variant="body1"><Box component="span" sx={{ fontWeight: "medium" }}>PV Info Version:</Box> {config.VERSION}</Typography>
+                            {config.SHOW_WHATS_NEW &&
+                                <Button component={RouterLink} to="/whatsnew" variant="outlined" size="small" sx={{ py: 0, minWidth: 0, whiteSpace: "nowrap" }}>What's New</Button>
+                            }
+                        </Box>
                         <Typography variant="body1"><Box component="span" sx={{ fontWeight: "medium" }}>Commit Hash:</Box> {config.GIT_SHORT_HASH}</Typography>
                         <Typography variant="body1"><Box component="span" sx={{ fontWeight: "medium" }}>Commit Date:</Box> {config.GIT_COMMIT_DATE}</Typography>
                     </Box>

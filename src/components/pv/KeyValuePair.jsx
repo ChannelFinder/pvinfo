@@ -26,7 +26,7 @@ function KeyValuePair(props) {
                     {Array.isArray(props.value) && props.title === "Tags" ? (
                         props.value.map((item, i) => (
                             <Fragment key={i}>
-                                <Link component={RouterLink} to={`/?pvName=*&tag1=${item}&standardSearch=false`} underline="hover">{item}</Link>
+                                <Link component={RouterLink} to={`/?pvName=*&tag=${encodeURIComponent(item)}&standardSearch=false`} underline="hover">{item}</Link>
                                 {i < props.value.length - 1 && ", "}
                             </Fragment>
                         ))

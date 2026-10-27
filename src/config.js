@@ -117,6 +117,9 @@ const config = {
     SECOND_EXTRA_PROP_SHOW_IN_RESULTS: parseBoolean(import.meta.env.REACT_APP_SECOND_EXTRA_PROP_SHOW_IN_RESULTS, false),
     SECOND_EXTRA_PROP_DROPDOWN_LABELS: parseList(import.meta.env.REACT_APP_SECOND_EXTRA_PROP_DROPDOWN_LABELS),
 
+    // known property values for the Advanced search properties list, parsed in getPropertyValues
+    PROPERTY_VALUES: import.meta.env.REACT_APP_PROPERTY_VALUES || "",
+
     // PV Web Socket
     USE_PVWS: parseBoolean(import.meta.env.REACT_APP_USE_PVWS, false),
     LIVE_MONITOR_WARN: parseIntOrDefault(import.meta.env.REACT_APP_LIVE_MONITOR_WARN, 50),
@@ -165,6 +168,7 @@ const config = {
     // Misc
     HELP_EXAMPLE_PV: import.meta.env.REACT_APP_HELP_EXAMPLE_PV,
     HELP_PV_NAMING_CONVENTION: import.meta.env.REACT_APP_HELP_PV_NAMING_CONVENTION,
+    SHOW_WHATS_NEW: parseBoolean(import.meta.env.REACT_APP_SHOW_WHATS_NEW, true),
     HOMEPAGE_HEADER: import.meta.env.REACT_APP_HOMEPAGE_HEADER,
     HOMEPAGE_SUBHEADER: import.meta.env.REACT_APP_HOMEPAGE_SUBHEADER,
     SEND_CREDENTIALS: parseBoolean(import.meta.env.REACT_APP_SEND_CREDENTIALS, false)

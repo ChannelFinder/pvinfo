@@ -1,5 +1,6 @@
 import { toByteArray } from "base64-js";
 import config from "./config";
+import { getExactMatchProperties } from "./components/home/propertyValues";
 
 const cfMaxResults = config.CF_MAX_RESULTS;
 const ologStartDays = config.OLOG_START_TIME_DAYS !== null
@@ -35,78 +36,74 @@ function addPartialMatchWildcards(value, separators, addWildcards = true) {
         .join("|");
 }
 
+// Channel Finder ~name patterns for a PV name search, = at the beginning is an exact match
+function pvNameQuery(pvName) {
+    if (pvName.charAt(0) === "=") {
+        return [pvName.substring(1)];
+    }
+    // PV names can't contain spaces, so space separated words are each sent as a ~name parameter which Channel Finder ANDs together
+    const namePatterns = pvName.split(/\s+/)
+        .map((word) => addPartialMatchWildcards(word, PV_NAME_OR_SEPARATORS))
+        .filter((pattern) => pattern !== "");
+    return namePatterns.length === 0 ? ["*"] : namePatterns;
+}
+
 function handleParams(params) {
     let urlParams = { "nameQuery": "~name=*", "params": "" };
     if ("pvName" in params && params.pvName !== "") {
-        let namePatterns = [];
-        if (params.pvName.charAt(0) === "=") {
-            namePatterns = [params.pvName.substring(1)];
-        }
-        else {
-            // PV names can't contain spaces, so space separated words are each sent as a ~name parameter which Channel Finder ANDs together
-            namePatterns = params.pvName.split(/\s+/)
-                .map((word) => addPartialMatchWildcards(word, PV_NAME_OR_SEPARATORS))
-                .filter((pattern) => pattern !== "");
-            if (namePatterns.length === 0) {
-                namePatterns = ["*"];
-            }
-        }
         // Channel Finder treats commas as OR separators, replace with the single character wildcard to match PV names with commas
-        urlParams.nameQuery = namePatterns.map((pattern) => `~name=${encodeURIComponent(pattern.replace(/,/g, '?'))}`).join("&");
+        urlParams.nameQuery = pvNameQuery(params.pvName).map((pattern) => `~name=${encodeURIComponent(pattern.replace(/,/g, '?'))}`).join("&");
     }
     if (params['standardSearch']) {
         urlParams.params = standardParse(params);
     } else {
-        urlParams.params = freeformParse(params);
+        urlParams.params = advancedParse(params);
     }
+    // tags are a list, each sent as a ~tag parameter which Channel Finder ANDs together
+    (params.tag || []).forEach((tag) => {
+        urlParams.params = urlParams.params.concat(`&~tag=${encodeURIComponent(tag)}`);
+    });
 
     return urlParams;
 }
 
-function standardParse(params) {
-    let noWildcard = new Set(["pvStatus", "recordType"]);
-    if (config.EXTRA_PROP && config.EXTRA_PROP_DROPDOWN_LABELS) {
-        noWildcard.add(config.EXTRA_PROP);
+// Channel Finder operator and pattern for a property search value, used by both search types:
+// = at the beginning is an exact match, ! at the beginning is not equal, and partial match wildcards
+// are added unless the property has known values, see getExactMatchProperties
+function propertyQuery(key, value, exactMatchProperties = getExactMatchProperties()) {
+    if (value.charAt(0) === "=") {
+        return { operator: "=", pattern: value.substring(1) };
     }
-    if (config.SECOND_EXTRA_PROP && config.SECOND_EXTRA_PROP_DROPDOWN_LABELS) {
-        noWildcard.add(config.SECOND_EXTRA_PROP);
+    if (value.charAt(0) === "!") {
+        return { operator: "!=", pattern: addPartialMatchWildcards(value.substring(1), CF_OR_SEPARATORS, !exactMatchProperties.has(key)) };
     }
+    return { operator: "=", pattern: addPartialMatchWildcards(value, CF_OR_SEPARATORS, !exactMatchProperties.has(key)) };
+}
 
+function standardParse(params) {
+    const exactMatchProperties = getExactMatchProperties();
     let addOn = "";
     for (let key in params) {
-        if (key === 'pvName' || key === "standardSearch") continue;
+        if (key === 'pvName' || key === "standardSearch" || key === "tag") continue;
         const value = params[key];
         if (value === "") {
             addOn = addOn.concat(`&${key}`);
             continue;
         }
-        let operator = "=";
-        let pattern = "";
-        if (value.charAt(0) === "=") {
-            pattern = value.substring(1);
-        }
-        else if (value.charAt(0) === "!") {
-            operator = "!=";
-            pattern = addPartialMatchWildcards(value.substring(1), CF_OR_SEPARATORS);
-        }
-        else {
-            pattern = addPartialMatchWildcards(value, CF_OR_SEPARATORS, !noWildcard.has(key));
-        }
+        const { operator, pattern } = propertyQuery(key, value, exactMatchProperties);
         if (pattern === "") continue;
         addOn = addOn.concat(`&${key}${operator}${encodeURIComponent(pattern)}`);
     }
     return addOn;
 }
 
-function freeformParse(params) {
+function advancedParse(params) {
+    const exactMatchProperties = getExactMatchProperties();
     let addOn = "";
     for (let key in params) {
-        if (key === 'pvName' || key === 'standardSearch') continue;
-        if (key.includes('tag')) {
-            addOn = addOn.concat(`&~tag=${encodeURIComponent(params[key])}`)
-        } else {
-            addOn = addOn.concat(`&${key}=${encodeURIComponent(params[key])}`);
-        }
+        if (key === 'pvName' || key === 'standardSearch' || key === 'tag') continue;
+        const { operator, pattern } = propertyQuery(key, params[key], exactMatchProperties);
+        addOn = addOn.concat(`&${key}${operator}${encodeURIComponent(pattern)}`);
     }
     return addOn;
 }
@@ -364,6 +361,8 @@ const api = {
     LOG_ENUM: logEnum,
     HELPERS_ENUM: queryHelperEnum,
     PARSE_WEBSOCKET_MSG: parseWebSocketMessage,
+    PV_NAME_QUERY: pvNameQuery,
+    PROPERTY_QUERY: propertyQuery,
 }
 
 export default api;
