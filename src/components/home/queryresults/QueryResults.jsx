@@ -5,7 +5,7 @@ import { useNavigate, Link as RouterLink } from "react-router";
 import TimelineIcon from '@mui/icons-material/Timeline';
 import ReadMoreIcon from '@mui/icons-material/ReadMore';
 import api from "../../../api";
-import ValueCheckbox from './valuecheckbox/ValueCheckbox';
+import ValueCheckbox, { monitorDisabledReason } from './valuecheckbox/ValueCheckbox';
 import Value from "./value";
 import Logo from "./logo";
 import ResultsToolbar from "./resultstoolbar";
@@ -87,9 +87,9 @@ function QueryResults(props) {
             [firstRow, lastRow] = [parseInt(start) - 1, parseInt(end) - 1];
         }
         for (let i = firstRow; i <= lastRow; ++i) {
-            // only check mark active PVs, unless we are ignoring CF PV status
-            // matters now that we show "Disconnected" for PVs that are not connected to their IOC
-            if (config.PVWS_IGNORE_CF_PVSTATUS || pvs[i].pvStatus === "Active") {
+            // skip the PVs whose switch is disabled, like inactive PVs and waveforms when they can't be monitored,
+            // so they don't count toward the monitoring warning and limit
+            if (monitorDisabledReason(pvs[i].pvStatus, pvs[i].recordType) === "") {
                 updateCurrentChecked(i, event.target.checked);
             }
         }

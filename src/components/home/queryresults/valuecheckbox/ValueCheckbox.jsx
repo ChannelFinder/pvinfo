@@ -4,6 +4,18 @@ import { Switch, Tooltip } from '@mui/material';
 import api from '../../../../api';
 import config from '../../../../config';
 
+// why live monitoring is not available for a PV, empty if it is available.
+// Also used by monitor all in QueryResults so it skips the same PVs as the switches
+function monitorDisabledReason(pvStatus, recordType) {
+    if (pvStatus !== "Active" && !config.PVWS_IGNORE_CF_PVSTATUS) {
+        return `PV status is ${pvStatus || "unknown"}`;
+    }
+    if (recordType === "waveform" && !config.PVWS_ALLOW_WAVEFORMS) {
+        return "Waveform monitoring is turned off";
+    }
+    return "";
+}
+
 function ValueCheckbox(props) {
     // open web socket for sending subscribe/clear messages
     // filter all messages as false since we don't need to read anything in parent component
@@ -21,15 +33,7 @@ function ValueCheckbox(props) {
     }
 
     useEffect(() => {
-        if (props.pvStatus !== "Active" && !config.PVWS_IGNORE_CF_PVSTATUS) {
-            setDisabledReason(`PV status is ${props.pvStatus || "unknown"}`);
-        }
-        else if (props.recordType === "waveform" && !config.PVWS_ALLOW_WAVEFORMS) {
-            setDisabledReason("Waveform monitoring is turned off");
-        }
-        else {
-            setDisabledReason("");
-        }
+        setDisabledReason(monitorDisabledReason(props.pvStatus, props.recordType));
     }, [props.pvStatus, props.recordType, props.pvName])
 
     // watch for changes in checked, if so send a subscribe message
@@ -62,4 +66,5 @@ function ValueCheckbox(props) {
     );
 }
 
+export { monitorDisabledReason };
 export default ValueCheckbox;
