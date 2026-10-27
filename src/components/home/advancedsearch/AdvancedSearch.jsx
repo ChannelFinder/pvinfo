@@ -8,10 +8,10 @@ import { getPropertyLabels } from './advancedQuery';
 // upper case before lower case, so friendly labels are listed before raw lower case Channel Finder names
 const byLabel = (a, b) => (a.label < b.label ? -1 : a.label > b.label ? 1 : 0);
 
-// one column of the properties and tags popover
+// one column of the properties and tags popover, narrower on phones so both columns fit side by side
 function AttributeList({ title, items, onSelect }) {
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', minWidth: 200, maxWidth: 320 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', minWidth: { xs: 140, sm: 200 }, maxWidth: { xs: 160, sm: 320 } }}>
             <Box sx={{ p: 1, borderBottom: 1, borderColor: 'grey.300' }}>
                 <Typography sx={{ fontWeight: 'medium' }}>{title}</Typography>
             </Box>
