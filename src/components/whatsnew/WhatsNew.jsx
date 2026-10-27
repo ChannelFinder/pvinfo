@@ -31,7 +31,7 @@ function getSections() {
                 { text: <Fragment><strong>Select PVs</strong> with the checkboxes on the left of the table.</Fragment> },
                 { text: <Fragment><strong>Copy PV names</strong> with the copy button in the table toolbar. It copies the PVs you selected, or every PV in the results if none are selected, one name per line.</Fragment> },
                 { text: <Fragment><strong>Plot several PVs together</strong> in the archiver viewer. Select up to {config.AA_MAX_PLOT_PVS} PVs and use the plot button in the toolbar.</Fragment>, show: config.USE_AA },
-                { text: <Fragment><strong>Live monitoring uses on/off switches</strong> instead of checkboxes. If a PV can't be monitored, its switch is faded and hovering it tells you why.</Fragment>, show: config.USE_PVWS },
+                { text: <Fragment><strong>Live monitoring uses on/off switches</strong> instead of checkboxes. Turn on <strong>Monitor all PVs</strong> on the right of the table toolbar to watch every PV on the page. If a PV can't be monitored, its switch is faded and hovering it tells you why.</Fragment>, show: config.USE_PVWS },
                 { text: <Fragment><strong>Resize columns</strong> by dragging the column edges. The widths stay put when the results update.</Fragment> },
                 { text: <Fragment><strong>CSV exports</strong> now have the date and time in the file name.</Fragment> },
             ],
