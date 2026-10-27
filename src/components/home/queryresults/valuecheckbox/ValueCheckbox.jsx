@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import useWebSocket from '../../../../useWebSocket';
 import { Switch, Tooltip } from '@mui/material';
 import api from '../../../../api';
@@ -11,6 +11,7 @@ function ValueCheckbox(props) {
     // why live monitoring is not available for this PV, empty if it is available
     const [disabledReason, setDisabledReason] = useState("");
     const enabled = disabledReason === "";
+    const isSubscribed = useRef(false);
     const { sendJsonMessage } = useWebSocket(config.PVWS_URL, {
         share: true,
         filter: (message) => false,
@@ -37,11 +38,24 @@ function ValueCheckbox(props) {
         if (enabled) {
             if (props.currentChecked.has(props.id)) {
                 sendJsonMessage({ "type": "subscribe", "pvs": [props.pvName] });
+                isSubscribed.current = true;
             } else {
                 sendJsonMessage({ "type": "clear", "pvs": [props.pvName] });
+                isSubscribed.current = false;
             }
         }
     }, [sendJsonMessage, props.currentChecked, props.checked, props.id, props.pvName, enabled])
+
+    // the row is removed from the table when the page, sort, or filter changes, clear the subscription
+    // since this component is no longer around to see the PV get unchecked
+    useEffect(() => {
+        return () => {
+            if (isSubscribed.current) {
+                sendJsonMessage({ "type": "clear", "pvs": [props.pvName] });
+                isSubscribed.current = false;
+            }
+        };
+    }, [sendJsonMessage, props.pvName])
 
     return (
         <Tooltip arrow title={enabled ? <div>Monitor<br />{props.pvName}</div> : disabledReason}>
