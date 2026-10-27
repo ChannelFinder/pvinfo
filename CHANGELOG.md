@@ -43,6 +43,7 @@ Version 3 updates the libraries and tools PV Info is built on. Node.js >= v22.22
 
 ### Fixed
 
+- The search button queried Channel Finder twice for each new search, once for the button and once for the URL change
 - Clicking next to a header link navigated to the home page ([#173](https://github.com/ChannelFinder/pvinfo/pull/173))
 - A tag only Advanced search opened from a URL searched the tag as a PV name when searched again
 - Properties with "tag" in the name, like `voltage`, were searched as tags in Advanced search
