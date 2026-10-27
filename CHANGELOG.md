@@ -50,6 +50,8 @@ Version 3 updates the libraries and tools PV Info is built on. Node.js >= v22.22
 
 - Monitor all monitored the first rows of the search results instead of the visible page when the table was sorted or filtered ([#175](https://github.com/ChannelFinder/pvinfo/pull/175))
 - PVs on a previous results page stayed subscribed in PV Web Socket after a page change ([#175](https://github.com/ChannelFinder/pvinfo/pull/175))
+- Monitor all counted waveform PVs toward the monitoring warning and limit when waveform monitoring was turned off ([#175](https://github.com/ChannelFinder/pvinfo/pull/175))
+- Monitored PVs that were sorted or filtered off the page still counted toward the monitoring warning and limit ([#175](https://github.com/ChannelFinder/pvinfo/pull/175))
 - Clicking next to a header link navigated to the home page ([#173](https://github.com/ChannelFinder/pvinfo/pull/173))
 - A tag only Advanced search opened from a URL searched the tag as a PV name when searched again
 - Properties with "tag" in the name, like `voltage`, were searched as tags in Advanced search
