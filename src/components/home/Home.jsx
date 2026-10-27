@@ -7,6 +7,7 @@ import ManageSearchRoundedIcon from '@mui/icons-material/ManageSearchRounded';
 import PageviewRoundedIcon from '@mui/icons-material/PageviewRounded';
 import ParamSearch from './paramsearch';
 import AdvancedSearch from './advancedsearch';
+import { parseAdvancedQuery, readSearchParams, getAdvancedQueryError } from './advancedsearch/advancedQuery';
 // is this needed?
 import './Home.css';
 import config from "../../config";
@@ -25,6 +26,7 @@ function Home(props) {
     const [recordTypeAutocompleteKey, setRecordTypeAutocompleteKey] = useState(-1);
     const [recordDesc, setRecordDesc] = useState(searchParams.get("recordDesc") || "");
     const [advancedQuery, setAdvancedQuery] = useState("");
+    const [advancedQueryError, setAdvancedQueryError] = useState("");
     const extraPropAName = config.EXTRA_PROP === "" || config.EXTRA_PROP === null ? null : config.EXTRA_PROP;
     const extraPropBName = config.SECOND_EXTRA_PROP === "" || config.SECOND_EXTRA_PROP === null ? null : config.SECOND_EXTRA_PROP;
 
@@ -103,8 +105,7 @@ function Home(props) {
 
     useEffect(() => {
         // If there are search parameters in the URL, query channel finder and show the PV data
-        let params = {}
-        searchParams.forEach((val, key) => { if (val !== "") { params[key] = val } });
+        let params = readSearchParams(searchParams);
         let standardSearch = true;
         if ("standardSearch" in params) {
             standardSearch = params["standardSearch"] === "false" ? false : true;
@@ -112,7 +113,8 @@ function Home(props) {
             delete params["standardSearch"];
         }
         if (Object.keys(params).length > 0) {
-            let advancedQuery = ""
+            // the Advanced query starts with the PV name, so use * when there isn't one or a tag would be read as the PV name
+            let advancedQuery = "*"
             if ("pvName" in params) {
                 setPVName(params["pvName"]);
                 advancedQuery = params["pvName"];
@@ -132,15 +134,14 @@ function Home(props) {
             // Fill out the advanced query with any extra search props
             for (let key in params) {
                 const value = params[key];
-                if (key.includes('tag')) {
-                    advancedQuery = advancedQuery.concat(` ${value}`);
+                if (key === "tag") {
+                    advancedQuery = advancedQuery.concat(` ${value.join(" ")}`);
                 } else {
                     advancedQuery = advancedQuery.concat(` ${key}=${value}`);
                 }
             }
             setAdvancedQuery(advancedQuery);
-            let resetParams = {}
-            searchParams.forEach((val, key) => { if (val !== "") { resetParams[key] = val } });
+            let resetParams = readSearchParams(searchParams);
             resetParams["standardSearch"] = standardSearch;
             setIsLoading(true);
             fetchData(api.CF_QUERY, resetParams, setCFData, "PV", true, true);
@@ -188,34 +189,25 @@ function Home(props) {
         return params;
     }
 
-    const parseAdvancedSearch = (e) => {
-        const keyValuePairs = e.target.advancedSearch.value.split(' ');
-        let params = {};
-        let numTags = 1;
-
-        for (let pair of keyValuePairs) {
-            const [key, value] = pair.split('=');
-            if (key === keyValuePairs[0]) {
-                params['pvName'] = key;
-            } else if (value !== undefined) {
-                params[key] = value;
-            } else {
-                params[`tag${numTags}`] = key;
-                ++numTags;
-            }
-        }
-        return params;
-    }
+    // the error is for the query that was submitted, clear it when the query is changed
+    useEffect(() => {
+        setAdvancedQueryError("");
+    }, [advancedQuery]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        setIsLoading(true);
         let params = {}
         if (standardSearch) {
             params = parseParamSearch(e);
         } else {
-            params = parseAdvancedSearch(e);
+            params = parseAdvancedQuery(advancedQuery);
+            const queryError = getAdvancedQueryError(params);
+            if (queryError !== "") {
+                setAdvancedQueryError(queryError);
+                return;
+            }
         }
+        setIsLoading(true);
         params['standardSearch'] = standardSearch;
         fetchData(api.CF_QUERY, params, setCFData, "PV", true, true);
         fetchData(api.COUNT_QUERY, params, setPVCount, "count");
@@ -299,7 +291,7 @@ function Home(props) {
                     ) : (
                         <AdvancedSearch advancedQuery={advancedQuery} setAdvancedQuery={setAdvancedQuery} handleAdvancedChange={handleAdvancedChange}
                             handleClear={handleClear} searchProperties={searchProperties} searchTags={searchTags}
-                            showHelp={cfData === null} />
+                            showHelp={cfData === null} queryError={advancedQueryError} />
                     )
                 }
                 <Grid container style={{ display: "flex" }} size={12}>

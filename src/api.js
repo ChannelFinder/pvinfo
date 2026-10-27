@@ -59,6 +59,10 @@ function handleParams(params) {
     } else {
         urlParams.params = advancedParse(params);
     }
+    // tags are a list, each sent as a ~tag parameter which Channel Finder ANDs together
+    (params.tag || []).forEach((tag) => {
+        urlParams.params = urlParams.params.concat(`&~tag=${encodeURIComponent(tag)}`);
+    });
 
     return urlParams;
 }
@@ -74,7 +78,7 @@ function standardParse(params) {
 
     let addOn = "";
     for (let key in params) {
-        if (key === 'pvName' || key === "standardSearch") continue;
+        if (key === 'pvName' || key === "standardSearch" || key === "tag") continue;
         const value = params[key];
         if (value === "") {
             addOn = addOn.concat(`&${key}`);
@@ -101,12 +105,8 @@ function standardParse(params) {
 function advancedParse(params) {
     let addOn = "";
     for (let key in params) {
-        if (key === 'pvName' || key === 'standardSearch') continue;
-        if (key.includes('tag')) {
-            addOn = addOn.concat(`&~tag=${encodeURIComponent(params[key])}`)
-        } else {
-            addOn = addOn.concat(`&${key}=${encodeURIComponent(params[key])}`);
-        }
+        if (key === 'pvName' || key === 'standardSearch' || key === 'tag') continue;
+        addOn = addOn.concat(`&${key}=${encodeURIComponent(params[key])}`);
     }
     return addOn;
 }

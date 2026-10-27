@@ -20,6 +20,8 @@ Version 3 updates the libraries and tools PV Info is built on. Node.js >= v22.22
 - Data grid toolbar is left aligned, compact, and uses the primary theme color, tables have a label in the toolbar, and the density selector is removed ([#173](https://github.com/ChannelFinder/pvinfo/pull/173))
 - CSV exports include the table name and a timestamp in the file name ([#173](https://github.com/ChannelFinder/pvinfo/pull/173))
 - Pages other than the home page are loaded on demand to reduce the initial bundle size ([#173](https://github.com/ChannelFinder/pvinfo/pull/173))
+- The Advanced search properties and tags dropdown is wider and taller, sorted, and shows property names from `REACT_APP_DETAILS_PAGE_PROPERTIES` and the extra property labels. Lists that are empty are hidden, and the add button is hidden if there are no properties or tags
+- Search URLs list tags as `tag=a&tag=b` instead of `tag1=a&tag2=b`. Links with the old numbered tags still work
 - IOCs page column "IOC Reboot Time" is renamed to "Last Recsync Update" ([#176](https://github.com/ChannelFinder/pvinfo/pull/176))
 - IOCs page shows IOC IP, CA Port, and PVA Port columns by default instead of the IP address from `iocid` ([#176](https://github.com/ChannelFinder/pvinfo/pull/176))
 - Search results live monitoring uses toggle switches instead of checkboxes. Switches for PVs that can't be monitored are faded and their tooltip says why
@@ -28,6 +30,8 @@ Version 3 updates the libraries and tools PV Info is built on. Node.js >= v22.22
 
 - Resizable data grid columns that keep their width when the table updates ([#172](https://github.com/ChannelFinder/pvinfo/pull/172))
 - Vitest tests, run in CI ([#173](https://github.com/ChannelFinder/pvinfo/pull/173))
+- Advanced search shows a preview of how the query will be searched, as chips below the search box
+- Advanced search does not search a property without a value after the `=`, it shows how to fix the query instead
 - OR searches with `|` (or `;`) are documented in the help page and search tooltips ([#174](https://github.com/ChannelFinder/pvinfo/pull/174), fixes [#148](https://github.com/ChannelFinder/pvinfo/issues/148))
 - Space separated words in the PV name search match PV names containing all of the words in any order ([#174](https://github.com/ChannelFinder/pvinfo/pull/174))
 - Options to hide the IOCs page, change its PV name pattern, and add columns ([#176](https://github.com/ChannelFinder/pvinfo/pull/176), fixes [#134](https://github.com/ChannelFinder/pvinfo/issues/134))
@@ -40,8 +44,11 @@ Version 3 updates the libraries and tools PV Info is built on. Node.js >= v22.22
 ### Fixed
 
 - Clicking next to a header link navigated to the home page ([#173](https://github.com/ChannelFinder/pvinfo/pull/173))
+- A tag only Advanced search opened from a URL searched the tag as a PV name when searched again
+- Properties with "tag" in the name, like `voltage`, were searched as tags in Advanced search
 - OR searches without wildcards only added partial match wildcards to the first and last pattern ([#174](https://github.com/ChannelFinder/pvinfo/pull/174))
 - Search property values are URL encoded ([#174](https://github.com/ChannelFinder/pvinfo/pull/174))
+- Advanced search queries with extra spaces searched for empty tags or treated the PV name as a tag, and property values containing `=` were cut off
 - IOCs page stayed on "Data Loading..." if the Channel Finder query failed ([#176](https://github.com/ChannelFinder/pvinfo/pull/176))
 - The mobile menu showed the Plotting link when the archiver was disabled ([#177](https://github.com/ChannelFinder/pvinfo/pull/177))
 - The caput log section on the PV details page opened to an empty table when the PV had no caput log data, it now shows "No Caput Log Data" like the online log and alarm log sections
