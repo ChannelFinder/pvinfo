@@ -117,6 +117,9 @@ const config = {
     SECOND_EXTRA_PROP_SHOW_IN_RESULTS: parseBoolean(import.meta.env.REACT_APP_SECOND_EXTRA_PROP_SHOW_IN_RESULTS, false),
     SECOND_EXTRA_PROP_DROPDOWN_LABELS: parseList(import.meta.env.REACT_APP_SECOND_EXTRA_PROP_DROPDOWN_LABELS),
 
+    // known property values for the Advanced search properties list, parsed in getPropertyValues
+    PROPERTY_VALUES: import.meta.env.REACT_APP_PROPERTY_VALUES || "",
+
     // PV Web Socket
     USE_PVWS: parseBoolean(import.meta.env.REACT_APP_USE_PVWS, false),
     LIVE_MONITOR_WARN: parseIntOrDefault(import.meta.env.REACT_APP_LIVE_MONITOR_WARN, 50),

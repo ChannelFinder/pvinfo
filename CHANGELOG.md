@@ -11,6 +11,7 @@ Version 3 updates the libraries and tools PV Info is built on. Node.js >= v22.22
 - Added `REACT_APP_USE_IOC_PAGE` (default `true`) to show or hide the IOCs page ([#176](https://github.com/ChannelFinder/pvinfo/pull/176))
 - Added `REACT_APP_IOC_PAGE_PV_PATTERN` (default `*:ENGINEER`), the PV name pattern used to find the IOCs listed on the IOCs page. It is used as an exact pattern, no partial match wildcards are added ([#176](https://github.com/ChannelFinder/pvinfo/pull/176))
 - Added `REACT_APP_IOC_PAGE_EXTRA_COLUMNS` (default `iocIP:IOC IP,caPort:CA Port,pvaPort:PVA Port`), extra Channel Finder properties shown as columns on the IOCs page. Set it to empty for no extra columns ([#176](https://github.com/ChannelFinder/pvinfo/pull/176))
+- Added `REACT_APP_PROPERTY_VALUES` (default empty), known values for Channel Finder properties in the format `property:value1,value2;property2:value1,value2`. Properties with known values, record types, and extra properties with dropdown labels can be opened in the Advanced search properties list to pick a value
 - Changed the default `REACT_APP_DETAILS_PAGE_PROPERTIES` to use `iocIP:IOC IP Address` instead of `iocid:IOC IP Address` ([#176](https://github.com/ChannelFinder/pvinfo/pull/176))
 
 ### Changed
