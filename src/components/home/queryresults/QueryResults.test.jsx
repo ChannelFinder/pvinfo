@@ -31,7 +31,7 @@ async function renderMonitorResults() {
 }
 
 const visiblePVs = (container) => [...container.querySelectorAll('.MuiDataGrid-row')].map((row) => pvName(row.getAttribute('data-id')));
-const monitorAllCheckbox = () => screen.getByLabelText('Monitor all');
+const monitorAllCheckbox = () => screen.getByLabelText('Monitor all PVs');
 const click = async (element) => { await act(async () => { fireEvent.click(element); }); };
 const sortByNameDescending = async (container) => {
   const nameHeader = container.querySelector('.MuiDataGrid-columnHeader[data-field="name"] .MuiDataGrid-columnHeaderTitleContainer');
@@ -125,7 +125,7 @@ test('a new search clears the selection', async () => {
 
 test('the monitor all switch is hidden when PV Web Socket is turned off', async () => {
   await renderResults([channel('PV:A')]);
-  expect(screen.queryByLabelText('Monitor all')).not.toBeInTheDocument();
+  expect(screen.queryByLabelText('Monitor all PVs')).not.toBeInTheDocument();
 });
 
 describe('monitor all', () => {
