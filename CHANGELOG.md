@@ -11,6 +11,7 @@ Version 3 updates the libraries and tools PV Info is built on. Node.js >= v22.22
 - Added `REACT_APP_USE_IOC_PAGE` (default `true`) to show or hide the IOCs page ([#176](https://github.com/ChannelFinder/pvinfo/pull/176))
 - Added `REACT_APP_IOC_PAGE_PV_PATTERN` (default `*:ENGINEER`), the PV name pattern used to find the IOCs listed on the IOCs page. It is used as an exact pattern, no partial match wildcards are added ([#176](https://github.com/ChannelFinder/pvinfo/pull/176))
 - Added `REACT_APP_IOC_PAGE_EXTRA_COLUMNS` (default `iocIP:IOC IP,caPort:CA Port,pvaPort:PVA Port`), extra Channel Finder properties shown as columns on the IOCs page. Set it to empty for no extra columns ([#176](https://github.com/ChannelFinder/pvinfo/pull/176))
+- Added `REACT_APP_AA_MAX_PLOT_PVS` (default `20`), the most selected PVs that can be plotted together from the search results
 - Changed the default `REACT_APP_DETAILS_PAGE_PROPERTIES` to use `iocIP:IOC IP Address` instead of `iocid:IOC IP Address` ([#176](https://github.com/ChannelFinder/pvinfo/pull/176))
 
 ### Changed
@@ -21,6 +22,7 @@ Version 3 updates the libraries and tools PV Info is built on. Node.js >= v22.22
 - Pages other than the home page are loaded on demand to reduce the initial bundle size ([#173](https://github.com/ChannelFinder/pvinfo/pull/173))
 - IOCs page column "IOC Reboot Time" is renamed to "Last Recsync Update" ([#176](https://github.com/ChannelFinder/pvinfo/pull/176))
 - IOCs page shows IOC IP, CA Port, and PVA Port columns by default instead of the IP address from `iocid` ([#176](https://github.com/ChannelFinder/pvinfo/pull/176))
+- Search results live monitoring uses toggle switches instead of checkboxes. Switches for PVs that can't be monitored are faded and their tooltip says why
 
 ### Added
 
@@ -29,6 +31,9 @@ Version 3 updates the libraries and tools PV Info is built on. Node.js >= v22.22
 - OR searches with `|` (or `;`) are documented in the help page and search tooltips ([#174](https://github.com/ChannelFinder/pvinfo/pull/174), fixes [#148](https://github.com/ChannelFinder/pvinfo/issues/148))
 - Space separated words in the PV name search match PV names containing all of the words in any order ([#174](https://github.com/ChannelFinder/pvinfo/pull/174))
 - Options to hide the IOCs page, change its PV name pattern, and add columns ([#176](https://github.com/ChannelFinder/pvinfo/pull/176), fixes [#134](https://github.com/ChannelFinder/pvinfo/issues/134))
+- Copy PV name button on the PV details page
+- Checkboxes to select PVs in the search results, hidden at phone width
+- Search results toolbar buttons to copy PV names to the clipboard (the selected PVs, or all results if none are selected) and to plot the selected PVs together in the archiver viewer, hidden at phone width
 - Renamed "Free Form" to "Advanced" search in codebase and labels in case we want to add a true free form search later
 - "Standard" and "Advanced" labels on the search type buttons ([#177](https://github.com/ChannelFinder/pvinfo/pull/177))
 

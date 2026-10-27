@@ -134,6 +134,7 @@ const config = {
     // Archiver
     USE_AA: parseBoolean(import.meta.env.REACT_APP_USE_AA, false),
     AA_POLICIES: parseList(import.meta.env.REACT_APP_AA_POLICIES),
+    AA_MAX_PLOT_PVS: parseIntOrDefault(import.meta.env.REACT_APP_AA_MAX_PLOT_PVS, 20),
 
     // OLOG
     USE_OLOG: parseBoolean(import.meta.env.REACT_APP_USE_OLOG, false),
