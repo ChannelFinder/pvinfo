@@ -24,6 +24,7 @@ Version 3 updates the libraries and tools PV Info is built on. Node.js >= v22.22
 - Pages other than the home page are loaded on demand to reduce the initial bundle size ([#173](https://github.com/ChannelFinder/pvinfo/pull/173))
 - The Advanced search properties and tags dropdown is wider and taller, sorted, and shows property names from `REACT_APP_DETAILS_PAGE_PROPERTIES` and the extra property labels. Lists that are empty are hidden, and the add button is hidden if there are no properties or tags
 - Search URLs list tags as `tag=a&tag=b` instead of `tag1=a&tag2=b`. Links with the old numbered tags still work
+- Advanced search property values get partial match wildcards like the standard search, so `recordDesc=temp` matches descriptions containing temp. `property==value` is an exact match and `property!=value` or `property=!value` is not equal. PV status, record type, and properties with known values from `REACT_APP_PROPERTY_VALUES` or the extra property dropdown labels are always an exact match. The "Searching for:" preview shows the wildcards that are added
 - IOCs page column "IOC Reboot Time" is renamed to "Last Recsync Update" ([#176](https://github.com/ChannelFinder/pvinfo/pull/176))
 - IOCs page shows IOC IP, CA Port, and PVA Port columns by default instead of the IP address from `iocid` ([#176](https://github.com/ChannelFinder/pvinfo/pull/176))
 - Search results live monitoring uses toggle switches instead of checkboxes. Switches for PVs that can't be monitored are faded and their tooltip says why
@@ -50,6 +51,7 @@ Version 3 updates the libraries and tools PV Info is built on. Node.js >= v22.22
 - Properties with "tag" in the name, like `voltage`, were searched as tags in Advanced search
 - OR searches without wildcards only added partial match wildcards to the first and last pattern ([#174](https://github.com/ChannelFinder/pvinfo/pull/174))
 - Search property values are URL encoded ([#174](https://github.com/ChannelFinder/pvinfo/pull/174))
+- Extra properties without dropdown labels did not get partial match wildcards in the standard search, and not equal searches on PV status, record type, or extra properties with dropdown labels got wildcards
 - Advanced search queries with extra spaces searched for empty tags or treated the PV name as a tag, and property values containing `=` were cut off
 - IOCs page stayed on "Data Loading..." if the Channel Finder query failed ([#176](https://github.com/ChannelFinder/pvinfo/pull/176))
 - The mobile menu showed the Plotting link when the archiver was disabled ([#177](https://github.com/ChannelFinder/pvinfo/pull/177))

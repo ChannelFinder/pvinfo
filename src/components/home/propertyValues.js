@@ -34,4 +34,9 @@ function getPropertyValues() {
     return values;
 }
 
-export { pvRecordTypes, getPropertyValues };
+// properties searched exactly instead of with partial match wildcards, since their values are known
+function getExactMatchProperties() {
+    return new Set(["pvStatus", "recordType", ...Object.keys(getPropertyValues())]);
+}
+
+export { pvRecordTypes, getPropertyValues, getExactMatchProperties };
