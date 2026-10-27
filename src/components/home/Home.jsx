@@ -2,7 +2,7 @@ import React, { Fragment, useEffect, useState } from 'react';
 import { Box, Grid, ToggleButton, ToggleButtonGroup, Typography, Tooltip } from '@mui/material';
 import QueryResults from "./queryresults";
 import api from "../../api";
-import { useSearchParams } from "react-router";
+import { createSearchParams, useSearchParams } from "react-router";
 import ManageSearchRoundedIcon from '@mui/icons-material/ManageSearchRounded';
 import PageviewRoundedIcon from '@mui/icons-material/PageviewRounded';
 import ParamSearch from './paramsearch';
@@ -208,9 +208,14 @@ function Home(props) {
             }
         }
         setIsLoading(true);
+        // the search params effect queries Channel Finder when the URL changes to a search, so only query here
+        // when it won't: the same search again, or no search terms which shows every PV
+        const hasSearchTerms = Object.keys(params).length > 0;
         params['standardSearch'] = standardSearch;
-        fetchData(api.CF_QUERY, params, setCFData, "PV", true, true);
-        fetchData(api.COUNT_QUERY, params, setPVCount, "count");
+        if (!hasSearchTerms || createSearchParams(params).toString() === searchParams.toString()) {
+            fetchData(api.CF_QUERY, params, setCFData, "PV", true, true);
+            fetchData(api.COUNT_QUERY, params, setPVCount, "count");
+        }
         setSearchParams(params);
     }
 
