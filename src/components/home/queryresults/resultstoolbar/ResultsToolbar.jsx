@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import { Badge, Tooltip, useMediaQuery } from '@mui/material';
+import { Badge, FormControlLabel, Switch, Tooltip, Typography, useMediaQuery } from '@mui/material';
 import {
     ColumnsPanelTrigger, FilterPanelTrigger, ToolbarButton,
     useGridApiContext, useGridRootProps, useGridSelector,
@@ -16,7 +16,8 @@ function archiverPlotURL(pvNames) {
 }
 
 // Toolbar controls for the search results table, passed to the default toolbar as mainControls.
-// Keeps the default columns and filter buttons and adds copy PV names and plot selected PVs buttons
+// Keeps the default columns and filter buttons and adds copy PV names and plot selected PVs buttons,
+// and the monitor all switch if PV Web Socket is used
 function ResultsToolbar(props) {
     const apiRef = useGridApiContext();
     const rootProps = useGridRootProps();
@@ -103,6 +104,17 @@ function ResultsToolbar(props) {
                             <TimelineIcon fontSize="small" />
                         </ToolbarButton>
                     </span>
+                </Tooltip>
+            }
+            {
+                config.USE_PVWS &&
+                <Tooltip title="Monitor the live value of all PVs on this page">
+                    {/* order and auto margin move it after the export and search box, to the right end of the toolbar above the actions column */}
+                    <FormControlLabel
+                        sx={{ order: 1, ml: "auto", mr: 0.5 }}
+                        control={<Switch size="small" checked={props.monitorAllChecked} onChange={props.handleMonitorAll} />}
+                        label={<Typography variant="body2" noWrap>Monitor all PVs</Typography>}
+                    />
                 </Tooltip>
             }
         </Fragment>
