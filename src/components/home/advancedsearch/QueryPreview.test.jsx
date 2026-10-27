@@ -21,6 +21,12 @@ test('shows any PV name for * and marks a property without a value as a warning'
   expect(container.querySelectorAll('.MuiChip-colorWarning')).toHaveLength(1);
 });
 
+test('shows tag= as a tag and marks it as a warning without a tag name', () => {
+  const { container } = render(<QueryPreview query="* tag=archived tag=" />);
+  expect(chips(container)).toEqual(['PV name: any', 'archived', 'tag = …']);
+  expect(container.querySelectorAll('.MuiChip-colorWarning')).toHaveLength(1);
+});
+
 test('shows nothing for an empty query', () => {
   const { container } = render(<QueryPreview query="  " />);
   expect(container).toBeEmptyDOMElement();

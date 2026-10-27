@@ -7,7 +7,7 @@ import ManageSearchRoundedIcon from '@mui/icons-material/ManageSearchRounded';
 import PageviewRoundedIcon from '@mui/icons-material/PageviewRounded';
 import ParamSearch from './paramsearch';
 import AdvancedSearch from './advancedsearch';
-import { parseAdvancedQuery, getAdvancedQueryError } from './advancedsearch/advancedQuery';
+import { parseAdvancedQuery, readSearchParams, getAdvancedQueryError } from './advancedsearch/advancedQuery';
 // is this needed?
 import './Home.css';
 import config from "../../config";
@@ -105,8 +105,7 @@ function Home(props) {
 
     useEffect(() => {
         // If there are search parameters in the URL, query channel finder and show the PV data
-        let params = {}
-        searchParams.forEach((val, key) => { if (val !== "") { params[key] = val } });
+        let params = readSearchParams(searchParams);
         let standardSearch = true;
         if ("standardSearch" in params) {
             standardSearch = params["standardSearch"] === "false" ? false : true;
@@ -114,7 +113,8 @@ function Home(props) {
             delete params["standardSearch"];
         }
         if (Object.keys(params).length > 0) {
-            let advancedQuery = ""
+            // the Advanced query starts with the PV name, so use * when there isn't one or a tag would be read as the PV name
+            let advancedQuery = "*"
             if ("pvName" in params) {
                 setPVName(params["pvName"]);
                 advancedQuery = params["pvName"];
@@ -134,15 +134,14 @@ function Home(props) {
             // Fill out the advanced query with any extra search props
             for (let key in params) {
                 const value = params[key];
-                if (key.includes('tag')) {
-                    advancedQuery = advancedQuery.concat(` ${value}`);
+                if (key === "tag") {
+                    advancedQuery = advancedQuery.concat(` ${value.join(" ")}`);
                 } else {
                     advancedQuery = advancedQuery.concat(` ${key}=${value}`);
                 }
             }
             setAdvancedQuery(advancedQuery);
-            let resetParams = {}
-            searchParams.forEach((val, key) => { if (val !== "") { resetParams[key] = val } });
+            let resetParams = readSearchParams(searchParams);
             resetParams["standardSearch"] = standardSearch;
             setIsLoading(true);
             fetchData(api.CF_QUERY, resetParams, setCFData, "PV", true, true);

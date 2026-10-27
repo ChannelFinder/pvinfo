@@ -7,13 +7,14 @@ import { parseAdvancedQuery, getPropertyLabels } from './advancedQuery';
 function QueryPreview({ query }) {
     const terms = useMemo(() => {
         const labels = getPropertyLabels();
-        return Object.entries(parseAdvancedQuery(query)).map(([key, value]) => {
+        return Object.entries(parseAdvancedQuery(query)).flatMap(([key, value]) => {
             if (key === "pvName") {
                 return { key, label: `PV name: ${value === "*" ? "any" : value}`, color: "primary" };
             }
-            // same check as the Channel Finder query, see advancedParse in api.js
-            if (key.includes("tag")) {
-                return { key, label: value, tag: true };
+            if (key === "tag") {
+                return value.map((tag, index) => (tag === ""
+                    ? { key: `tag${index}`, label: "tag = …", tag: true, color: "warning" }
+                    : { key: `tag${index}`, label: tag, tag: true }));
             }
             // a property without a value can't be searched, see getAdvancedQueryError
             return value === ""

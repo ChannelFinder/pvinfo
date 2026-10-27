@@ -17,8 +17,8 @@ vi.mock('../../api', () => ({
 const alertProps = { handleErrorMessage: vi.fn(), handleOpenErrorAlert: vi.fn(), handleSeverity: vi.fn() };
 const queryError = 'Enter a value after iocName=, or use iocName=* to match any value';
 
-async function renderAdvancedSearch() {
-  render(<ThemeProvider theme={theme}><MemoryRouter><Home {...alertProps} /></MemoryRouter></ThemeProvider>);
+async function renderAdvancedSearch(url = '/') {
+  render(<ThemeProvider theme={theme}><MemoryRouter initialEntries={[url]}><Home {...alertProps} /></MemoryRouter></ThemeProvider>);
   await act(async () => {});
   fireEvent.click(screen.getByRole('button', { name: 'Advanced search' }));
 }
@@ -45,4 +45,23 @@ test('the error clears when the query is changed and the search then runs', asyn
   expect(screen.queryByText(queryError)).not.toBeInTheDocument();
   await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'search' })); });
   expect(api.CF_QUERY).toHaveBeenCalledWith({ pvName: 'SR*', iocName: 'test*', standardSearch: false });
+});
+
+test('tags are searched as a list', async () => {
+  await renderAdvancedSearch();
+  typeQuery('SR* archived golden');
+  await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'search' })); });
+  expect(api.CF_QUERY).toHaveBeenCalledWith({ pvName: 'SR*', tag: ['archived', 'golden'], standardSearch: false });
+});
+
+test('a tag only search from the URL keeps the tags in the Advanced query', async () => {
+  await renderAdvancedSearch('/?tag=archived&tag=golden&standardSearch=false');
+  expect(screen.getByRole('searchbox')).toHaveValue('* archived golden');
+  expect(api.CF_QUERY).toHaveBeenCalledWith({ tag: ['archived', 'golden'], standardSearch: false });
+});
+
+test('a link with numbered tags from before 3.0 still searches the tags', async () => {
+  await renderAdvancedSearch('/?pvName=SR*&tag1=archived&tag2=golden&standardSearch=false');
+  expect(screen.getByRole('searchbox')).toHaveValue('SR* archived golden');
+  expect(api.CF_QUERY).toHaveBeenCalledWith({ pvName: 'SR*', tag: ['archived', 'golden'], standardSearch: false });
 });
