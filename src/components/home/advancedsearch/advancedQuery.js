@@ -10,7 +10,14 @@ function parseAdvancedQuery(query) {
     terms.forEach((term, index) => {
         const equalsIndex = term.indexOf("=");
         if (equalsIndex !== -1) {
-            params[term.substring(0, equalsIndex)] = term.substring(equalsIndex + 1);
+            const key = term.substring(0, equalsIndex);
+            const value = term.substring(equalsIndex + 1);
+            // tag=name is the same as the tag name on its own, so params.tag is always a list
+            if (key === "tag") {
+                tags.push(value);
+            } else {
+                params[key] = value;
+            }
         } else if (index === 0) {
             params["pvName"] = term;
         } else {
@@ -50,6 +57,9 @@ function getAdvancedQueryError(params) {
     const emptyProperty = Object.keys(params).find((key) => key !== "pvName" && key !== "tag" && params[key] === "");
     if (emptyProperty !== undefined) {
         return `Enter a value after ${emptyProperty}=, or use ${emptyProperty}=* to match any value`;
+    }
+    if (params["tag"]?.includes("")) {
+        return "Enter a tag name after tag=";
     }
     return "";
 }

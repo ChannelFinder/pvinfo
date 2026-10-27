@@ -17,6 +17,10 @@ describe('Advanced search query parsing', () => {
     expect(parseAdvancedQuery('SR* archived voltage')).toEqual({ pvName: 'SR*', tag: ['archived', 'voltage'] });
   });
 
+  test('tag=name is the same as the tag name', () => {
+    expect(parseAdvancedQuery('SR* tag=archived golden')).toEqual({ pvName: 'SR*', tag: ['archived', 'golden'] });
+  });
+
   test('a value can contain =', () => {
     expect(parseAdvancedQuery('SR* note=a=b')).toEqual({ pvName: 'SR*', note: 'a=b' });
   });
@@ -51,6 +55,10 @@ describe('Advanced search query errors', () => {
   test('a property with tag in the name but no value is an error', () => {
     expect(getAdvancedQueryError(parseAdvancedQuery('* voltage='))).toBe('Enter a value after voltage=, or use voltage=* to match any value');
     expect(getAdvancedQueryError(parseAdvancedQuery('* stage='))).toBe('Enter a value after stage=, or use stage=* to match any value');
+  });
+
+  test('tag= without a tag name is an error', () => {
+    expect(getAdvancedQueryError(parseAdvancedQuery('* tag='))).toBe('Enter a tag name after tag=');
   });
 
   test('PV names, property values, and tags are fine', () => {

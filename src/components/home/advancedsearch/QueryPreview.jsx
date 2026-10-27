@@ -12,7 +12,9 @@ function QueryPreview({ query }) {
                 return { key, label: `PV name: ${value === "*" ? "any" : value}`, color: "primary" };
             }
             if (key === "tag") {
-                return value.map((tag, index) => ({ key: `tag${index}`, label: tag, tag: true }));
+                return value.map((tag, index) => (tag === ""
+                    ? { key: `tag${index}`, label: "tag = …", tag: true, color: "warning" }
+                    : { key: `tag${index}`, label: tag, tag: true }));
             }
             // a property without a value can't be searched, see getAdvancedQueryError
             return value === ""
