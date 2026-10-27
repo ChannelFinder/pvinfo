@@ -1,5 +1,5 @@
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
-import { Typography, Switch, Link, IconButton, Tooltip } from '@mui/material';
+import { Typography, Link, IconButton, Tooltip } from '@mui/material';
 import { DataGrid, GRID_CHECKBOX_SELECTION_COL_DEF, GRID_CHECKBOX_SELECTION_FIELD, useGridApiRef, gridPaginatedVisibleSortedGridRowIdsSelector } from '@mui/x-data-grid';
 import { useNavigate, Link as RouterLink } from "react-router";
 import TimelineIcon from '@mui/icons-material/Timeline';
@@ -184,21 +184,6 @@ function QueryResults(props) {
         );
     }
 
-    const renderActionsHeader = () => {
-        return (
-            <div>
-                <Typography display="inline" variant="subtitle2">Actions</Typography>
-                {
-                    config.USE_PVWS ? <Tooltip arrow title="Monitor All PVs">
-                        <Switch size="small" checked={monitorAllChecked} onChange={handleMonitorSelectAll} sx={{ ml: ".5rem" }}
-                            slotProps={{ input: { "aria-label": "Monitor all PVs" } }}></Switch>
-                    </Tooltip>
-                        : <div></div>
-                }
-            </div>
-        )
-    }
-
     const renderIOCLink = (params) => {
         return (
             <div>
@@ -265,7 +250,7 @@ function QueryResults(props) {
     if (config.USE_PVWS) {
         columns.push({ field: "value", headerName: 'Value', width: 140, resizable: false, renderCell: renderValue })
     }
-    columns.push({ field: "button", headerName: 'Actions', width: config.USE_PVWS ? 160 : 120, resizable: false, sortable: false, disableColumnMenu: true, renderCell: renderButtons, renderHeader: renderActionsHeader })
+    columns.push({ field: "button", headerName: 'Actions', width: config.USE_PVWS ? 160 : 120, resizable: false, sortable: false, disableColumnMenu: true, renderCell: renderButtons })
     columns = columns.map((column) =>
         column.field in columnWidths ? { ...column, flex: 0, width: columnWidths[column.field] } : column
     )
@@ -442,7 +427,8 @@ function QueryResults(props) {
                     baseCheckbox: { size: "small" },
                     toolbar: {
                         csvOptions: csvExportOptions("PVs"),
-                        mainControls: <ResultsToolbar handleErrorMessage={handleErrorMessage} handleOpenErrorAlert={handleOpenErrorAlert} handleSeverity={handleSeverity} />
+                        mainControls: <ResultsToolbar handleErrorMessage={handleErrorMessage} handleOpenErrorAlert={handleOpenErrorAlert} handleSeverity={handleSeverity}
+                            monitorAllChecked={monitorAllChecked} handleMonitorAll={handleMonitorSelectAll} />
                     }
                 }}
             />
