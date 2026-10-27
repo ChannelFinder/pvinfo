@@ -47,12 +47,21 @@ test('the error clears when the query is changed and the search then runs', asyn
   expect(api.CF_QUERY).toHaveBeenCalledWith({ pvName: 'SR*', iocName: 'test*', standardSearch: false });
 });
 
-test('a tag only search from the URL keeps the tag in the Advanced query', async () => {
-  await renderAdvancedSearch('/?tag1=archived&standardSearch=false');
-  expect(screen.getByRole('searchbox')).toHaveValue('* archived');
+test('tags are searched as a list', async () => {
+  await renderAdvancedSearch();
+  typeQuery('SR* archived golden');
+  await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'search' })); });
+  expect(api.CF_QUERY).toHaveBeenCalledWith({ pvName: 'SR*', tag: ['archived', 'golden'], standardSearch: false });
 });
 
-test('a PV name search from the URL starts the Advanced query', async () => {
-  await renderAdvancedSearch('/?pvName=SR*&tag1=archived&standardSearch=false');
-  expect(screen.getByRole('searchbox')).toHaveValue('SR* archived');
+test('a tag only search from the URL keeps the tags in the Advanced query', async () => {
+  await renderAdvancedSearch('/?tag=archived&tag=golden&standardSearch=false');
+  expect(screen.getByRole('searchbox')).toHaveValue('* archived golden');
+  expect(api.CF_QUERY).toHaveBeenCalledWith({ tag: ['archived', 'golden'], standardSearch: false });
+});
+
+test('a link with numbered tags from before 3.0 still searches the tags', async () => {
+  await renderAdvancedSearch('/?pvName=SR*&tag1=archived&tag2=golden&standardSearch=false');
+  expect(screen.getByRole('searchbox')).toHaveValue('SR* archived golden');
+  expect(api.CF_QUERY).toHaveBeenCalledWith({ pvName: 'SR*', tag: ['archived', 'golden'], standardSearch: false });
 });

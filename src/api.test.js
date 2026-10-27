@@ -70,12 +70,12 @@ describe('Channel Finder query parameters', () => {
   });
 
   test('advanced search property values and tags are passed through without wildcards', async () => {
-    expect(await cfQueryString({ standardSearch: false, pvName: 'TEST*', Sector: '5|6', tag1: 'archived' }))
+    expect(await cfQueryString({ standardSearch: false, pvName: 'TEST*', Sector: '5|6', tag: ['archived'] }))
       .toBe('?~name=TEST*&Sector=5|6&~tag=archived');
   });
 
-  test('advanced search properties with tag in the name are not tags', async () => {
-    expect(await cfQueryString({ standardSearch: false, pvName: '*', voltage: '5', tag1: 'archived' }))
-      .toBe('?~name=*&voltage=5&~tag=archived');
+  test('each tag is a ~tag parameter and properties with tag in the name are not tags', async () => {
+    expect(await cfQueryString({ standardSearch: false, pvName: '*', voltage: '5', tag: ['archived', 'golden'] }))
+      .toBe('?~name=*&voltage=5&~tag=archived&~tag=golden');
   });
 });
