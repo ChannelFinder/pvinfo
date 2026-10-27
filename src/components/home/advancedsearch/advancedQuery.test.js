@@ -17,6 +17,10 @@ describe('Advanced search query parsing', () => {
     expect(parseAdvancedQuery('SR* note=a=b')).toEqual({ pvName: 'SR*', note: 'a=b' });
   });
 
+  test('== is an exact match and != is not equal, like = and ! in the standard search', () => {
+    expect(parseAdvancedQuery('SR* recordDesc==temp iocName!=test hostName=!sim')).toEqual({ pvName: 'SR*', recordDesc: '=temp', iocName: '!test', hostName: '!sim' });
+  });
+
   test('an empty query has no params', () => {
     expect(parseAdvancedQuery('   ')).toEqual({});
   });
@@ -25,6 +29,11 @@ describe('Advanced search query parsing', () => {
 describe('Advanced search query errors', () => {
   test('a property without a value is an error', () => {
     expect(getAdvancedQueryError(parseAdvancedQuery('SR* iocName='))).toBe('Enter a value after iocName=, or use iocName=* to match any value');
+  });
+
+  test('an exact or not equal property without a value is an error', () => {
+    expect(getAdvancedQueryError(parseAdvancedQuery('SR* iocName=='))).toBe('Enter a value after iocName=, or use iocName=* to match any value');
+    expect(getAdvancedQueryError(parseAdvancedQuery('SR* iocName!='))).toBe('Enter a value after iocName=, or use iocName=* to match any value');
   });
 
   test('PV names, property values, and tags are fine', () => {
