@@ -126,6 +126,16 @@ describe('monitor all', () => {
     expect(rowSwitches(container).every((input) => input.checked)).toBe(true);
     expect([...subscribed].sort()).toEqual(['PV:A', 'PV:B']);
   });
+
+  test('skips waveforms like the row switches when waveform monitoring is turned off', async () => {
+    // so the skipped waveforms don't count toward the monitoring warning
+    Object.assign(configOverrides, { PVWS_ALLOW_WAVEFORMS: false, LIVE_MONITOR_WARN: 1 });
+    const waveform = { ...channel('PV:W'), properties: [{ name: 'pvStatus', value: 'Active' }, { name: 'recordType', value: 'waveform' }] };
+    const { props } = await renderResults([channel('PV:A'), waveform]);
+    await act(async () => { fireEvent.click(screen.getByLabelText('Monitor all PVs')); });
+    expect([...subscribed]).toEqual(['PV:A']);
+    expect(props.handleErrorMessage).not.toHaveBeenCalled();
+  });
 });
 
 test('the selection checkboxes and the copy and plot buttons are hidden together at phone width', async () => {
