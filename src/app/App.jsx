@@ -15,6 +15,7 @@ const Plot = lazy(() => import('../components/plot'));
 const Help = lazy(() => import('../components/help'));
 const Services = lazy(() => import('../components/services'));
 const CaputLogPage = lazy(() => import('../components/caputlog/CaputLogPage'));
+const WhatsNew = lazy(() => import('../components/whatsnew'));
 
 function App() {
   const [openErrorAlert, setOpenErrorAlert] = useState(false);
@@ -48,6 +49,9 @@ function App() {
               }
               <Route path="/services" element={<Services />} />
               <Route path="/help" element={<Help />} />
+              {
+                config.SHOW_WHATS_NEW ? <Route path="/whatsnew" element={<WhatsNew />} /> : null
+              }
               <Route path="/" element={<Home handleOpenErrorAlert={setOpenErrorAlert} handleErrorMessage={setErrorMessage} handleSeverity={setSeverity} />} />
             </Routes>
           </Suspense>

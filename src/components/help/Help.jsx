@@ -12,6 +12,9 @@ function Help() {
           <Grid sx={{ textAlign: "center" }} justifyContent="center" size={12}>
               <Typography style={{marginBottom: 20}} variant='h4'><strong>PV Info Help</strong></Typography>
           </Grid>
+          {config.SHOW_WHATS_NEW &&
+            <Typography variant='body1' sx={{ mb: 2 }}>See <Link component={RouterLink} to="/whatsnew" underline="always">what's new in this version</Link> of PV Info.</Typography>
+          }
           <Grid justifyContent="flex-end" size={12}>
 
             <Typography variant='h6' style={{marginBottom: 10}}><strong>Process Variables Described</strong></Typography>
