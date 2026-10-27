@@ -34,6 +34,8 @@ function Help() {
               <li>? (question mark) matches one of any character</li>
               <li>= (equals sign) at the beginning forces an exact match of the input string</li>
               <li>! (exclamation point) at the beginning is a not equal to search (not available for PV name field)</li>
+              <li>| (vertical bar) or ; (semicolon) between patterns matches any of the patterns (OR)</li>
+              <li>spaces between words in the PV name field match PV names containing all of the words in any order (AND)</li>
             </ul>
             <Typography variant='body1' sx={{ mb: 2 }}>Also, if there are no asterisks at the beginning or end of the field search, then partial searches are enabled.
               For example "cmm:" is equivlent to "*cmm:*"</Typography>
@@ -44,14 +46,21 @@ function Help() {
               <li>*beam_current would match any PV that ends with beam_current, excluding, for example, cmm:beamcurrenttest</li>
               <li>cmm:beam_current will match any PV name containing that term; however (as of this writing) there is only one such PV.</li>
               <li>=cmm:beam_current will match cmm:beam_current exactly.</li>
+              <li>LTB_*VVR*|LN_*VVR* will match any PV that begins with LTB_ or LN_ and contains VVR. Each pattern follows the rules above, so VVR|BPM is equivalent to *VVR*|*BPM*</li>
+              <li>beam current will match any PV name containing both "beam" and "current" such as "cmm:beam_current" or "SR:current_beam_avg"</li>
             </ul>
+            <Typography variant='body1' sx={{ mb: 2 }}>Commas in the PV name field do not work as an OR, they match any single character (like ?) so that PV names containing commas can be found. Use | or ; instead.
+              The OR patterns can not be combined with ! (not equal), Channel Finder will match nearly all PVs for a query like !test|sim.</Typography>
             <Typography variant='h6' style={{marginTop: 10, marginBottom: 10}}><strong>Free Form Search</strong></Typography>
             <Typography variant='body1' sx={{ mb: 2 }}>
-              There is also an option on the home page to toggle on a "Free Form Search". This option allows you to create your own PV and property search. This operates similarly to the CS Studio Phoebus Channel Table application. It can be very useful if you have other ChannelFinder properties available that are not in the "standard" search boxes.
+              There is also a "Free Form" search option, select it with the Free Form button next to the Standard button above the search fields on the home page. This option allows you to create your own PV and property search. This operates similarly to the CS Studio Phoebus Channel Table application. It can be very useful if you have other ChannelFinder properties available that are not in the "standard" search boxes.
             </Typography>
             <Typography variant='body1' sx={{ mb: 2 }}>
               An example free form search would be: <strong>TEST*PV* Sector=5 Acc=SR iocName=test*</strong><br />
               Which will result in a Channel Finder query like so: <strong>~name=TEST*PV*&Sector=5&Acc=SR&iocName=test*</strong>
+            </Typography>
+            <Typography variant='body1' sx={{ mb: 2 }}>
+              Patterns can be combined with | or ; to match any of them, for example: <strong>TEST*PV* Sector=5|6</strong> will match PVs in Sector 5 or 6.
             </Typography>
             <Typography variant='h6' style={{marginTop: 10, marginBottom: 10}}><strong>Viewing Search Results</strong></Typography>
             <Typography variant='body1' sx={{ mb: 2 }}>The search results display a table with the matching PVs with the following fields:</Typography>
@@ -159,12 +168,18 @@ function Help() {
               <li>Link Icon: Get URL link to the exact graph you are viewing.</li>
             </ul>
 
-            <Typography variant='h6' style={{marginTop: 10, marginBottom: 10}}><strong>IOCs Page</strong></Typography>
-            <Typography variant='body1' sx={{ mb: 2 }}>
-              The IOCs page lists all the IOCs in alphabetical order. The host where the IOC runs, the engineer in charge of the IOC,
-              the IOC IP address, and the date when the IOC was last connected to recsync (often the IOC reboot time).
-              Double clicking or clicking the IOC name will open the PV search for all the PVs in that IOC.
-            </Typography>
+            {config.USE_IOC_PAGE && <>
+              <Typography variant='h6' style={{marginTop: 10, marginBottom: 10}}><strong>IOCs Page</strong></Typography>
+              <Typography variant='body1' sx={{ mb: 2 }}>
+                The IOCs page lists all the IOCs in alphabetical order. The host where the IOC runs, the engineer in charge of the IOC,
+                the IOC IP address, the Channel Access and PV Access server ports, and the last time recsync updated the IOC's PVs in Channel Finder. This is when the IOC last connected to recsync,
+                for example after an IOC reboot or a recsync restart, or when it disconnected and its PVs became Inactive.
+                Double clicking or clicking the IOC name will open the PV search for all the PVs in that IOC.
+              </Typography>
+              <Typography variant='body1' sx={{ mb: 2 }}>
+                The list of IOCs comes from the PVs matching <strong>{config.IOC_PAGE_PV_PATTERN}</strong>, so an IOC without a PV matching that name will not be listed.
+              </Typography>
+            </>}
 
           </Grid>
         </Grid>

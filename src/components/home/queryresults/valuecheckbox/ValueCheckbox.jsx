@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import useWebSocket from '../../../../useWebSocket';
-import { Checkbox, Tooltip } from '@mui/material';
+import { Switch, Tooltip } from '@mui/material';
 import api from '../../../../api';
 import config from '../../../../config';
 
@@ -8,7 +8,9 @@ function ValueCheckbox(props) {
     // open web socket for sending subscribe/clear messages
     // filter all messages as false since we don't need to read anything in parent component
     // This still is in QueryResults so even with USE_PVWS===false it will try to connect, would be better to move to ValueCheckbox?
-    const [enabled, setEnabled] = useState(true);
+    // why live monitoring is not available for this PV, empty if it is available
+    const [disabledReason, setDisabledReason] = useState("");
+    const enabled = disabledReason === "";
     const isSubscribed = useRef(false);
     const { sendJsonMessage } = useWebSocket(config.PVWS_URL, {
         share: true,
@@ -21,13 +23,13 @@ function ValueCheckbox(props) {
 
     useEffect(() => {
         if (props.pvStatus !== "Active" && !config.PVWS_IGNORE_CF_PVSTATUS) {
-            setEnabled(false);
+            setDisabledReason(`PV status is ${props.pvStatus || "unknown"}`);
         }
         else if (props.recordType === "waveform" && !config.PVWS_ALLOW_WAVEFORMS) {
-            setEnabled(false);
+            setDisabledReason("Waveform monitoring is turned off");
         }
         else {
-            setEnabled(true);
+            setDisabledReason("");
         }
     }, [props.pvStatus, props.recordType, props.pvName])
 
@@ -56,13 +58,20 @@ function ValueCheckbox(props) {
     }, [sendJsonMessage, props.pvName])
 
     return (
-        <Tooltip arrow title={<div>Monitor<br />{props.pvName}</div>}>
-            <Checkbox
-                checked={props.checked[props.id] && enabled}
-                disabled={!enabled}
-                color="primary"
-                onChange={handleMonitorPVChange(props.id)} >
-            </Checkbox>
+        <Tooltip arrow title={enabled ? <div>Monitor<br />{props.pvName}</div> : disabledReason}>
+            {/* span so the tooltip still shows when the switch is disabled */}
+            <span>
+                <Switch
+                    size="small"
+                    checked={props.checked[props.id] && enabled}
+                    disabled={!enabled}
+                    // fade disabled switches more than the default so they stand out from switches that are off
+                    sx={{ opacity: enabled ? 1 : 0.35 }}
+                    slotProps={{ input: { "aria-label": enabled ? `Monitor ${props.pvName}` : `Can't monitor ${props.pvName}, ${disabledReason}` } }}
+                    color="primary"
+                    onChange={handleMonitorPVChange(props.id)} >
+                </Switch>
+            </span>
         </Tooltip>
     );
 }

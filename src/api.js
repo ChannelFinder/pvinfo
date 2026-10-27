@@ -15,19 +15,44 @@ const alarmLogMaxResults = config.AL_MAX_RESULTS !== null
     ? `&size=${config.AL_MAX_RESULTS}`
     : "";
 
+// Channel Finder splits each query value on these characters and ORs the pieces together
+const CF_OR_SEPARATORS = /[|,;]/;
+// commas are not OR separators for PV names since some sites have commas in their PV names, see handleParams
+const PV_NAME_OR_SEPARATORS = /[|;]/;
+
+// Split an OR query like "VVR|TEST" into its patterns and wrap each pattern without a leading or
+// trailing * in wildcards for a partial match, i.e. "*VVR*|*TEST*" instead of "*VVR|TEST*"
+function addPartialMatchWildcards(value, separators, addWildcards = true) {
+    return value.split(separators)
+        .map((pattern) => pattern.trim())
+        .filter((pattern) => pattern !== "")
+        .map((pattern) => {
+            if (addWildcards && pattern.charAt(0) !== "*" && pattern.charAt(pattern.length - 1) !== "*") {
+                return `*${pattern}*`;
+            }
+            return pattern;
+        })
+        .join("|");
+}
+
 function handleParams(params) {
-    let urlParams = { "pvName": "*", "params": "" };
+    let urlParams = { "nameQuery": "~name=*", "params": "" };
     if ("pvName" in params && params.pvName !== "") {
+        let namePatterns = [];
         if (params.pvName.charAt(0) === "=") {
-            urlParams.pvName = params.pvName.substring(1);
-        }
-        else if (params.pvName.charAt(0) !== "*" && params.pvName.charAt(params.pvName.length - 1) !== "*") {
-            urlParams.pvName = `*${params.pvName}*`;
+            namePatterns = [params.pvName.substring(1)];
         }
         else {
-            urlParams.pvName = params.pvName;
+            // PV names can't contain spaces, so space separated words are each sent as a ~name parameter which Channel Finder ANDs together
+            namePatterns = params.pvName.split(/\s+/)
+                .map((word) => addPartialMatchWildcards(word, PV_NAME_OR_SEPARATORS))
+                .filter((pattern) => pattern !== "");
+            if (namePatterns.length === 0) {
+                namePatterns = ["*"];
+            }
         }
-        urlParams.pvName = encodeURIComponent(urlParams.pvName.replace(/,/g, '?'));
+        // Channel Finder treats commas as OR separators, replace with the single character wildcard to match PV names with commas
+        urlParams.nameQuery = namePatterns.map((pattern) => `~name=${encodeURIComponent(pattern.replace(/,/g, '?'))}`).join("&");
     }
     if (params['standardSearch']) {
         urlParams.params = standardParse(params);
@@ -51,22 +76,24 @@ function standardParse(params) {
     for (let key in params) {
         if (key === 'pvName' || key === "standardSearch") continue;
         const value = params[key];
-        let newParam = `&${key}`
-        if (value !== "") {
-            if (value.charAt(0) === "=") {
-                newParam = newParam.concat(value)
-            }
-            else if (value.charAt(0) === "!") {
-                newParam = newParam.concat(`!=*${value.substring(1)}*`);
-            }
-            else if ((value.charAt(0) !== "*" && value.charAt(value.length - 1) !== "*") && !(noWildcard.has(key))) {
-                newParam = newParam.concat(`=*${value}*`);
-            }
-            else {
-                newParam = newParam.concat(`=${value}`);
-            }
+        if (value === "") {
+            addOn = addOn.concat(`&${key}`);
+            continue;
         }
-        addOn = addOn.concat(newParam);
+        let operator = "=";
+        let pattern = "";
+        if (value.charAt(0) === "=") {
+            pattern = value.substring(1);
+        }
+        else if (value.charAt(0) === "!") {
+            operator = "!=";
+            pattern = addPartialMatchWildcards(value.substring(1), CF_OR_SEPARATORS);
+        }
+        else {
+            pattern = addPartialMatchWildcards(value, CF_OR_SEPARATORS, !noWildcard.has(key));
+        }
+        if (pattern === "") continue;
+        addOn = addOn.concat(`&${key}${operator}${encodeURIComponent(pattern)}`);
     }
     return addOn;
 }
@@ -76,9 +103,9 @@ function freeformParse(params) {
     for (let key in params) {
         if (key === 'pvName' || key === 'standardSearch') continue;
         if (key.includes('tag')) {
-            addOn = addOn.concat(`&~tag=${params[key]}`)
+            addOn = addOn.concat(`&~tag=${encodeURIComponent(params[key])}`)
         } else {
-            addOn = addOn.concat(`&${key}=${params[key]}`);
+            addOn = addOn.concat(`&${key}=${encodeURIComponent(params[key])}`);
         }
     }
     return addOn;
@@ -87,7 +114,7 @@ function freeformParse(params) {
 async function queryChannelFinder(params) {
     let urlParams = handleParams(params);
     let maxResults = cfMaxResults ? `&~size=${cfMaxResults}` : "";
-    let requestURI = `${config.CF_URL}/resources/channels?~name=${urlParams.pvName}${urlParams.params}${maxResults}`;
+    let requestURI = `${config.CF_URL}/resources/channels?${urlParams.nameQuery}${urlParams.params}${maxResults}`;
     let options = { method: 'GET' }
     if (config.SEND_CREDENTIALS) {
         if (config.IS_PROD) {
@@ -142,7 +169,7 @@ async function getQueryHelpers(helperType) {
 
 async function getCount(params = {}) {
     let urlParams = handleParams(params)
-    let requestURI = `${config.CF_URL}/resources/channels/count?~name=${urlParams.pvName}${urlParams.params}`;
+    let requestURI = `${config.CF_URL}/resources/channels/count?${urlParams.nameQuery}${urlParams.params}`;
 
     return await standardQuery(requestURI);
 }

@@ -1,6 +1,6 @@
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
-import { Typography, Checkbox, Link, IconButton, Tooltip } from '@mui/material';
-import { DataGrid, useGridApiRef, gridPaginatedVisibleSortedGridRowIdsSelector } from '@mui/x-data-grid';
+import { Typography, Switch, Link, IconButton, Tooltip } from '@mui/material';
+import { DataGrid, GRID_CHECKBOX_SELECTION_COL_DEF, GRID_CHECKBOX_SELECTION_FIELD, useGridApiRef, gridPaginatedVisibleSortedGridRowIdsSelector } from '@mui/x-data-grid';
 import { useNavigate, Link as RouterLink } from "react-router";
 import TimelineIcon from '@mui/icons-material/Timeline';
 import ReadMoreIcon from '@mui/icons-material/ReadMore';
@@ -8,6 +8,7 @@ import api from "../../../api";
 import ValueCheckbox from './valuecheckbox/ValueCheckbox';
 import Value from "./value";
 import Logo from "./logo";
+import ResultsToolbar from "./resultstoolbar";
 import config from "../../../config";
 import csvExportOptions from "../../../csvExportOptions";
 
@@ -34,6 +35,7 @@ function QueryResults(props) {
     const [monitorAllChecked, setMonitorAllChecked] = useState(false);
     // set when the visible page changes and monitor all is checked, so the PVs on the new visible page get monitored
     const [monitorVisiblePagePending, setMonitorVisiblePagePending] = useState(false);
+    const [rowSelectionModel, setRowSelectionModel] = useState({ type: "include", ids: new Set() });
     const liveMonitorMax = config.LIVE_MONITOR_MAX;
     const liveMonitorWarn = config.LIVE_MONITOR_WARN;
 
@@ -188,7 +190,8 @@ function QueryResults(props) {
                 <Typography display="inline" variant="subtitle2">Actions</Typography>
                 {
                     config.USE_PVWS ? <Tooltip arrow title="Monitor All PVs">
-                        <Checkbox checked={monitorAllChecked} onChange={handleMonitorSelectAll} sx={{ ml: ".5rem" }}></Checkbox>
+                        <Switch size="small" checked={monitorAllChecked} onChange={handleMonitorSelectAll} sx={{ ml: ".5rem" }}
+                            slotProps={{ input: { "aria-label": "Monitor all PVs" } }}></Switch>
                     </Tooltip>
                         : <div></div>
                 }
@@ -235,6 +238,8 @@ function QueryResults(props) {
     }
 
     let columns = [
+        // narrower than the default 50px since the selection checkboxes are small
+        { ...GRID_CHECKBOX_SELECTION_COL_DEF, width: 34, minWidth: 34 },
         { field: "name", headerName: 'PV Name', flex: 15, minWidth: 175, renderCell: renderPVNameLink }
     ]
     if (config.CF_RECORD_DESC) {
@@ -280,6 +285,8 @@ function QueryResults(props) {
             return pvObject;
         }));
         setChecked(new Array(props.cfData.length).fill(false));
+        // row ids are reused by the next search, so clear the selection for new results
+        setRowSelectionModel({ type: "include", ids: new Set() });
         monitorAllOnNewPage(config.DEFAULT_MONITOR_ALL);
     }, [props.cfData, monitorAllOnNewPage]);
 
@@ -310,7 +317,10 @@ function QueryResults(props) {
                 const omitSmall = config.OMIT_IN_TABLE_SMALL;
                 const omitMedium = config.OMIT_IN_TABLE_MEDIUM;
 
+                // hide the row selection checkboxes on phones, and clear the selection so rows aren't left selected while hidden
+                toggleColumnVisibility(GRID_CHECKBOX_SELECTION_FIELD, windowWidth > sm);
                 if (windowWidth <= sm) {
+                    setRowSelectionModel({ type: "include", ids: new Set() });
                     for (let i = 0; i < omitExtraSmall.length; ++i) {
                         toggleColumnVisibility(omitExtraSmall[i], false)
                     }
@@ -410,9 +420,31 @@ function QueryResults(props) {
                 onColumnWidthChange={(params) =>
                     setColumnWidths((prev) => ({ ...prev, [params.colDef.field]: params.width }))
                 }
+                checkboxSelection
+                disableRowSelectionOnClick
+                rowSelectionModel={rowSelectionModel}
+                onRowSelectionModelChange={(newModel) => setRowSelectionModel(newModel)}
                 showToolbar
                 label="Search Results"
-                slotProps={{ toolbar: { csvOptions: csvExportOptions("PVs") } }}
+                // the selection checkboxes are small and grey until checked so they don't distract from the results
+                sx={{
+                    "& .MuiDataGrid-cellCheckbox .MuiCheckbox-root:not(.Mui-checked), & .MuiDataGrid-columnHeaderCheckbox .MuiCheckbox-root:not(.Mui-checked):not(.MuiCheckbox-indeterminate)": {
+                        color: "grey.400",
+                    },
+                    "& .MuiDataGrid-cellCheckbox .MuiCheckbox-root, & .MuiDataGrid-columnHeaderCheckbox .MuiCheckbox-root": {
+                        padding: "4px",
+                    },
+                    "& .MuiDataGrid-cellCheckbox .MuiSvgIcon-root, & .MuiDataGrid-columnHeaderCheckbox .MuiSvgIcon-root": {
+                        fontSize: 18,
+                    },
+                }}
+                slotProps={{
+                    baseCheckbox: { size: "small" },
+                    toolbar: {
+                        csvOptions: csvExportOptions("PVs"),
+                        mainControls: <ResultsToolbar handleErrorMessage={handleErrorMessage} handleOpenErrorAlert={handleOpenErrorAlert} handleSeverity={handleSeverity} />
+                    }
+                }}
             />
         </ Fragment>
     );
