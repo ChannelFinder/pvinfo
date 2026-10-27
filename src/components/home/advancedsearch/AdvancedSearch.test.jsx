@@ -6,7 +6,7 @@ const configOverrides = vi.hoisted(() => ({
   EXTRA_PROP: 'Sector',
   EXTRA_PROP_LABEL: 'Storage Ring Sector',
   SECOND_EXTRA_PROP: null,
-  PROPERTY_VALUES: 'Acc:GTB,BR,BTS,SR',
+  PROPERTY_VALUES: 'Acc:GTB,BR,BTS,SR;mode:Fast Archive',
 }));
 vi.mock('../../../config', async (importOriginal) => {
   const actual = (await importOriginal()).default;
@@ -69,6 +69,14 @@ test('a property with known values opens its values and picking one adds the who
   expect(listItems('Acc')).toEqual(['Acc', 'GTB', 'BR', 'BTS', 'SR']);
   fireEvent.click(screen.getByRole('button', { name: 'BTS' }));
   expect(setAdvancedQuery).toHaveBeenCalledWith('SR* Acc=BTS ');
+});
+
+test('spaces in a picked value are replaced with the ? wildcard so the value stays one term', () => {
+  const { setAdvancedQuery } = renderSearch({ searchProperties: ['mode'], advancedQuery: 'SR*' });
+  openDropdown('Properties');
+  fireEvent.click(screen.getByRole('button', { name: 'mode' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Fast Archive' }));
+  expect(setAdvancedQuery).toHaveBeenCalledWith('SR* mode=Fast?Archive ');
 });
 
 test('back returns from a property\'s values to the properties list', () => {

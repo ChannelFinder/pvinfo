@@ -68,8 +68,9 @@ function AdvancedSearch(props) {
         props.setAdvancedQuery(props.advancedQuery + prefix + value + suffix);
     }
 
+    // the query is space separated, so spaces in a value are replaced with the Channel Finder single character wildcard
     const handleSelectValue = (value) => {
-        handleSelectAtt(`${valuesProperty}=${value} `, false);
+        handleSelectAtt(`${valuesProperty}=${value.replace(/\s+/g, "?")} `, false);
         handleCloseAtts();
     }
 
