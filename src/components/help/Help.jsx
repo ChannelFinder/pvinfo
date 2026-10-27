@@ -1,5 +1,6 @@
 import React, { Fragment } from "react";
-import { Typography, Grid, Link } from "@mui/material";
+import { Typography, Grid, Link, Button } from "@mui/material";
+import NewReleasesOutlinedIcon from "@mui/icons-material/NewReleasesOutlined";
 import { Link as RouterLink } from "react-router";
 import archivePlotOptions from "../../assets/archive-options.png";
 import config from "../../config";
@@ -13,7 +14,7 @@ function Help() {
               <Typography style={{marginBottom: 20}} variant='h4'><strong>PV Info Help</strong></Typography>
           </Grid>
           {config.SHOW_WHATS_NEW &&
-            <Typography variant='body1' sx={{ mb: 2 }}>See <Link component={RouterLink} to="/whatsnew" underline="always">what's new in this version</Link> of PV Info.</Typography>
+            <Button variant="outlined" component={RouterLink} to="/whatsnew" startIcon={<NewReleasesOutlinedIcon />} sx={{ mb: 2 }}>What's New in PV Info</Button>
           }
           <Grid justifyContent="flex-end" size={12}>
 
