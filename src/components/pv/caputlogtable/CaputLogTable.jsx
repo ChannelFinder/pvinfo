@@ -80,8 +80,10 @@ function CaputLogTable(props) {
         initialState: { searchTerm: searchTerm }
     });
 
+    // the PV details page is reused when going from one PV to another, and SearchProvider only reads its config
+    // when it is created, so the key gives each PV a new search and accordion state
     return (
-        <SearchProvider config={searchConfig} >
+        <SearchProvider key={searchTerm} config={searchConfig} >
             <CaputLogAccordion searchTerm={searchTerm} />
         </SearchProvider>
     );
