@@ -270,8 +270,11 @@ function QueryResults(props) {
             return pvObject;
         }));
         setChecked(new Array(props.cfData.length).fill(false));
-        // row ids are reused by the next search, so clear the selection for new results
+        // row ids are reused by the next search, so clear the selection and monitored PVs for new results.
+        // a search can return its results twice, see Home, and the monitored ids would otherwise skip the new switches
         setRowSelectionModel({ type: "include", ids: new Set() });
+        setCurrentChecked(new Set());
+        setMonitorAllChecked(false);
         monitorAllOnNewPage(config.DEFAULT_MONITOR_ALL);
     }, [props.cfData, monitorAllOnNewPage]);
 

@@ -184,6 +184,35 @@ describe('monitor all', () => {
     expect([...subscribed].sort()).toEqual(visiblePVs(container).sort());
   });
 
+  test('the row switches stay on when the same results arrive twice with DEFAULT_MONITOR_ALL', async () => {
+    // a search from the search button queries Channel Finder twice, once for the submit and once for the new URL
+    configOverrides.DEFAULT_MONITOR_ALL = true;
+    const props = { isLoading: false, handleErrorMessage: () => {}, handleOpenErrorAlert: () => {}, handleSeverity: () => {} };
+    const page = (data) => <ThemeProvider theme={theme}><MemoryRouter><QueryResults cfData={data} {...props} /></MemoryRouter></ThemeProvider>;
+    const rowSwitches = (container) => [...container.querySelectorAll('.MuiDataGrid-row [data-field="button"] input')];
+    const { container, rerender } = render(page(cfData));
+    await act(async () => {});
+    rerender(page([...cfData]));
+    await act(async () => {});
+    expect(monitorAllCheckbox(container).checked).toBe(true);
+    expect(rowSwitches(container)).toHaveLength(50);
+    expect(rowSwitches(container).every((input) => input.checked)).toBe(true);
+    expect([...subscribed].sort()).toEqual(visiblePVs(container).sort());
+  });
+
+  test('new results stop monitoring by default', async () => {
+    const props = { isLoading: false, handleErrorMessage: () => {}, handleOpenErrorAlert: () => {}, handleSeverity: () => {} };
+    const page = (data) => <ThemeProvider theme={theme}><MemoryRouter><QueryResults cfData={data} {...props} /></MemoryRouter></ThemeProvider>;
+    const { container, rerender } = render(page(cfData));
+    await act(async () => {});
+    await click(monitorAllCheckbox(container));
+    expect(subscribed.size).toBe(50);
+    rerender(page(cfData.map((channel) => ({ ...channel, name: `${channel.name}:B` }))));
+    await act(async () => {});
+    expect(monitorAllCheckbox(container).checked).toBe(false);
+    expect(subscribed.size).toBe(0);
+  });
+
   test('a PV unchecked by the user stays unchecked with DEFAULT_MONITOR_ALL', async () => {
     configOverrides.DEFAULT_MONITOR_ALL = true;
     const container = await renderMonitorResults();
