@@ -38,6 +38,7 @@ beforeEach(() => {
 
 afterEach(() => {
   vi.restoreAllMocks();
+  vi.unstubAllGlobals();
   Object.keys(configOverrides).forEach((key) => delete configOverrides[key]);
 });
 
@@ -87,4 +88,18 @@ test('a new search clears the selection', async () => {
   rerender(results([channel('PV:X'), channel('PV:Y'), channel('PV:Z')], props));
   await act(async () => {});
   expect(screen.getByRole('button', { name: 'Copy all 3 PV names' })).toBeInTheDocument();
+});
+
+test('the selection checkboxes and the copy and plot buttons are hidden together at phone width', async () => {
+  // only the phone width media query matches, see SM_BREAKPOINT
+  const phoneQuery = `(max-width:${configOverrides.SM_BREAKPOINT ?? 600}px)`;
+  // jsdom has no matchMedia, which MUI's useMediaQuery uses
+  vi.stubGlobal('matchMedia', vi.fn((query) => ({
+    matches: query.replace(/\s/g, '') === phoneQuery.replace(/\s/g, ''), media: query,
+    addListener: () => {}, removeListener: () => {}, addEventListener: () => {}, removeEventListener: () => {},
+  })));
+  const { container } = await renderResults([channel('PV:A'), channel('PV:B')]);
+  expect(container.querySelector('[data-field="__check__"]')).toBeNull();
+  expect(screen.queryByRole('button', { name: /Copy all/ })).not.toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: /plot them together/ })).not.toBeInTheDocument();
 });

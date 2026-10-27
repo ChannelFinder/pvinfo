@@ -1,5 +1,5 @@
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
-import { Typography, Switch, Link, IconButton, Tooltip } from '@mui/material';
+import { Typography, Switch, Link, IconButton, Tooltip, useMediaQuery } from '@mui/material';
 import { DataGrid, GRID_CHECKBOX_SELECTION_COL_DEF, GRID_CHECKBOX_SELECTION_FIELD } from '@mui/x-data-grid';
 import { useNavigate, Link as RouterLink } from "react-router";
 import TimelineIcon from '@mui/icons-material/Timeline';
@@ -33,6 +33,8 @@ function QueryResults(props) {
     const [currentChecked, setCurrentChecked] = useState(new Set());
     const [monitorAllChecked, setMonitorAllChecked] = useState(false);
     const [rowSelectionModel, setRowSelectionModel] = useState({ type: "include", ids: new Set() });
+    // same phone cutoff as the toolbar copy and plot buttons, see ResultsToolbar
+    const isPhone = useMediaQuery(`(max-width:${config.SM_BREAKPOINT}px)`);
     const liveMonitorMax = config.LIVE_MONITOR_MAX;
     const liveMonitorWarn = config.LIVE_MONITOR_WARN;
 
@@ -270,6 +272,14 @@ function QueryResults(props) {
         setRowSelectionModel({ type: "include", ids: new Set() });
     }, [props.cfData]);
 
+    // hide the row selection checkboxes on phones, and clear the selection so rows aren't left selected while hidden
+    useEffect(() => {
+        setColumnVisibilityModel((prevColumnVisibilityModel) => ({ ...prevColumnVisibilityModel, [GRID_CHECKBOX_SELECTION_FIELD]: !isPhone }));
+        if (isPhone) {
+            setRowSelectionModel({ type: "include", ids: new Set() });
+        }
+    }, [isPhone]);
+
     function roundToBreakpoint(width, breakpoints) {
         const smallerBreakpoints = breakpoints.filter((item) => item <= width);
         return smallerBreakpoints[smallerBreakpoints.length - 1]
@@ -297,10 +307,7 @@ function QueryResults(props) {
                 const omitSmall = config.OMIT_IN_TABLE_SMALL;
                 const omitMedium = config.OMIT_IN_TABLE_MEDIUM;
 
-                // hide the row selection checkboxes on phones, and clear the selection so rows aren't left selected while hidden
-                toggleColumnVisibility(GRID_CHECKBOX_SELECTION_FIELD, windowWidth > sm);
                 if (windowWidth <= sm) {
-                    setRowSelectionModel({ type: "include", ids: new Set() });
                     for (let i = 0; i < omitExtraSmall.length; ++i) {
                         toggleColumnVisibility(omitExtraSmall[i], false)
                     }
@@ -395,7 +402,8 @@ function QueryResults(props) {
                 // the selection checkboxes are small and grey until checked so they don't distract from the results
                 sx={{
                     "& .MuiDataGrid-cellCheckbox .MuiCheckbox-root:not(.Mui-checked), & .MuiDataGrid-columnHeaderCheckbox .MuiCheckbox-root:not(.Mui-checked):not(.MuiCheckbox-indeterminate)": {
-                        color: "grey.400",
+                        // lightest grey with the 3:1 contrast on white recommended for controls
+                        color: "#8f8f8f",
                     },
                     "& .MuiDataGrid-cellCheckbox .MuiCheckbox-root, & .MuiDataGrid-columnHeaderCheckbox .MuiCheckbox-root": {
                         padding: "4px",
