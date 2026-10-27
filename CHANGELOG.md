@@ -47,6 +47,7 @@ Version 3 updates the libraries and tools PV Info is built on. Node.js >= v22.22
 
 ### Fixed
 
+- The search button queried Channel Finder twice for each new search, once for the button and once for the URL change
 - Monitor all monitored the first rows of the search results instead of the visible page when the table was sorted or filtered ([#175](https://github.com/ChannelFinder/pvinfo/pull/175))
 - PVs on a previous results page stayed subscribed in PV Web Socket after a page change ([#175](https://github.com/ChannelFinder/pvinfo/pull/175))
 - Clicking next to a header link navigated to the home page ([#173](https://github.com/ChannelFinder/pvinfo/pull/173))

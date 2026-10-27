@@ -47,3 +47,32 @@ test('the error clears when the query is changed and the search then runs', asyn
   await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'search' })); });
   expect(api.CF_QUERY).toHaveBeenCalledWith({ pvName: 'SR*', iocName: 'test*', standardSearch: false });
 });
+
+// these use the Advanced search since jsdom doesn't support reading the Standard search fields from the form
+describe('search button', () => {
+  const search = async () => { await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'search' })); }); };
+
+  test('queries Channel Finder once for a new search', async () => {
+    await renderAdvancedSearch();
+    typeQuery('SR*');
+    await search();
+    expect(api.CF_QUERY).toHaveBeenCalledTimes(1);
+    expect(api.COUNT_QUERY).toHaveBeenCalledTimes(1);
+    expect(api.CF_QUERY).toHaveBeenCalledWith({ pvName: 'SR*', standardSearch: false });
+  });
+
+  test('queries Channel Finder again when the same search is repeated', async () => {
+    await renderAdvancedSearch();
+    typeQuery('SR*');
+    await search();
+    await search();
+    expect(api.CF_QUERY).toHaveBeenCalledTimes(2);
+  });
+
+  test('a search without search terms queries every PV once', async () => {
+    await renderAdvancedSearch();
+    await search();
+    expect(api.CF_QUERY).toHaveBeenCalledTimes(1);
+    expect(api.CF_QUERY).toHaveBeenCalledWith({ standardSearch: false });
+  });
+});
