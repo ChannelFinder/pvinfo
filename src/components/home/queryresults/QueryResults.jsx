@@ -1,11 +1,12 @@
-import React, { Fragment, useCallback, useEffect, useState } from 'react';
-import { Typography, Switch, Link, IconButton, Tooltip, useMediaQuery } from '@mui/material';
-import { DataGrid, GRID_CHECKBOX_SELECTION_COL_DEF, GRID_CHECKBOX_SELECTION_FIELD } from '@mui/x-data-grid';
+import React, { Fragment, useCallback, useEffect, useRef, useState } from 'react';
+import { Typography, Link, IconButton, Tooltip, useMediaQuery } from '@mui/material';
+import { DataGrid, GRID_CHECKBOX_SELECTION_COL_DEF, GRID_CHECKBOX_SELECTION_FIELD, useGridApiRef, gridPaginatedVisibleSortedGridRowIdsSelector } from '@mui/x-data-grid';
 import { useNavigate, Link as RouterLink } from "react-router";
 import TimelineIcon from '@mui/icons-material/Timeline';
 import ReadMoreIcon from '@mui/icons-material/ReadMore';
 import api from "../../../api";
-import ValueCheckbox from './valuecheckbox/ValueCheckbox';
+import ValueCheckbox, { monitorDisabledReason } from './valuecheckbox/ValueCheckbox';
+import useWebSocket from '../../../useWebSocket';
 import Value from "./value";
 import Logo from "./logo";
 import ResultsToolbar from "./resultstoolbar";
@@ -14,6 +15,7 @@ import csvExportOptions from "../../../csvExportOptions";
 
 function QueryResults(props) {
     const navigate = useNavigate();
+    const apiRef = useGridApiRef();
     const pageSizeEnvValue = config.RESULTS_TABLE_SIZE;
     const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: pageSizeEnvValue });
     const [pvs, setPVs] = useState([]);
@@ -29,9 +31,14 @@ function QueryResults(props) {
     const [columnWidths, setColumnWidths] = useState({});
     const [currentBreakpoint, setCurrentBreakpoint] = useState();
     const [prevBreakpoint, setPrevBreakpoint] = useState();
-    const [checked, setChecked] = useState([]);
+    // row ids of the monitored PVs
     const [currentChecked, setCurrentChecked] = useState(new Set());
     const [monitorAllChecked, setMonitorAllChecked] = useState(false);
+    // set by the page, sort, and filter handlers, see handleVisiblePageChange
+    const visiblePageKeepsMonitorAll = useRef(null);
+    const [visiblePageChanges, setVisiblePageChanges] = useState(0);
+    // PV names subscribed in PV Web Socket, so only the changes are sent when the monitored PVs change
+    const subscribedPVs = useRef(new Set());
     const [rowSelectionModel, setRowSelectionModel] = useState({ type: "include", ids: new Set() });
     // same phone cutoff as the toolbar copy and plot buttons, see ResultsToolbar
     const isPhone = useMediaQuery(`(max-width:${config.SM_BREAKPOINT}px)`);
@@ -40,61 +47,105 @@ function QueryResults(props) {
 
     let { handleErrorMessage, handleOpenErrorAlert, handleSeverity } = props;
 
-    const updateCurrentChecked = useCallback((index, checkedStatus) => {
-        if (currentChecked.has(index) && checkedStatus) {
-            return
+    // no web socket connection when PV Web Socket is turned off
+    const { sendJsonMessage } = useWebSocket(config.USE_PVWS ? config.PVWS_URL : null, {
+        share: true,
+        filter: () => false,
+    });
+
+    // add ids to the monitored PVs, stopping once over the maximum so the error below is shown
+    const addWithLimit = useCallback((monitored, ids) => {
+        const newMonitored = new Set(monitored);
+        for (const id of ids) {
+            if (newMonitored.size > liveMonitorMax) {
+                break;
+            }
+            newMonitored.add(id);
         }
-        let newChecked = checked;
-        setCurrentChecked(prevState => {
-            const newCurrentChecked = new Set(prevState);
-            if (newCurrentChecked.size > liveMonitorMax && checkedStatus) {
-                return newCurrentChecked;
+        return newMonitored;
+    }, [liveMonitorMax]);
+
+    const updateCurrentChecked = useCallback((id, checkedStatus) => {
+        setCurrentChecked((prevState) => {
+            if (prevState.has(id) === checkedStatus) {
+                return prevState;
             }
             if (checkedStatus) {
-                newCurrentChecked.add(index);
-            } else {
-                newCurrentChecked.delete(index);
+                return addWithLimit(prevState, [id]);
             }
-            newChecked[index] = checkedStatus;
-            setChecked(newChecked);
+            const newCurrentChecked = new Set(prevState);
+            newCurrentChecked.delete(id);
             return newCurrentChecked;
         });
-    }, [currentChecked, checked, liveMonitorMax]);
+    }, [addWithLimit]);
 
-    const clearMonitoring = useCallback(() => {
-        setMonitorAllChecked(false);
-        let newCurrentChecked = currentChecked;
-
-        const iterator = newCurrentChecked.values();
-        let current = iterator.next();
-
-        while (!current.done) {
-            newCurrentChecked.delete(current.value);
-
-            const myEvent = { target: { checked: false } }
-            updateCurrentChecked(current.value, myEvent.target.checked);
-            current = iterator.next();
+    // ids of the PVs that can be monitored on the page the user is looking at. The grid's row ids are used
+    // so it is the sorted and filtered page and not just the first rows of the search results
+    const visibleMonitorableIds = useCallback(() => {
+        if (!apiRef.current) {
+            return [];
         }
-        setCurrentChecked(newCurrentChecked);
-    }, [currentChecked, updateCurrentChecked])
+        return gridPaginatedVisibleSortedGridRowIdsSelector(apiRef).filter((id) => {
+            const row = apiRef.current.getRow(id);
+            return row && monitorDisabledReason(row.pvStatus, row.recordType) === "";
+        });
+    }, [apiRef]);
 
-    const handleMonitorSelectAll = useCallback((firstRow, lastRow) => (event) => {
+    const handleMonitorSelectAll = (event) => {
         setMonitorAllChecked(event.target.checked);
+        setCurrentChecked(event.target.checked ? addWithLimit(currentChecked, visibleMonitorableIds()) : new Set());
+    }
 
-        if (!firstRow && !lastRow) {
-            const rowsString = document.getElementsByClassName('MuiTablePagination-displayedRows')[0].innerHTML;
-            const [start, end] = rowsString.split('\u2013').map(s => s.trim().replace(" of", ""));
-            [firstRow, lastRow] = [parseInt(start) - 1, parseInt(end) - 1];
+    // the visible page changed (new search, page change, sort, filter). The grid hasn't rendered the new page yet,
+    // so the monitored PVs are updated in the effect below. A sort or filter can also reset the page,
+    // so requests before the effect runs are combined and keeping monitor all wins
+    const handleVisiblePageChange = useCallback((keepMonitorAll) => {
+        visiblePageKeepsMonitorAll.current = Boolean(visiblePageKeepsMonitorAll.current) || keepMonitorAll;
+        setVisiblePageChanges((count) => count + 1);
+    }, []);
+
+    // monitor all monitors the new visible page, otherwise only the monitored PVs still on the page stay monitored
+    useEffect(() => {
+        if (visiblePageKeepsMonitorAll.current === null) {
+            return;
         }
-        for (let i = firstRow; i <= lastRow; ++i) {
-            // only check mark active PVs, unless we are ignoring CF PV status
-            // matters now that we show "Disconnected" for PVs that are not connected to their IOC
-            if (config.PVWS_IGNORE_CF_PVSTATUS || pvs[i].pvStatus === "Active") {
-                updateCurrentChecked(i, event.target.checked);
+        const keepMonitorAll = config.USE_PVWS && visiblePageKeepsMonitorAll.current;
+        visiblePageKeepsMonitorAll.current = null;
+        setMonitorAllChecked(keepMonitorAll);
+        if (keepMonitorAll) {
+            setCurrentChecked(addWithLimit(new Set(), visibleMonitorableIds()));
+        } else {
+            const visibleIds = new Set(apiRef.current ? gridPaginatedVisibleSortedGridRowIdsSelector(apiRef) : []);
+            setCurrentChecked((prevState) => new Set([...prevState].filter((id) => visibleIds.has(id))));
+        }
+    }, [visiblePageChanges, apiRef, addWithLimit, visibleMonitorableIds]);
+
+    // subscribe and clear PVs in PV Web Socket when the monitored PVs change
+    useEffect(() => {
+        if (!config.USE_PVWS) {
+            return;
+        }
+        const monitoredPVs = new Set([...currentChecked].map((id) => pvs[id]?.name).filter(Boolean));
+        const clearPVs = [...subscribedPVs.current].filter((name) => !monitoredPVs.has(name));
+        const subscribePVs = [...monitoredPVs].filter((name) => !subscribedPVs.current.has(name));
+        if (clearPVs.length > 0) {
+            sendJsonMessage({ "type": "clear", "pvs": clearPVs });
+        }
+        if (subscribePVs.length > 0) {
+            sendJsonMessage({ "type": "subscribe", "pvs": subscribePVs });
+        }
+        subscribedPVs.current = monitoredPVs;
+    }, [currentChecked, pvs, sendJsonMessage]);
+
+    // clear the subscriptions when leaving the search results
+    useEffect(() => {
+        return () => {
+            if (subscribedPVs.current.size > 0) {
+                sendJsonMessage({ "type": "clear", "pvs": [...subscribedPVs.current] });
+                subscribedPVs.current = new Set();
             }
-        }
-        return
-    }, [updateCurrentChecked])
+        };
+    }, [sendJsonMessage]);
 
     // Notify user if monitoring over warn or max PVs
     useEffect(() => {
@@ -112,11 +163,12 @@ function QueryResults(props) {
 
     useEffect(() => {
         if (props.isLoading) {
-            clearMonitoring();
+            setMonitorAllChecked(false);
+            setCurrentChecked(new Set());
             // go back to the first page for a new search but keep the user's page size
             setPaginationModel((prev) => ({ ...prev, page: 0 }));
         }
-    }, [props.isLoading, clearMonitoring])
+    }, [props.isLoading])
 
     const handleRowDoubleClick = (e) => {
         navigate(`/pv/${e.row.name}`);
@@ -159,27 +211,12 @@ function QueryResults(props) {
                 </Tooltip>
                 {
                     config.USE_PVWS ? <ValueCheckbox pvName={params.row.name} id={params.row.id}
-                        pvStatus={params.row.pvStatus} recordType={params.row.recordType} checked={checked}
-                        currentChecked={currentChecked} updateCurrentChecked={updateCurrentChecked} />
+                        pvStatus={params.row.pvStatus} recordType={params.row.recordType}
+                        checked={currentChecked.has(params.row.id)} updateCurrentChecked={updateCurrentChecked} />
                         : <div></div>
                 }
             </div>
         );
-    }
-
-    const renderActionsHeader = () => {
-        return (
-            <div>
-                <Typography display="inline" variant="subtitle2">Actions</Typography>
-                {
-                    config.USE_PVWS ? <Tooltip arrow title="Monitor All PVs">
-                        <Switch size="small" checked={monitorAllChecked} onChange={handleMonitorSelectAll()} sx={{ ml: ".5rem" }}
-                            slotProps={{ input: { "aria-label": "Monitor all PVs" } }}></Switch>
-                    </Tooltip>
-                        : <div></div>
-                }
-            </div>
-        )
     }
 
     const renderIOCLink = (params) => {
@@ -248,7 +285,7 @@ function QueryResults(props) {
     if (config.USE_PVWS) {
         columns.push({ field: "value", headerName: 'Value', width: 140, resizable: false, renderCell: renderValue })
     }
-    columns.push({ field: "button", headerName: 'Actions', width: config.USE_PVWS ? 160 : 120, resizable: false, sortable: false, disableColumnMenu: true, renderCell: renderButtons, renderHeader: renderActionsHeader })
+    columns.push({ field: "button", headerName: 'Actions', width: config.USE_PVWS ? 160 : 120, resizable: false, sortable: false, disableColumnMenu: true, renderCell: renderButtons })
     columns = columns.map((column) =>
         column.field in columnWidths ? { ...column, flex: 0, width: columnWidths[column.field] } : column
     )
@@ -267,10 +304,11 @@ function QueryResults(props) {
             });
             return pvObject;
         }));
-        setChecked(new Array(props.cfData.length).fill(false));
-        // row ids are reused by the next search, so clear the selection for new results
+        // row ids are reused by the next search, so clear the selection and monitored PVs for new results
         setRowSelectionModel({ type: "include", ids: new Set() });
-    }, [props.cfData]);
+        setCurrentChecked(new Set());
+        handleVisiblePageChange(config.DEFAULT_MONITOR_ALL);
+    }, [props.cfData, handleVisiblePageChange]);
 
     // hide the row selection checkboxes on phones, and clear the selection so rows aren't left selected while hidden
     useEffect(() => {
@@ -374,6 +412,7 @@ function QueryResults(props) {
     return (
         <Fragment>
             <DataGrid
+                apiRef={apiRef}
                 rows={pvs}
                 columns={columns}
                 autoHeight={true}
@@ -382,8 +421,10 @@ function QueryResults(props) {
                 paginationModel={paginationModel}
                 onPaginationModelChange={(newPaginationModel) => {
                     setPaginationModel(newPaginationModel);
-                    clearMonitoring();
+                    handleVisiblePageChange(config.DEFAULT_MONITOR_ALL);
                 }}
+                onSortModelChange={() => handleVisiblePageChange(monitorAllChecked)}
+                onFilterModelChange={() => handleVisiblePageChange(monitorAllChecked)}
                 pageSizeOptions={tablePageSizeOptions}
                 pagination
                 columnVisibilityModel={columnVisibilityModel}
@@ -416,7 +457,8 @@ function QueryResults(props) {
                     baseCheckbox: { size: "small" },
                     toolbar: {
                         csvOptions: csvExportOptions("PVs"),
-                        mainControls: <ResultsToolbar handleErrorMessage={handleErrorMessage} handleOpenErrorAlert={handleOpenErrorAlert} handleSeverity={handleSeverity} />
+                        mainControls: <ResultsToolbar handleErrorMessage={handleErrorMessage} handleOpenErrorAlert={handleOpenErrorAlert} handleSeverity={handleSeverity}
+                            monitorAllChecked={monitorAllChecked} handleMonitorAll={handleMonitorSelectAll} />
                     }
                 }}
             />

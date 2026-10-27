@@ -5,6 +5,46 @@ import theme from '../../../theme';
 import QueryResults from './QueryResults';
 import { archiverPlotURL } from './resultstoolbar/ResultsToolbar';
 
+// track which PVs are subscribed through the shared PVWS web socket
+const subscribed = new Set();
+vi.mock('../../../useWebSocket', () => ({
+  default: () => ({
+    lastJsonMessage: null,
+    sendJsonMessage: (message) => {
+      message.pvs.forEach((pv) => message.type === 'subscribe' ? subscribed.add(pv) : subscribed.delete(pv));
+    },
+  }),
+}));
+
+const pvName = (i) => `PV${String(i).padStart(3, '0')}`;
+const cfData = Array.from({ length: 120 }, (_, i) => ({
+  name: pvName(i),
+  owner: 'owner',
+  properties: [{ name: 'pvStatus', value: 'Active' }, { name: 'recordType', value: 'ai' }],
+}));
+
+async function renderMonitorResults(data = cfData, handleErrorMessage = () => {}) {
+  const props = { isLoading: false, cfData: data, handleErrorMessage, handleOpenErrorAlert: () => {}, handleSeverity: () => {} };
+  const { container } = render(<ThemeProvider theme={theme}><MemoryRouter><QueryResults {...props} /></MemoryRouter></ThemeProvider>);
+  await act(async () => {});
+  return container;
+}
+
+const visiblePVs = (container) => [...container.querySelectorAll('.MuiDataGrid-row')].map((row) => pvName(row.getAttribute('data-id')));
+const monitorAllCheckbox = () => screen.getByLabelText('Monitor all PVs');
+const click = async (element) => { await act(async () => { fireEvent.click(element); }); };
+const rowSwitch = (container, id) => container.querySelector(`.MuiDataGrid-row[data-id="${id}"] [data-field="button"] input`);
+// the quick filter waits before filtering, see debounceMs in the MUI X Data Grid docs
+const quickFilter = async (text) => {
+  fireEvent.change(screen.getByPlaceholderText('Search…'), { target: { value: text } });
+  await act(async () => { await new Promise((resolve) => setTimeout(resolve, 500)); });
+};
+const sortByNameDescending = async (container) => {
+  const nameHeader = container.querySelector('.MuiDataGrid-columnHeader[data-field="name"] .MuiDataGrid-columnHeaderTitleContainer');
+  await click(nameHeader);
+  await click(nameHeader);
+};
+
 const configOverrides = vi.hoisted(() => ({}));
 vi.mock('../../../config', async (importOriginal) => {
   const actual = (await importOriginal()).default;
@@ -88,6 +128,161 @@ test('a new search clears the selection', async () => {
   rerender(results([channel('PV:X'), channel('PV:Y'), channel('PV:Z')], props));
   await act(async () => {});
   expect(screen.getByRole('button', { name: 'Copy all 3 PV names' })).toBeInTheDocument();
+});
+
+test('the monitor all switch is hidden when PV Web Socket is turned off', async () => {
+  await renderResults([channel('PV:A')]);
+  expect(screen.queryByLabelText('Monitor all PVs')).not.toBeInTheDocument();
+});
+
+describe('monitor all', () => {
+  beforeEach(() => {
+    subscribed.clear();
+    Object.keys(configOverrides).forEach((key) => delete configOverrides[key]);
+    Object.assign(configOverrides, { USE_PVWS: true, PVWS_IGNORE_CF_PVSTATUS: false, RESULTS_TABLE_SIZE: 50, DEFAULT_MONITOR_ALL: false });
+  });
+
+  test('the switch is in the toolbar and the actions header is only a label', async () => {
+    const container = await renderMonitorResults();
+    expect(container.querySelector('.MuiDataGrid-toolbar').contains(monitorAllCheckbox())).toBe(true);
+    expect(container.querySelector('.MuiDataGrid-columnHeader[data-field="button"] input')).toBeNull();
+  });
+
+  test('monitors the PVs on the visible page', async () => {
+    const container = await renderMonitorResults();
+    await click(monitorAllCheckbox(container));
+    expect([...subscribed].sort()).toEqual(visiblePVs(container).sort());
+    expect(subscribed.size).toBe(50);
+  });
+
+  test('monitors the visible page after the table is sorted', async () => {
+    const container = await renderMonitorResults();
+    await sortByNameDescending(container);
+    expect(visiblePVs(container)[0]).toBe('PV119');
+    await click(monitorAllCheckbox(container));
+    expect([...subscribed].sort()).toEqual(visiblePVs(container).sort());
+  });
+
+  test('follows the visible page when the table is sorted while checked', async () => {
+    const container = await renderMonitorResults();
+    await click(monitorAllCheckbox(container));
+    await sortByNameDescending(container);
+    expect(monitorAllCheckbox(container).checked).toBe(true);
+    expect([...subscribed].sort()).toEqual(visiblePVs(container).sort());
+  });
+
+  test('stops monitoring on page change by default', async () => {
+    const container = await renderMonitorResults();
+    await click(monitorAllCheckbox(container));
+    await click(container.querySelector('[aria-label="Go to next page"]'));
+    expect(subscribed.size).toBe(0);
+    expect(monitorAllCheckbox(container).checked).toBe(false);
+  });
+
+  test('is checked after a search and follows page changes with DEFAULT_MONITOR_ALL', async () => {
+    configOverrides.DEFAULT_MONITOR_ALL = true;
+    const container = await renderMonitorResults();
+    expect(monitorAllCheckbox(container).checked).toBe(true);
+    expect([...subscribed].sort()).toEqual(visiblePVs(container).sort());
+
+    await click(container.querySelector('[aria-label="Go to next page"]'));
+    expect(visiblePVs(container)[0]).toBe('PV050');
+    expect(monitorAllCheckbox(container).checked).toBe(true);
+    expect([...subscribed].sort()).toEqual(visiblePVs(container).sort());
+  });
+
+  test('the row switches stay on when the same results arrive twice with DEFAULT_MONITOR_ALL', async () => {
+    // a search from the search button queries Channel Finder twice, once for the submit and once for the new URL
+    configOverrides.DEFAULT_MONITOR_ALL = true;
+    const props = { isLoading: false, handleErrorMessage: () => {}, handleOpenErrorAlert: () => {}, handleSeverity: () => {} };
+    const page = (data) => <ThemeProvider theme={theme}><MemoryRouter><QueryResults cfData={data} {...props} /></MemoryRouter></ThemeProvider>;
+    const rowSwitches = (container) => [...container.querySelectorAll('.MuiDataGrid-row [data-field="button"] input')];
+    const { container, rerender } = render(page(cfData));
+    await act(async () => {});
+    rerender(page([...cfData]));
+    await act(async () => {});
+    expect(monitorAllCheckbox(container).checked).toBe(true);
+    expect(rowSwitches(container)).toHaveLength(50);
+    expect(rowSwitches(container).every((input) => input.checked)).toBe(true);
+    expect([...subscribed].sort()).toEqual(visiblePVs(container).sort());
+  });
+
+  test('new results stop monitoring by default', async () => {
+    const props = { isLoading: false, handleErrorMessage: () => {}, handleOpenErrorAlert: () => {}, handleSeverity: () => {} };
+    const page = (data) => <ThemeProvider theme={theme}><MemoryRouter><QueryResults cfData={data} {...props} /></MemoryRouter></ThemeProvider>;
+    const { container, rerender } = render(page(cfData));
+    await act(async () => {});
+    await click(monitorAllCheckbox(container));
+    expect(subscribed.size).toBe(50);
+    rerender(page(cfData.map((channel) => ({ ...channel, name: `${channel.name}:B` }))));
+    await act(async () => {});
+    expect(monitorAllCheckbox(container).checked).toBe(false);
+    expect(subscribed.size).toBe(0);
+  });
+
+  test('a PV unchecked by the user stays unchecked with DEFAULT_MONITOR_ALL', async () => {
+    configOverrides.DEFAULT_MONITOR_ALL = true;
+    const container = await renderMonitorResults();
+    const firstRowCheckbox = container.querySelector('.MuiDataGrid-row[data-id="0"] [data-field="button"] input');
+    await click(firstRowCheckbox);
+    await act(async () => {});
+    expect(subscribed.has('PV000')).toBe(false);
+    expect(subscribed.size).toBe(49);
+  });
+
+  test('skips waveforms like the row switches when waveform monitoring is turned off', async () => {
+    // so the skipped waveforms don't count toward the monitoring warning and limit
+    Object.assign(configOverrides, { PVWS_ALLOW_WAVEFORMS: false, LIVE_MONITOR_WARN: 30 });
+    const handleErrorMessage = vi.fn();
+    const waveformEveryOther = cfData.map((channel, i) => (i % 2 === 0 ? channel
+      : { ...channel, properties: [{ name: 'pvStatus', value: 'Active' }, { name: 'recordType', value: 'waveform' }] }));
+    const container = await renderMonitorResults(waveformEveryOther, handleErrorMessage);
+    await click(monitorAllCheckbox(container));
+    expect(subscribed.size).toBe(25);
+    expect(subscribed.has('PV001')).toBe(false);
+    expect(handleErrorMessage).not.toHaveBeenCalled();
+  });
+
+  test('a monitored PV sorted off the page is no longer monitored when it comes back', async () => {
+    const container = await renderMonitorResults();
+    await click(rowSwitch(container, 0));
+    expect(subscribed.has('PV000')).toBe(true);
+    await sortByNameDescending(container);
+    expect(subscribed.size).toBe(0);
+    // sorting a third time goes back to the original order
+    await click(container.querySelector('.MuiDataGrid-columnHeader[data-field="name"] .MuiDataGrid-columnHeaderTitleContainer'));
+    expect(visiblePVs(container)[0]).toBe('PV000');
+    expect(rowSwitch(container, 0).checked).toBe(false);
+    expect(subscribed.size).toBe(0);
+  });
+
+  test('stays on when the table is filtered from a later page', async () => {
+    const container = await renderMonitorResults();
+    await click(container.querySelector('[aria-label="Go to next page"]'));
+    await click(monitorAllCheckbox(container));
+    expect(subscribed.has('PV050')).toBe(true);
+    // the filter leaves one page of results, which sends the grid back to the first page
+    await quickFilter('PV00');
+    expect(visiblePVs(container)).toHaveLength(10);
+    expect(monitorAllCheckbox(container).checked).toBe(true);
+    expect([...subscribed].sort()).toEqual(visiblePVs(container).sort());
+  });
+
+  test('keeps monitoring when the Actions column is hidden', async () => {
+    const container = await renderMonitorResults();
+    await click(monitorAllCheckbox(container));
+    await click(screen.getByRole('button', { name: 'Columns' }));
+    await click(screen.getByRole('checkbox', { name: 'Actions' }));
+    expect(container.querySelector('.MuiDataGrid-columnHeader[data-field="button"]')).toBeNull();
+    expect([...subscribed].sort()).toEqual(visiblePVs(container).sort());
+    expect(subscribed.size).toBe(50);
+  });
+
+  test('does nothing with DEFAULT_MONITOR_ALL when PVWS is disabled', async () => {
+    Object.assign(configOverrides, { DEFAULT_MONITOR_ALL: true, USE_PVWS: false });
+    await renderMonitorResults();
+    expect(subscribed.size).toBe(0);
+  });
 });
 
 test('the selection checkboxes and the copy and plot buttons are hidden together at phone width', async () => {

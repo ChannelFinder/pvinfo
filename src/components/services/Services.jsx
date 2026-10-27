@@ -226,6 +226,7 @@ function Services() {
                                                 <TableRow><TableCell>Show Disconnected in Live Value Box</TableCell><TableCell>{config.SHOW_DISCONNECTED ? "Yes" : "No"}</TableCell></TableRow>
                                                 <TableRow><TableCell>Monitor All Warning Threshold</TableCell><TableCell>{config.LIVE_MONITOR_WARN}</TableCell></TableRow>
                                                 <TableRow><TableCell>Monitor All Maximum</TableCell><TableCell>{config.LIVE_MONITOR_MAX}</TableCell></TableRow>
+                                                <TableRow><TableCell>Monitor All by Default</TableCell><TableCell>{config.DEFAULT_MONITOR_ALL ? "Yes" : "No"}</TableCell></TableRow>
                                             </TableBody>
                                         </Table>
                                     </Grid>
