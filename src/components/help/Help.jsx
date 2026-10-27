@@ -60,7 +60,7 @@ function Help() {
               There is also an "Advanced" search option, select it with the Advanced button next to the Standard button above the search fields on the home page. This option allows you to create your own PV and property search. This operates similarly to the CS Studio Phoebus Channel Table application. It can be very useful if you have other ChannelFinder properties available that are not in the "standard" search boxes.
             </Typography>
             <Typography variant='body1' sx={{ mb: 2 }}>
-              An example advanced search would be: <strong>TEST*PV* recordDesc=temp iocName=test*</strong><br />
+              An example advanced search would be: <strong>TEST*PV recordDesc=temp iocName=test*</strong><br />
               Which will result in a Channel Finder query like so: <strong>~name=*TEST*PV*&recordDesc=*temp*&iocName=test*</strong>
             </Typography>
             <Typography variant='body1' sx={{ mb: 2 }}>Property values follow the same rules as the standard search fields:</Typography>
