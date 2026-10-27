@@ -50,3 +50,13 @@ test('shows an error when the first search fails', () => {
   render(<CaputLogTable pvName="SR:C1:beam" />);
   expect(screen.getByText('Error Fetching Caput Log Data')).toBeInTheDocument();
 });
+
+test('going to another PV shows that PV\'s caput log data', () => {
+  useSearch.mockReturnValue(searchState({ totalResults: 0 }));
+  const { rerender } = render(<CaputLogTable pvName="SR:C1:beam" />);
+  expect(screen.getByText('No Caput Log Data')).toBeInTheDocument();
+  useSearch.mockReturnValue(searchState({ totalResults: 12 }));
+  rerender(<CaputLogTable pvName="SR:C2:beam" />);
+  expect(screen.getByText('Caput Log Data')).toBeInTheDocument();
+  expect(screen.getByText('caput log layout')).toBeInTheDocument();
+});
