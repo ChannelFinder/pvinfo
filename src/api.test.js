@@ -73,4 +73,9 @@ describe('Channel Finder query parameters', () => {
     expect(await cfQueryString({ standardSearch: false, pvName: 'TEST*', Sector: '5|6', tag1: 'archived' }))
       .toBe('?~name=TEST*&Sector=5|6&~tag=archived');
   });
+
+  test('advanced search properties with tag in the name are not tags', async () => {
+    expect(await cfQueryString({ standardSearch: false, pvName: '*', voltage: '5', tag1: 'archived' }))
+      .toBe('?~name=*&voltage=5&~tag=archived');
+  });
 });

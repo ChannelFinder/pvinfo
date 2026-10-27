@@ -17,8 +17,8 @@ vi.mock('../../api', () => ({
 const alertProps = { handleErrorMessage: vi.fn(), handleOpenErrorAlert: vi.fn(), handleSeverity: vi.fn() };
 const queryError = 'Enter a value after iocName=, or use iocName=* to match any value';
 
-async function renderAdvancedSearch() {
-  render(<ThemeProvider theme={theme}><MemoryRouter><Home {...alertProps} /></MemoryRouter></ThemeProvider>);
+async function renderAdvancedSearch(url = '/') {
+  render(<ThemeProvider theme={theme}><MemoryRouter initialEntries={[url]}><Home {...alertProps} /></MemoryRouter></ThemeProvider>);
   await act(async () => {});
   fireEvent.click(screen.getByRole('button', { name: 'Advanced search' }));
 }
@@ -45,4 +45,14 @@ test('the error clears when the query is changed and the search then runs', asyn
   expect(screen.queryByText(queryError)).not.toBeInTheDocument();
   await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'search' })); });
   expect(api.CF_QUERY).toHaveBeenCalledWith({ pvName: 'SR*', iocName: 'test*', standardSearch: false });
+});
+
+test('a tag only search from the URL keeps the tag in the Advanced query', async () => {
+  await renderAdvancedSearch('/?tag1=archived&standardSearch=false');
+  expect(screen.getByRole('searchbox')).toHaveValue('* archived');
+});
+
+test('a PV name search from the URL starts the Advanced query', async () => {
+  await renderAdvancedSearch('/?pvName=SR*&tag1=archived&standardSearch=false');
+  expect(screen.getByRole('searchbox')).toHaveValue('SR* archived');
 });

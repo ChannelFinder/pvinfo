@@ -1,5 +1,6 @@
 import { toByteArray } from "base64-js";
 import config from "./config";
+import { isTagParam } from "./components/home/advancedsearch/advancedQuery";
 
 const cfMaxResults = config.CF_MAX_RESULTS;
 const ologStartDays = config.OLOG_START_TIME_DAYS !== null
@@ -102,7 +103,7 @@ function advancedParse(params) {
     let addOn = "";
     for (let key in params) {
         if (key === 'pvName' || key === 'standardSearch') continue;
-        if (key.includes('tag')) {
+        if (isTagParam(key)) {
             addOn = addOn.concat(`&~tag=${encodeURIComponent(params[key])}`)
         } else {
             addOn = addOn.concat(`&${key}=${encodeURIComponent(params[key])}`);

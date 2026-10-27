@@ -7,7 +7,7 @@ import ManageSearchRoundedIcon from '@mui/icons-material/ManageSearchRounded';
 import PageviewRoundedIcon from '@mui/icons-material/PageviewRounded';
 import ParamSearch from './paramsearch';
 import AdvancedSearch from './advancedsearch';
-import { parseAdvancedQuery, getAdvancedQueryError } from './advancedsearch/advancedQuery';
+import { parseAdvancedQuery, isTagParam, getAdvancedQueryError } from './advancedsearch/advancedQuery';
 // is this needed?
 import './Home.css';
 import config from "../../config";
@@ -114,7 +114,8 @@ function Home(props) {
             delete params["standardSearch"];
         }
         if (Object.keys(params).length > 0) {
-            let advancedQuery = ""
+            // the Advanced query starts with the PV name, so use * when there isn't one or a tag would be read as the PV name
+            let advancedQuery = "*"
             if ("pvName" in params) {
                 setPVName(params["pvName"]);
                 advancedQuery = params["pvName"];
@@ -134,7 +135,7 @@ function Home(props) {
             // Fill out the advanced query with any extra search props
             for (let key in params) {
                 const value = params[key];
-                if (key.includes('tag')) {
+                if (isTagParam(key)) {
                     advancedQuery = advancedQuery.concat(` ${value}`);
                 } else {
                     advancedQuery = advancedQuery.concat(` ${key}=${value}`);

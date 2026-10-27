@@ -38,6 +38,8 @@ Version 3 updates the libraries and tools PV Info is built on. Node.js >= v22.22
 ### Fixed
 
 - Clicking next to a header link navigated to the home page ([#173](https://github.com/ChannelFinder/pvinfo/pull/173))
+- A tag only Advanced search opened from a URL searched the tag as a PV name when searched again
+- Properties with "tag" in the name, like `voltage`, were searched as tags in Advanced search
 - OR searches without wildcards only added partial match wildcards to the first and last pattern ([#174](https://github.com/ChannelFinder/pvinfo/pull/174))
 - Search property values are URL encoded ([#174](https://github.com/ChannelFinder/pvinfo/pull/174))
 - Advanced search queries with extra spaces searched for empty tags or treated the PV name as a tag, and property values containing `=` were cut off

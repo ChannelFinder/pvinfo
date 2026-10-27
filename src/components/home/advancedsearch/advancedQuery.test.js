@@ -27,6 +27,11 @@ describe('Advanced search query errors', () => {
     expect(getAdvancedQueryError(parseAdvancedQuery('SR* iocName='))).toBe('Enter a value after iocName=, or use iocName=* to match any value');
   });
 
+  test('a property with tag in the name but no value is an error', () => {
+    expect(getAdvancedQueryError(parseAdvancedQuery('* voltage='))).toBe('Enter a value after voltage=, or use voltage=* to match any value');
+    expect(getAdvancedQueryError(parseAdvancedQuery('* stage='))).toBe('Enter a value after stage=, or use stage=* to match any value');
+  });
+
   test('PV names, property values, and tags are fine', () => {
     expect(getAdvancedQueryError(parseAdvancedQuery('SR* iocName=test* archived'))).toBe('');
     expect(getAdvancedQueryError(parseAdvancedQuery(''))).toBe('');

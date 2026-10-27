@@ -1,7 +1,7 @@
 import { Box, Chip, Typography } from '@mui/material';
 import LocalOfferOutlinedIcon from '@mui/icons-material/LocalOfferOutlined';
 import { useMemo } from 'react';
-import { parseAdvancedQuery, getPropertyLabels } from './advancedQuery';
+import { parseAdvancedQuery, isTagParam, getPropertyLabels } from './advancedQuery';
 
 // Read only chips showing how the Advanced search query will be searched
 function QueryPreview({ query }) {
@@ -12,7 +12,7 @@ function QueryPreview({ query }) {
                 return { key, label: `PV name: ${value === "*" ? "any" : value}`, color: "primary" };
             }
             // same check as the Channel Finder query, see advancedParse in api.js
-            if (key.includes("tag")) {
+            if (isTagParam(key)) {
                 return { key, label: value, tag: true };
             }
             // a property without a value can't be searched, see getAdvancedQueryError

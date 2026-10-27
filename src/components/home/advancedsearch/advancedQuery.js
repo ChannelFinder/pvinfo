@@ -20,11 +20,16 @@ function parseAdvancedQuery(query) {
     return params;
 }
 
+// tags from parseAdvancedQuery are numbered tag1, tag2... so properties like voltage aren't mistaken for tags
+function isTagParam(key) {
+    return /^tag\d+$/.test(key);
+}
+
 // Error message for params from parseAdvancedQuery that can't be searched, or "" if they are fine.
 // The most likely mistake is picking a property from the dropdown and not typing a value after the =
 function getAdvancedQueryError(params) {
     // same check for tags as the Channel Finder query, see advancedParse in api.js
-    const emptyProperty = Object.keys(params).find((key) => key !== "pvName" && !key.includes("tag") && params[key] === "");
+    const emptyProperty = Object.keys(params).find((key) => key !== "pvName" && !isTagParam(key) && params[key] === "");
     if (emptyProperty !== undefined) {
         return `Enter a value after ${emptyProperty}=, or use ${emptyProperty}=* to match any value`;
     }
@@ -49,4 +54,4 @@ function getPropertyLabels() {
     return labels;
 }
 
-export { parseAdvancedQuery, getAdvancedQueryError, getPropertyLabels };
+export { parseAdvancedQuery, isTagParam, getAdvancedQueryError, getPropertyLabels };
