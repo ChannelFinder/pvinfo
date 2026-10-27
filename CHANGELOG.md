@@ -34,7 +34,8 @@ Version 3 updates the libraries and tools PV Info is built on. Node.js >= v22.22
 - Copy PV name button on the PV details page
 - Checkboxes to select PVs in the search results, hidden at phone width
 - Search results toolbar buttons to copy PV names to the clipboard (the selected PVs, or all results if none are selected) and to plot the selected PVs together in the archiver viewer, hidden at phone width
-- "Standard" and "Free Form" labels on the search type buttons ([#177](https://github.com/ChannelFinder/pvinfo/pull/177))
+- Renamed "Free Form" to "Advanced" search in codebase and labels in case we want to add a true free form search later
+- "Standard" and "Advanced" labels on the search type buttons ([#177](https://github.com/ChannelFinder/pvinfo/pull/177))
 
 ### Fixed
 
@@ -43,6 +44,7 @@ Version 3 updates the libraries and tools PV Info is built on. Node.js >= v22.22
 - Search property values are URL encoded ([#174](https://github.com/ChannelFinder/pvinfo/pull/174))
 - IOCs page stayed on "Data Loading..." if the Channel Finder query failed ([#176](https://github.com/ChannelFinder/pvinfo/pull/176))
 - The mobile menu showed the Plotting link when the archiver was disabled ([#177](https://github.com/ChannelFinder/pvinfo/pull/177))
+- The caput log section on the PV details page opened to an empty table when the PV had no caput log data, it now shows "No Caput Log Data" like the online log and alarm log sections
 
 ### Removed
 

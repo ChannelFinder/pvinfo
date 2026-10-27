@@ -57,7 +57,7 @@ function handleParams(params) {
     if (params['standardSearch']) {
         urlParams.params = standardParse(params);
     } else {
-        urlParams.params = freeformParse(params);
+        urlParams.params = advancedParse(params);
     }
 
     return urlParams;
@@ -98,7 +98,7 @@ function standardParse(params) {
     return addOn;
 }
 
-function freeformParse(params) {
+function advancedParse(params) {
     let addOn = "";
     for (let key in params) {
         if (key === 'pvName' || key === 'standardSearch') continue;

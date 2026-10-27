@@ -3,7 +3,7 @@ import AddIcon from '@mui/icons-material/Add';
 import SearchActions from '../searchactions/SearchActions';
 import { Fragment, useRef, useState } from 'react';
 
-function FreeSearch(props) {
+function AdvancedSearch(props) {
     const [anchorEl, setAnchorEl] = useState(null);
     const textFieldRef = useRef();
     const [syntaxTooltipOpen, setSyntaxTooltipOpen] = useState(false);
@@ -19,11 +19,11 @@ function FreeSearch(props) {
     }
 
     const handleSelectAtt = (value, isProp) => {
-        let prefix = props.freeformQuery.length === 0 ? "* "
-            : props.freeformQuery.slice(-1) === " " ? ""
+        let prefix = props.advancedQuery.length === 0 ? "* "
+            : props.advancedQuery.slice(-1) === " " ? ""
                 : " "
         let suffix = isProp ? "=" : "";
-        props.setFreeformQuery(props.freeformQuery + prefix + value + suffix);
+        props.setAdvancedQuery(props.advancedQuery + prefix + value + suffix);
     }
 
     const open = Boolean(anchorEl);
@@ -42,17 +42,17 @@ function FreeSearch(props) {
                     title={<div>Space delimited string<br />PV name (with * and ?)<br />Followed by property=value pairs<br />Followed by tag names<br />| between patterns for OR<br />Click + to add a property or tag</div>}>
                     <TextField
                         sx={{ display: "flex", flexGrow: 1, minWidth: { xs: '60%', md: '75%' }, textOverflow: 'ellipsis' }}
-                        id="freeSearch"
+                        id="advancedSearch"
                         label="Search Query"
-                        name="freeSearch"
+                        name="advancedSearch"
                         ref={textFieldRef}
                         autoComplete="off"
-                        value={props.freeformQuery}
+                        value={props.advancedQuery}
                         // onChange={handleInputChange}
                         placeholder="Search Query"
                         type="search"
                         variant="outlined"
-                        onChange={props.handleFreeformChange}
+                        onChange={props.handleAdvancedChange}
                         slotProps={{
                             input: {
                                 endAdornment: (
@@ -131,4 +131,4 @@ function FreeSearch(props) {
     );
 }
 
-export default FreeSearch;
+export default AdvancedSearch;

@@ -6,7 +6,7 @@ import { useSearchParams } from "react-router";
 import ManageSearchRoundedIcon from '@mui/icons-material/ManageSearchRounded';
 import PageviewRoundedIcon from '@mui/icons-material/PageviewRounded';
 import ParamSearch from './paramsearch';
-import FreeSearch from './freesearch';
+import AdvancedSearch from './advancedsearch';
 // is this needed?
 import './Home.css';
 import config from "../../config";
@@ -24,7 +24,7 @@ function Home(props) {
     const [recordType, setRecordType] = useState(searchParams.get("recordType") || "");
     const [recordTypeAutocompleteKey, setRecordTypeAutocompleteKey] = useState(-1);
     const [recordDesc, setRecordDesc] = useState(searchParams.get("recordDesc") || "");
-    const [freeformQuery, setFreeformQuery] = useState("");
+    const [advancedQuery, setAdvancedQuery] = useState("");
     const extraPropAName = config.EXTRA_PROP === "" || config.EXTRA_PROP === null ? null : config.EXTRA_PROP;
     const extraPropBName = config.SECOND_EXTRA_PROP === "" || config.SECOND_EXTRA_PROP === null ? null : config.SECOND_EXTRA_PROP;
 
@@ -54,8 +54,8 @@ function Home(props) {
     const handleInputChange = (e) => {
         cfProps[e.target.name](e.target.value);
     }
-    const handleFreeformChange = (e) => {
-        setFreeformQuery(e.target.value);
+    const handleAdvancedChange = (e) => {
+        setAdvancedQuery(e.target.value);
     };
 
     const fetchData = (apiCall, parameters, setData, dataName, displayError = false, setLoading = false) => {
@@ -112,10 +112,10 @@ function Home(props) {
             delete params["standardSearch"];
         }
         if (Object.keys(params).length > 0) {
-            let freeformQuery = ""
+            let advancedQuery = ""
             if ("pvName" in params) {
                 setPVName(params["pvName"]);
-                freeformQuery = params["pvName"];
+                advancedQuery = params["pvName"];
                 delete params["pvName"];
             }
             // Populate the stock & extra prop CF property values
@@ -123,22 +123,22 @@ function Home(props) {
                 if (prop in params) {
                     if (prop === "pvName") continue;
                     cfProps[prop](params[prop]);
-                    freeformQuery = freeformQuery.concat(` ${prop}=${params[prop]}`);
+                    advancedQuery = advancedQuery.concat(` ${prop}=${params[prop]}`);
                     delete params[prop];
                 } else if (prop === "pvStatus") {
                     cfProps[prop]("*");
                 }
             }
-            // Fill out the freeform query with any extra search props
+            // Fill out the advanced query with any extra search props
             for (let key in params) {
                 const value = params[key];
                 if (key.includes('tag')) {
-                    freeformQuery = freeformQuery.concat(` ${value}`);
+                    advancedQuery = advancedQuery.concat(` ${value}`);
                 } else {
-                    freeformQuery = freeformQuery.concat(` ${key}=${value}`);
+                    advancedQuery = advancedQuery.concat(` ${key}=${value}`);
                 }
             }
-            setFreeformQuery(freeformQuery);
+            setAdvancedQuery(advancedQuery);
             let resetParams = {}
             searchParams.forEach((val, key) => { if (val !== "") { resetParams[key] = val } });
             resetParams["standardSearch"] = standardSearch;
@@ -188,8 +188,8 @@ function Home(props) {
         return params;
     }
 
-    const parseFreeformSearch = (e) => {
-        const keyValuePairs = e.target.freeSearch.value.split(' ');
+    const parseAdvancedSearch = (e) => {
+        const keyValuePairs = e.target.advancedSearch.value.split(' ');
         let params = {};
         let numTags = 1;
 
@@ -214,7 +214,7 @@ function Home(props) {
         if (standardSearch) {
             params = parseParamSearch(e);
         } else {
-            params = parseFreeformSearch(e);
+            params = parseAdvancedSearch(e);
         }
         params['standardSearch'] = standardSearch;
         fetchData(api.CF_QUERY, params, setCFData, "PV", true, true);
@@ -233,7 +233,7 @@ function Home(props) {
         setRecordDesc("");
         setExtraPropAValue("");
         setExtraPropBValue("");
-        setFreeformQuery("");
+        setAdvancedQuery("");
         // https://stackoverflow.com/a/59845474
         setRecordTypeAutocompleteKey(recordTypeAutocompleteKey - 1);
     }
@@ -258,7 +258,7 @@ function Home(props) {
                     </Typography>
                 </Grid>
                 <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                    <Tooltip arrow title="Search Type - Standard / Free Form">
+                    <Tooltip arrow title="Search Type - Standard / Advanced">
                         <ToggleButtonGroup
                             value={standardSearch}
                             exclusive
@@ -270,9 +270,9 @@ function Home(props) {
                                 <ManageSearchRoundedIcon />
                                 <Box component="span" sx={{ display: { xs: "none", sm: "inline" }, ml: 1 }}>Standard</Box>
                             </ToggleButton>
-                            <ToggleButton value={false} aria-label="Free Form search">
+                            <ToggleButton value={false} aria-label="Advanced search">
                                 <PageviewRoundedIcon />
-                                <Box component="span" sx={{ display: { xs: "none", sm: "inline" }, ml: 1 }}>Free Form</Box>
+                                <Box component="span" sx={{ display: { xs: "none", sm: "inline" }, ml: 1 }}>Advanced</Box>
                             </ToggleButton>
                         </ToggleButtonGroup>
                     </Tooltip>
@@ -297,7 +297,7 @@ function Home(props) {
                             setIsLoading={setIsLoading}
                         ></ParamSearch>
                     ) : (
-                        <FreeSearch freeformQuery={freeformQuery} setFreeformQuery={setFreeformQuery} handleFreeformChange={handleFreeformChange}
+                        <AdvancedSearch advancedQuery={advancedQuery} setAdvancedQuery={setAdvancedQuery} handleAdvancedChange={handleAdvancedChange}
                             handleClear={handleClear} searchProperties={searchProperties} searchTags={searchTags}
                             showHelp={cfData === null} />
                     )
