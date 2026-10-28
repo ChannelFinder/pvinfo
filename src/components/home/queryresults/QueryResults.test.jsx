@@ -1,4 +1,4 @@
-import { render, screen, act, fireEvent } from '@testing-library/react';
+import { render, screen, act, fireEvent, waitFor } from '@testing-library/react';
 import { ThemeProvider } from '@mui/material';
 import { MemoryRouter } from 'react-router';
 import theme from '../../../theme';
@@ -77,6 +77,35 @@ test('copy and plot use only the selected PVs', async () => {
 
   fireEvent.click(screen.getByRole('button', { name: 'Plot 2 selected PVs together' }));
   expect(openMock).toHaveBeenCalledWith('http://aa/archViewer.html?pv=PV%3AA&pv=PV%3AC', '_blank', 'noopener');
+});
+
+// the data grid unselects rows hidden by the table filter, so the count matches the PVs that are copied and plotted
+test('copy and plot count only the selected PVs that pass the table filter, the same PVs they copy and plot', async () => {
+  const openMock = vi.spyOn(window, 'open').mockImplementation(() => null);
+  const { container } = await renderResults([channel('PV:A'), channel('PV:B'), channel('PV:C')]);
+  selectRow(container, 0);
+  selectRow(container, 1);
+  fireEvent.change(screen.getByRole('searchbox'), { target: { value: 'PV:B' } });
+  await waitFor(() => expect(container.querySelectorAll('.MuiDataGrid-row')).toHaveLength(1));
+
+  await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Copy 1 selected PV name' })); });
+  expect(navigator.clipboard.writeText).toHaveBeenCalledWith('PV:B');
+  fireEvent.click(screen.getByRole('button', { name: 'Plot 1 selected PV together' }));
+  expect(openMock).toHaveBeenCalledWith('http://aa/archViewer.html?pv=PV%3AB', '_blank', 'noopener');
+});
+
+test('columns hidden at a narrow width are shown again when the window is maximized', async () => {
+  configOverrides.CF_RECORD_TYPE = true;
+  const headers = (container) => [...container.querySelectorAll('.MuiDataGrid-columnHeaderTitle')].map((header) => header.textContent);
+  // between the small and medium breakpoints, Host, IOC, Status and Type are hidden
+  vi.stubGlobal('innerWidth', 700);
+  const { container } = await renderResults([channel('PV:A')]);
+  expect(headers(container)).not.toContain('Status');
+  expect(headers(container)).not.toContain('Host');
+
+  vi.stubGlobal('innerWidth', 1600);
+  await act(async () => { window.dispatchEvent(new Event('resize')); });
+  expect(headers(container)).toEqual(expect.arrayContaining(['Host', 'IOC', 'Status', 'Type']));
 });
 
 test('plot is disabled when more than the maximum PVs are selected', async () => {

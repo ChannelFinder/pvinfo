@@ -1,4 +1,5 @@
 import { render, screen, act, fireEvent } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@mui/material';
 import { MemoryRouter } from 'react-router';
 import theme from '../../theme';
@@ -65,6 +66,17 @@ test('a link with numbered tags from before 3.0 still searches the tags', async 
   await renderAdvancedSearch('/?pvName=SR*&tag1=archived&tag2=golden&standardSearch=false');
   expect(screen.getByRole('searchbox')).toHaveValue('SR* archived golden');
   expect(api.CF_QUERY).toHaveBeenCalledWith({ pvName: 'SR*', tag: ['archived', 'golden'], standardSearch: false });
+});
+
+test('Enter in the results table search box filters the table without searching again', async () => {
+  const channel = (name) => ({ name, owner: 'owner', properties: [{ name: 'pvStatus', value: 'Active' }] });
+  api.CF_QUERY.mockResolvedValueOnce([channel('PV:A'), channel('PV:B')]);
+  await renderAdvancedSearch('/?pvName=PV*&standardSearch=false');
+  expect(api.CF_QUERY).toHaveBeenCalledTimes(1);
+  const quickFilter = screen.getByPlaceholderText('Search…');
+  await userEvent.type(quickFilter, 'PV:A{Enter}');
+  expect(api.CF_QUERY).toHaveBeenCalledTimes(1);
+  expect(quickFilter).toHaveValue('PV:A');
 });
 
 // these use the Advanced search since jsdom doesn't support reading the Standard search fields from the form

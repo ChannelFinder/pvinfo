@@ -305,10 +305,11 @@ function Home(props) {
                             showHelp={cfData === null} queryError={advancedQueryError} />
                     )
                 }
-                <Grid container style={{ display: "flex" }} size={12}>
-                    <QueryResults isLoading={isLoading} cfData={cfData} handleErrorMessage={props.handleErrorMessage} handleOpenErrorAlert={props.handleOpenErrorAlert} handleSeverity={props.handleSeverity} />
-                </Grid>
             </form>
+            {/* outside the form so Enter in the table's search box doesn't submit the search again */}
+            <Grid container style={{ display: "flex" }} size={12}>
+                <QueryResults isLoading={isLoading} cfData={cfData} handleErrorMessage={props.handleErrorMessage} handleOpenErrorAlert={props.handleOpenErrorAlert} handleSeverity={props.handleSeverity} />
+            </Grid>
         </ Fragment >
     );
 }
