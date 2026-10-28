@@ -96,6 +96,14 @@ describe('search button', () => {
     expect(api.CF_QUERY).toHaveBeenCalledTimes(2);
   });
 
+  test('a search with only an empty PV name queries every PV once', async () => {
+    await renderAdvancedSearch();
+    typeQuery('pvName=');
+    await search();
+    expect(api.CF_QUERY).toHaveBeenCalledTimes(1);
+    expect(screen.queryByText('Data Loading...')).not.toBeInTheDocument();
+  });
+
   test('a search without search terms queries every PV once', async () => {
     await renderAdvancedSearch();
     await search();
