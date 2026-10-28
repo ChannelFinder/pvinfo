@@ -163,3 +163,12 @@ test('the selection checkboxes and the copy and plot buttons are hidden together
   expect(screen.queryByRole('button', { name: /Copy all/ })).not.toBeInTheDocument();
   expect(screen.queryByRole('button', { name: /plot them together/ })).not.toBeInTheDocument();
 });
+
+test('the IOC link searches for the PVs in that IOC only, not IOCs with similar names', async () => {
+  // the IOC column is hidden at jsdom's default 1024px width
+  vi.stubGlobal('innerWidth', 1600);
+  const pv = (name, iocName) => ({ ...channel(name), properties: [...channel(name).properties, { name: 'iocName', value: iocName }] });
+  await renderResults([pv('PV:A', 'IOC1'), pv('PV:B', 'IOC 2')]);
+  expect(screen.getByRole('link', { name: 'IOC1' })).toHaveAttribute('href', '/?iocName==IOC1');
+  expect(screen.getByRole('link', { name: 'IOC 2' })).toHaveAttribute('href', '/?iocName==IOC%202');
+});

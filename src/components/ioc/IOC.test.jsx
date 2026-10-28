@@ -1,6 +1,6 @@
-import { render, screen, act } from '@testing-library/react';
+import { render, screen, act, fireEvent } from '@testing-library/react';
 import { ThemeProvider } from '@mui/material';
-import { MemoryRouter } from 'react-router';
+import { MemoryRouter, Route, Routes, useLocation } from 'react-router';
 import theme from '../../theme';
 import api from '../../api';
 import IOC from './IOC';
@@ -91,4 +91,22 @@ test('shows an error when the IOCs can not be loaded from Channel Finder', async
   await act(async () => {});
   expect(screen.getByText('Unable to Load IOCs')).toBeInTheDocument();
   expect(screen.queryByText('Data Loading...')).not.toBeInTheDocument();
+});
+
+test('the IOC name link and double click search for the PVs in that IOC only, not IOCs with similar names', async () => {
+  api.CF_QUERY.mockResolvedValue([channel('IOC1:ENGINEER', 'IOC1'), channel('IOC 2:ENGINEER', 'IOC 2')]);
+  const SearchLocation = () => { const location = useLocation(); return <div>search {location.search}</div>; };
+  const { container } = render(
+    <ThemeProvider theme={theme}>
+      <MemoryRouter initialEntries={['/ioc']}>
+        <Routes><Route path="/ioc" element={<IOC />} /><Route path="/" element={<SearchLocation />} /></Routes>
+      </MemoryRouter>
+    </ThemeProvider>
+  );
+  await act(async () => {});
+  expect(screen.getByRole('link', { name: 'IOC1' })).toHaveAttribute('href', '/?iocName==IOC1');
+  expect(screen.getByRole('link', { name: 'IOC 2' })).toHaveAttribute('href', '/?iocName==IOC%202');
+
+  fireEvent.doubleClick(container.querySelector('.MuiDataGrid-row[data-id="ioc1"] [data-field="hostName"]'));
+  expect(screen.getByText('search ?iocName==IOC1')).toBeInTheDocument();
 });
