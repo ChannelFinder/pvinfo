@@ -1,11 +1,11 @@
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
-import { Typography, Switch, Link, IconButton, Tooltip, useMediaQuery } from '@mui/material';
+import { Typography, Link, IconButton, Tooltip, useMediaQuery } from '@mui/material';
 import { DataGrid, GRID_CHECKBOX_SELECTION_COL_DEF, GRID_CHECKBOX_SELECTION_FIELD } from '@mui/x-data-grid';
 import { useNavigate, Link as RouterLink } from "react-router";
 import TimelineIcon from '@mui/icons-material/Timeline';
 import ReadMoreIcon from '@mui/icons-material/ReadMore';
 import api from "../../../api";
-import ValueCheckbox from './valuecheckbox/ValueCheckbox';
+import ValueCheckbox, { monitorDisabledReason } from './valuecheckbox/ValueCheckbox';
 import Value from "./value";
 import Logo from "./logo";
 import ResultsToolbar from "./resultstoolbar";
@@ -87,9 +87,9 @@ function QueryResults(props) {
             [firstRow, lastRow] = [parseInt(start) - 1, parseInt(end) - 1];
         }
         for (let i = firstRow; i <= lastRow; ++i) {
-            // only check mark active PVs, unless we are ignoring CF PV status
-            // matters now that we show "Disconnected" for PVs that are not connected to their IOC
-            if (config.PVWS_IGNORE_CF_PVSTATUS || pvs[i].pvStatus === "Active") {
+            // skip the PVs whose switch is disabled, like inactive PVs and waveforms when they can't be monitored,
+            // so they don't count toward the monitoring warning and limit
+            if (monitorDisabledReason(pvs[i].pvStatus, pvs[i].recordType) === "") {
                 updateCurrentChecked(i, event.target.checked);
             }
         }
@@ -167,21 +167,6 @@ function QueryResults(props) {
         );
     }
 
-    const renderActionsHeader = () => {
-        return (
-            <div>
-                <Typography display="inline" variant="subtitle2">Actions</Typography>
-                {
-                    config.USE_PVWS ? <Tooltip arrow title="Monitor All PVs">
-                        <Switch size="small" checked={monitorAllChecked} onChange={handleMonitorSelectAll()} sx={{ ml: ".5rem" }}
-                            slotProps={{ input: { "aria-label": "Monitor all PVs" } }}></Switch>
-                    </Tooltip>
-                        : <div></div>
-                }
-            </div>
-        )
-    }
-
     const renderIOCLink = (params) => {
         return (
             <div>
@@ -248,7 +233,7 @@ function QueryResults(props) {
     if (config.USE_PVWS) {
         columns.push({ field: "value", headerName: 'Value', width: 140, resizable: false, renderCell: renderValue })
     }
-    columns.push({ field: "button", headerName: 'Actions', width: config.USE_PVWS ? 160 : 120, resizable: false, sortable: false, disableColumnMenu: true, renderCell: renderButtons, renderHeader: renderActionsHeader })
+    columns.push({ field: "button", headerName: 'Actions', width: config.USE_PVWS ? 160 : 120, resizable: false, sortable: false, disableColumnMenu: true, renderCell: renderButtons })
     columns = columns.map((column) =>
         column.field in columnWidths ? { ...column, flex: 0, width: columnWidths[column.field] } : column
     )
@@ -416,7 +401,8 @@ function QueryResults(props) {
                     baseCheckbox: { size: "small" },
                     toolbar: {
                         csvOptions: csvExportOptions("PVs"),
-                        mainControls: <ResultsToolbar handleErrorMessage={handleErrorMessage} handleOpenErrorAlert={handleOpenErrorAlert} handleSeverity={handleSeverity} />
+                        mainControls: <ResultsToolbar handleErrorMessage={handleErrorMessage} handleOpenErrorAlert={handleOpenErrorAlert} handleSeverity={handleSeverity}
+                            monitorAllChecked={monitorAllChecked} handleMonitorAll={handleMonitorSelectAll()} />
                     }
                 }}
             />

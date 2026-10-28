@@ -6,6 +6,7 @@ const configOverrides = vi.hoisted(() => ({
   EXTRA_PROP: 'Sector',
   EXTRA_PROP_LABEL: 'Storage Ring Sector',
   SECOND_EXTRA_PROP: null,
+  PROPERTY_VALUES: 'Acc:GTB,BR,BTS,SR;mode:Fast Archive',
 }));
 vi.mock('../../../config', async (importOriginal) => {
   const actual = (await importOriginal()).default;
@@ -57,4 +58,33 @@ test('a query error is shown on the search box', () => {
   renderSearch({ advancedQuery: 'SR* iocName=', queryError: 'Enter a value after iocName=, or use iocName=* to match any value' });
   expect(screen.getByText('Enter a value after iocName=, or use iocName=* to match any value')).toBeInTheDocument();
   expect(screen.getByRole('searchbox')).toHaveAttribute('aria-invalid', 'true');
+});
+
+test('a property with known values opens its values and picking one adds the whole term', () => {
+  const { setAdvancedQuery } = renderSearch({ searchProperties: ['Acc', 'iocName'], advancedQuery: 'SR*' });
+  openDropdown('Properties');
+  fireEvent.click(screen.getByRole('button', { name: 'Acc' }));
+  expect(setAdvancedQuery).not.toHaveBeenCalled();
+  // shown in the configured order, after the back button
+  expect(listItems('Acc')).toEqual(['Acc', 'GTB', 'BR', 'BTS', 'SR']);
+  fireEvent.click(screen.getByRole('button', { name: 'BTS' }));
+  expect(setAdvancedQuery).toHaveBeenCalledWith('SR* Acc=BTS ');
+});
+
+test('spaces in a picked value are replaced with the ? wildcard so the value stays one term', () => {
+  const { setAdvancedQuery } = renderSearch({ searchProperties: ['mode'], advancedQuery: 'SR*' });
+  openDropdown('Properties');
+  fireEvent.click(screen.getByRole('button', { name: 'mode' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Fast Archive' }));
+  expect(setAdvancedQuery).toHaveBeenCalledWith('SR* mode=Fast?Archive ');
+});
+
+test('back returns from a property\'s values to the properties list', () => {
+  renderSearch({ searchProperties: ['Acc', 'iocName'] });
+  openDropdown('Properties');
+  fireEvent.click(screen.getByRole('button', { name: 'Acc' }));
+  expect(screen.queryByRole('button', { name: 'IOC Name' })).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: 'Acc' }));
+  expect(screen.getByRole('button', { name: 'IOC Name' })).toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: 'GTB' })).not.toBeInTheDocument();
 });

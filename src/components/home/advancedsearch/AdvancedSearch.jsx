@@ -1,24 +1,36 @@
 import { Grid, Box, Button, IconButton, InputAdornment, List, ListItemButton, ListItemText, Popover, TextField, Tooltip, Typography } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import SearchActions from '../searchactions/SearchActions';
 import { Fragment, useMemo, useRef, useState } from 'react';
 import QueryPreview from './QueryPreview';
 import { getPropertyLabels } from './advancedQuery';
+import { getPropertyValues } from '../propertyValues';
 
 // upper case before lower case, so friendly labels are listed before raw lower case Channel Finder names
 const byLabel = (a, b) => (a.label < b.label ? -1 : a.label > b.label ? 1 : 0);
 
-// one column of the properties and tags popover, narrower on phones so both columns fit side by side
-function AttributeList({ title, items, onSelect }) {
+// one column of the properties and tags popover, narrower on phones so both columns fit side by side.
+// Items with known values show a > to open them
+function AttributeList({ title, items, onSelect, onBack }) {
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', minWidth: { xs: 140, sm: 200 }, maxWidth: { xs: 160, sm: 320 } }}>
-            <Box sx={{ p: 1, borderBottom: 1, borderColor: 'grey.300' }}>
-                <Typography sx={{ fontWeight: 'medium' }}>{title}</Typography>
-            </Box>
+            {onBack ?
+                <ListItemButton onClick={onBack} sx={{ p: 1, flexGrow: 0, borderBottom: 1, borderColor: 'grey.300' }}>
+                    <ChevronLeftIcon fontSize="small" sx={{ mr: 0.5 }} />
+                    <Typography noWrap sx={{ fontWeight: 'medium' }}>{title}</Typography>
+                </ListItemButton>
+                :
+                <Box sx={{ p: 1, borderBottom: 1, borderColor: 'grey.300' }}>
+                    <Typography sx={{ fontWeight: 'medium' }}>{title}</Typography>
+                </Box>
+            }
             <List dense disablePadding sx={{ overflow: 'auto', maxHeight: 'min(360px, 50vh)' }}>
                 {items.map((item) => (
                     <ListItemButton key={item.name} onClick={() => onSelect(item.name)} title={item.label}>
                         <ListItemText primary={item.label} slotProps={{ primary: { noWrap: true } }} />
+                        {item.hasValues && <ChevronRightIcon fontSize="small" sx={{ ml: 1, color: 'text.secondary' }} />}
                     </ListItemButton>
                 ))}
             </List>
@@ -28,6 +40,8 @@ function AttributeList({ title, items, onSelect }) {
 
 function AdvancedSearch(props) {
     const [anchorEl, setAnchorEl] = useState(null);
+    // property whose known values are shown in place of the properties list
+    const [valuesProperty, setValuesProperty] = useState(null);
     const textFieldRef = useRef();
     const [syntaxTooltipOpen, setSyntaxTooltipOpen] = useState(false);
     // hide the syntax tooltip while hovering the add button so only its own tooltip shows
@@ -39,9 +53,14 @@ function AdvancedSearch(props) {
 
     const handleCloseAtts = () => {
         setAnchorEl(null);
+        setValuesProperty(null);
     }
 
     const handleSelectAtt = (value, isProp) => {
+        if (isProp && propertyValues[value]) {
+            setValuesProperty(value);
+            return;
+        }
         let prefix = props.advancedQuery.length === 0 ? "* "
             : props.advancedQuery.slice(-1) === " " ? ""
                 : " "
@@ -49,13 +68,22 @@ function AdvancedSearch(props) {
         props.setAdvancedQuery(props.advancedQuery + prefix + value + suffix);
     }
 
+    // the query is space separated, so spaces in a value are replaced with the Channel Finder single character wildcard
+    const handleSelectValue = (value) => {
+        handleSelectAtt(`${valuesProperty}=${value.replace(/\s+/g, "?")} `, false);
+        handleCloseAtts();
+    }
+
     const open = Boolean(anchorEl);
     const id = open ? 'properties-popover' : undefined;
 
-    const propertyItems = useMemo(() => {
-        const labels = getPropertyLabels();
-        return props.searchProperties.map((name) => ({ name, label: labels[name] || name })).sort(byLabel);
-    }, [props.searchProperties]);
+    const propertyLabels = useMemo(() => getPropertyLabels(), []);
+    const propertyValues = useMemo(() => getPropertyValues(), []);
+    const propertyItems = useMemo(() => props.searchProperties
+        .map((name) => ({ name, label: propertyLabels[name] || name, hasValues: Boolean(propertyValues[name]) }))
+        .sort(byLabel), [props.searchProperties, propertyLabels, propertyValues]);
+    // shown in the order they are configured
+    const valueItems = valuesProperty ? propertyValues[valuesProperty].map((value) => ({ name: value, label: value })) : [];
     const tagItems = useMemo(() => props.searchTags.map((name) => ({ name, label: name })).sort(byLabel), [props.searchTags]);
     const hasAttributes = propertyItems.length > 0 || tagItems.length > 0;
     const addLabel = tagItems.length === 0 ? "Properties" : propertyItems.length === 0 ? "Tags" : "Props/Tags";
@@ -72,7 +100,7 @@ function AdvancedSearch(props) {
                     open={syntaxTooltipOpen && !addHovered}
                     onOpen={() => setSyntaxTooltipOpen(true)}
                     onClose={() => setSyntaxTooltipOpen(false)}
-                    title={<div>Space delimited string<br />PV name (with * and ?)<br />Followed by property=value pairs<br />Followed by tag names<br />| between patterns for OR{hasAttributes && <Fragment><br />Click + to add {addDescription}</Fragment>}</div>}>
+                    title={<div>Space delimited string<br />PV name (with * and ?)<br />Followed by property=value pairs<br />Followed by tag names<br />| between patterns for OR<br />property==value for exactly equal<br />property!=value for not equal{hasAttributes && <Fragment><br />Click + to add {addDescription}</Fragment>}</div>}>
                     <TextField
                         sx={{ display: "flex", flexGrow: 1, minWidth: { xs: '60%', md: '75%' }, textOverflow: 'ellipsis' }}
                         id="advancedSearch"
@@ -133,7 +161,10 @@ function AdvancedSearch(props) {
                     }}
                 >
                     <Box sx={{ display: 'flex', flexDirection: 'row' }}>
-                        {propertyItems.length > 0 &&
+                        {valuesProperty ?
+                            <AttributeList title={propertyLabels[valuesProperty] || valuesProperty} items={valueItems}
+                                onSelect={handleSelectValue} onBack={() => setValuesProperty(null)} />
+                            : propertyItems.length > 0 &&
                             <AttributeList title="Properties" items={propertyItems} onSelect={(name) => handleSelectAtt(name, true)} />
                         }
                         {propertyItems.length > 0 && tagItems.length > 0 &&

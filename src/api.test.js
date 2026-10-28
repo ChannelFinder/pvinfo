@@ -1,5 +1,18 @@
 import api from './api';
 
+const configOverrides = vi.hoisted(() => ({
+  CF_RECORD_TYPE: false,
+  EXTRA_PROP: 'archive',
+  EXTRA_PROP_DROPDOWN_LABELS: ['Fast', 'Slow'],
+  SECOND_EXTRA_PROP: 'irm',
+  SECOND_EXTRA_PROP_DROPDOWN_LABELS: [],
+  PROPERTY_VALUES: 'Sector:1,2,10',
+}));
+vi.mock('./config', async (importOriginal) => {
+  const actual = (await importOriginal()).default;
+  return { default: new Proxy({ ...actual }, { get: (target, key) => (key in configOverrides ? configOverrides[key] : target[key]) }) };
+});
+
 // run a Channel Finder count query and return the decoded query string that was sent
 async function cfQueryString(params) {
   const fetchMock = vi.fn(() => Promise.resolve({ ok: true, json: () => Promise.resolve(0) }));
@@ -60,6 +73,12 @@ describe('Channel Finder query parameters', () => {
 
   test('properties without partial match do not get wildcards', async () => {
     expect(await cfQueryString({ pvStatus: 'Active' })).toBe('?~name=*&pvStatus=Active');
+    expect(await cfQueryString({ pvStatus: '!Active' })).toBe('?~name=*&pvStatus!=Active');
+    expect(await cfQueryString({ archive: 'Fast' })).toBe('?~name=*&archive=Fast');
+  });
+
+  test('an extra property without dropdown labels gets partial match wildcards', async () => {
+    expect(await cfQueryString({ irm: '01' })).toBe('?~name=*&irm=*01*');
   });
 
   test('property values are URL encoded', async () => {
@@ -69,13 +88,18 @@ describe('Channel Finder query parameters', () => {
     expect(fetchMock.mock.calls[0][0]).toContain('&hostName=*a*%7C*b%23c%26d*');
   });
 
-  test('advanced search property values and tags are passed through without wildcards', async () => {
-    expect(await cfQueryString({ standardSearch: false, pvName: 'TEST*', Sector: '5|6', tag: ['archived'] }))
-      .toBe('?~name=TEST*&Sector=5|6&~tag=archived');
+  test('advanced search property values get the same wildcards as the standard search, tags are passed through', async () => {
+    expect(await cfQueryString({ standardSearch: false, pvName: 'TEST*', recordDesc: 'temp', hostName: '=ioc1', iocName: '!test', tag: ['archived'] }))
+      .toBe('?~name=TEST*&recordDesc=*temp*&hostName=ioc1&iocName!=*test*&~tag=archived');
+  });
+
+  test('advanced search properties with known values are an exact match', async () => {
+    expect(await cfQueryString({ standardSearch: false, Sector: '1|2', archive: '!Fast', recordDesc: 'temp*' }))
+      .toBe('?~name=*&Sector=1|2&archive!=Fast&recordDesc=temp*');
   });
 
   test('each tag is a ~tag parameter and properties with tag in the name are not tags', async () => {
     expect(await cfQueryString({ standardSearch: false, pvName: '*', voltage: '5', tag: ['archived', 'golden'] }))
-      .toBe('?~name=*&voltage=5&~tag=archived&~tag=golden');
+      .toBe('?~name=*&voltage=*5*&~tag=archived&~tag=golden');
   });
 });

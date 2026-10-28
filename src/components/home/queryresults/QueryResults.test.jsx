@@ -5,6 +5,17 @@ import theme from '../../../theme';
 import QueryResults from './QueryResults';
 import { archiverPlotURL } from './resultstoolbar/ResultsToolbar';
 
+// track which PVs are subscribed through the shared PVWS web socket
+const subscribed = new Set();
+vi.mock('../../../useWebSocket', () => ({
+  default: () => ({
+    lastJsonMessage: null,
+    sendJsonMessage: (message) => {
+      message.pvs.forEach((pv) => message.type === 'subscribe' ? subscribed.add(pv) : subscribed.delete(pv));
+    },
+  }),
+}));
+
 const configOverrides = vi.hoisted(() => ({}));
 vi.mock('../../../config', async (importOriginal) => {
   const actual = (await importOriginal()).default;
@@ -88,6 +99,43 @@ test('a new search clears the selection', async () => {
   rerender(results([channel('PV:X'), channel('PV:Y'), channel('PV:Z')], props));
   await act(async () => {});
   expect(screen.getByRole('button', { name: 'Copy all 3 PV names' })).toBeInTheDocument();
+});
+
+test('the monitor all switch is hidden when PV Web Socket is turned off', async () => {
+  await renderResults([channel('PV:A')]);
+  expect(screen.queryByLabelText('Monitor all PVs')).not.toBeInTheDocument();
+});
+
+describe('monitor all', () => {
+  const rowSwitches = (container) => [...container.querySelectorAll('.MuiDataGrid-row [data-field="button"] input')];
+
+  beforeEach(() => {
+    subscribed.clear();
+    Object.assign(configOverrides, { USE_PVWS: true, PVWS_IGNORE_CF_PVSTATUS: false });
+  });
+
+  test('the switch is in the toolbar and the actions header is only a label', async () => {
+    const { container } = await renderResults([channel('PV:A'), channel('PV:B')]);
+    expect(container.querySelector('.MuiDataGrid-toolbar').contains(screen.getByLabelText('Monitor all PVs'))).toBe(true);
+    expect(container.querySelector('.MuiDataGrid-columnHeader[data-field="button"] input')).toBeNull();
+  });
+
+  test('turning it on monitors the PVs on the page', async () => {
+    const { container } = await renderResults([channel('PV:A'), channel('PV:B')]);
+    await act(async () => { fireEvent.click(screen.getByLabelText('Monitor all PVs')); });
+    expect(rowSwitches(container).every((input) => input.checked)).toBe(true);
+    expect([...subscribed].sort()).toEqual(['PV:A', 'PV:B']);
+  });
+
+  test('skips waveforms like the row switches when waveform monitoring is turned off', async () => {
+    // so the skipped waveforms don't count toward the monitoring warning
+    Object.assign(configOverrides, { PVWS_ALLOW_WAVEFORMS: false, LIVE_MONITOR_WARN: 1 });
+    const waveform = { ...channel('PV:W'), properties: [{ name: 'pvStatus', value: 'Active' }, { name: 'recordType', value: 'waveform' }] };
+    const { props } = await renderResults([channel('PV:A'), waveform]);
+    await act(async () => { fireEvent.click(screen.getByLabelText('Monitor all PVs')); });
+    expect([...subscribed]).toEqual(['PV:A']);
+    expect(props.handleErrorMessage).not.toHaveBeenCalled();
+  });
 });
 
 test('the selection checkboxes and the copy and plot buttons are hidden together at phone width', async () => {
