@@ -40,11 +40,10 @@ test('explains the Advanced search quotes for values with spaces', () => {
 });
 
 test('hides items for features a site has turned off', () => {
-  Object.assign(configOverrides, { USE_AA: false, USE_PVWS: false, USE_IOC_PAGE: false, PROPERTY_VALUES: '' });
+  Object.assign(configOverrides, { USE_AA: false, USE_PVWS: false, USE_IOC_PAGE: false });
   render(<WhatsNew />);
   expect(screen.queryByText(/Plot several PVs together/)).not.toBeInTheDocument();
   expect(screen.queryByText(/Live monitoring uses on\/off switches/)).not.toBeInTheDocument();
-  expect(screen.queryByText(/Pick property values from a list/)).not.toBeInTheDocument();
   expect(screen.queryByText('IOCs Page')).not.toBeInTheDocument();
   expect(screen.queryByText(/"plot selected"/)).not.toBeInTheDocument();
   expect(screen.getByText(/Copy PV names/)).toBeInTheDocument();
@@ -54,6 +53,12 @@ test('hides a section when none of its items apply', () => {
   configOverrides.IOC_PAGE_EXTRA_COLUMNS = [];
   render(<WhatsNew />);
   expect(screen.queryByText('IOCs Page')).not.toBeInTheDocument();
+});
+
+test('the property values item is shown without configured property values, since pvStatus always has a list', () => {
+  configOverrides.PROPERTY_VALUES = '';
+  render(<WhatsNew />);
+  expect(screen.getByText(/Pick property values from a list/)).toBeInTheDocument();
 });
 
 test('the live value precision item is shown only when PV Web Socket is used', () => {

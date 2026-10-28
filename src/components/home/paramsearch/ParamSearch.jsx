@@ -3,21 +3,15 @@ import { Grid, TextField, MenuItem, Tooltip } from '@mui/material';
 import SearchActions from '../searchactions/SearchActions';
 import Autocomplete from '@mui/material/Autocomplete';
 import config from "../../../config";
-import { pvRecordTypes } from "../propertyValues";
+import { pvRecordTypes, pvStatuses } from "../propertyValues";
 
+// Any is * which leaves the PV status out of the search
 const pvStatusOptions = [
     {
         value: '*',
         label: 'Any'
     },
-    {
-        value: 'Active',
-        label: 'Active'
-    },
-    {
-        value: 'Inactive',
-        label: 'Inactive'
-    }
+    ...pvStatuses.map((status) => ({ value: status, label: status }))
 ]
 
 const pvNameTooltip = <div>* for any # character wildcard<br />? for single character wildcard<br />| between patterns for OR<br />space between patterns for AND<br />= at beginning for exactly equal</div>;

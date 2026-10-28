@@ -4,12 +4,16 @@ const pvRecordTypes = ['aai', 'aao', 'ai', 'ao', 'aSub', 'bi', 'bo', 'calcout', 
     'fanout', 'histogram', 'int64in', 'int64out', 'longin', 'longout', 'lsi', 'lso', 'mbbi', 'mbbiDirect', 'mbbo', 'mbboDirect',
     'permissive', 'printf', 'sel', 'seq', 'state', 'stringin', 'stringout', 'subArray', 'sub', 'waveform'];
 
+const pvStatuses = ['Active', 'Inactive'];
+
 // known values for Channel Finder properties, in the order they should be shown:
-// record types, the extra property dropdown labels, then PROPERTY_VALUES which wins if a property is listed twice
+// PV status, record types, the extra property dropdown labels, then PROPERTY_VALUES which wins if a property is listed twice
 // In the future CF could handle this natively so we don't have to hard-code via a property
 // https://github.com/ChannelFinder/ChannelFinderService/issues/236
 function getPropertyValues() {
     let values = {};
+    values["pvStatus"] = pvStatuses;
+
     if (config.CF_RECORD_TYPE) {
         values["recordType"] = pvRecordTypes;
     }
@@ -39,4 +43,4 @@ function getExactMatchProperties() {
     return new Set(["pvStatus", "recordType", ...Object.keys(getPropertyValues())]);
 }
 
-export { pvRecordTypes, getPropertyValues, getExactMatchProperties };
+export { pvRecordTypes, pvStatuses, getPropertyValues, getExactMatchProperties };
