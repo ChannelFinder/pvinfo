@@ -205,6 +205,7 @@ function PV(props) {
                         <Tooltip arrow title={monitorReason}>
                             <span>
                                 <FormControlLabel
+                                    sx={{ mt: 1 }}
                                     control={<Switch color="primary" checked={pvMonitoring} onChange={handlePVMonitoringChange} />}
                                     disabled={monitorReason !== ""}
                                     label="Live PV Monitoring" />
