@@ -172,9 +172,10 @@ function QueryResults(props) {
     }
 
     const renderIOCLink = (params) => {
+        // iocName==IOC1 is an exact match, so the search doesn't include IOCs with similar names like IOC10
         return (
             <div>
-                <Link component={RouterLink} to={`/?iocName=${params.row.iocName}`} underline="hover">{params.row.iocName}</Link>
+                <Link component={RouterLink} to={`/?iocName==${encodeURIComponent(params.row.iocName)}`} underline="hover">{params.row.iocName}</Link>
             </div>
         )
     }
@@ -298,38 +299,16 @@ function QueryResults(props) {
                 const omitSmall = config.OMIT_IN_TABLE_SMALL;
                 const omitMedium = config.OMIT_IN_TABLE_MEDIUM;
 
-                if (windowWidth <= sm) {
-                    for (let i = 0; i < omitExtraSmall.length; ++i) {
-                        toggleColumnVisibility(omitExtraSmall[i], false)
-                    }
-                    for (let i = 0; i < omitSmall.length; ++i) {
-                        toggleColumnVisibility(omitSmall[i], false);
-                    }
-                    for (let i = 0; i < omitMedium.length; ++i) {
-                        toggleColumnVisibility(omitMedium[i], false);
-                    }
-                } else if (windowWidth > sm && windowWidth <= md) {
-                    for (let i = 0; i < omitSmall.length; ++i) {
-                        toggleColumnVisibility(omitSmall[i], false);
-                    }
-                    for (let i = 0; i < omitExtraSmall.length; ++i) {
-                        toggleColumnVisibility(omitExtraSmall[i], true);
-                    }
-                    for (let i = 0; i < omitMedium.length; ++i) {
-                        toggleColumnVisibility(omitMedium[i], false);
-                    }
-                } else if (windowWidth > md && windowWidth <= lg) {
-                    for (let i = 0; i < omitMedium.length; ++i) {
-                        toggleColumnVisibility(omitMedium[i], false);
-                    }
-                    for (let i = 0; i < omitSmall.length; ++i) {
-                        toggleColumnVisibility(omitSmall[i], true);
-                    }
-                } else {
-                    for (let i = 0; i < omitMedium.length; ++i) {
-                        toggleColumnVisibility(omitMedium[i], true);
-                    }
-                }
+                // set every column in all three lists, so going straight from a narrow window to a wide one,
+                // like maximizing it, shows the columns that were hidden for any of the narrower widths
+                const hidden = new Set([
+                    ...(windowWidth <= sm ? omitExtraSmall : []),
+                    ...(windowWidth <= md ? omitSmall : []),
+                    ...(windowWidth <= lg ? omitMedium : []),
+                ]);
+                [...omitExtraSmall, ...omitSmall, ...omitMedium].forEach((field) => {
+                    toggleColumnVisibility(field, !hidden.has(field));
+                });
             }
         };
         window.addEventListener('resize', handleWindowResize);

@@ -103,3 +103,67 @@ describe('Channel Finder query parameters', () => {
       .toBe('?~name=*&voltage=*5*&~tag=archived&~tag=golden');
   });
 });
+
+describe('PV value formatting', () => {
+  const format = api.FORMAT_VALUE;
+
+  test('negative numbers are not shown in exponential form', () => {
+    expect(format(-12.5)).toBe('-12.5');
+    expect(format(-12.5, 2, 'VDouble')).toBe('-12.50');
+  });
+
+  test('the PV precision sets the decimals, keeping trailing zeros like Phoebus', () => {
+    expect(format(3.14159, 2, 'VDouble')).toBe('3.14');
+    expect(format(3.1, 3, 'VDouble')).toBe('3.100');
+    expect(format(0, 2, 'VDouble')).toBe('0.00');
+  });
+
+  test('exponential form is used for values that would round to all zeros or are very large', () => {
+    expect(format(0.006, 2, 'VDouble')).toBe('0.01');
+    expect(format(0.004, 2, 'VDouble')).toBe('4.00e-3');
+    expect(format(-0.004, 2, 'VDouble')).toBe('-4.00e-3');
+    expect(format(1234567890, 2, 'VDouble')).toBe('1.23e+9');
+    expect(format(-1234567890, 2, 'VDouble')).toBe('-1.23e+9');
+  });
+
+  test('values right at the rounding cutoff that round to all zeros use exponential form too', () => {
+    expect(format(5e-7, 6, 'VDouble')).toBe('5.000000e-7');
+    expect(format(-5e-7, 6, 'VDouble')).toBe('-5.000000e-7');
+  });
+
+  test('precision 0 or unknown shows the value in full, since PREC 0 usually means PREC was never set', () => {
+    expect(format(3.14159, 0, 'VDouble')).toBe('3.14159');
+    expect(format(3.14159)).toBe('3.14159');
+    expect(format(0.001)).toBe('1e-3');
+    expect(format(-0.001)).toBe('-1e-3');
+  });
+
+  test('integer types are whole numbers', () => {
+    expect(format(5, 0, 'VInt')).toBe('5');
+    expect(format(-5, 0, 'VLong', 2)).toBe('-5');
+    expect(format(255, 0, 'VUByte')).toBe('255');
+  });
+
+  test('NaN, text and arrays are unchanged', () => {
+    expect(format('NaN', 2, 'VDouble')).toBe('NaN');
+    expect(format('text')).toBe('text');
+  });
+
+  test('the results table caps the decimals at 2, and uses 2 without trailing zeros when the precision is 0 or unknown', () => {
+    expect(format(3.14159, 4, 'VDouble', 2)).toBe('3.14');
+    expect(format(3.1, 3, 'VDouble', 2)).toBe('3.10');
+    expect(format(3.1, 1, 'VDouble', 2)).toBe('3.1');
+    expect(format(3.14159, 0, 'VDouble', 2)).toBe('3.14');
+    expect(format(3.1, 0, 'VDouble', 2)).toBe('3.1');
+    // after a remount the vtype is unknown, so whole numbers don't show as 5.00
+    expect(format(5, null, null, 2)).toBe('5');
+    expect(format(-0.001, null, null, 2)).toBe('-1.00e-3');
+  });
+
+  test('later web socket messages use the precision and vtype from the first message', () => {
+    const first = api.PARSE_WEBSOCKET_MSG({ type: 'update', pv: 'SR:temp', value: 12.5, precision: 2, vtype: 'VDouble' });
+    expect(first.pv_value).toBe('12.50');
+    const update = api.PARSE_WEBSOCKET_MSG({ type: 'update', pv: 'SR:temp', value: 3.14159 }, { precision: first.precision, vtype: first.vtype });
+    expect(update.pv_value).toBe('3.14');
+  });
+});

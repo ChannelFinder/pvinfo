@@ -32,6 +32,7 @@ Version 3 updates the libraries and tools PV Info is built on. Node.js >= v22.22
 - The monitor all switch is in the search results toolbar with a "Monitor all PVs" label instead of next to the "Actions" column header
 - The Services page Preference Settings show the new settings, and the IOCs page settings are in their own IOCs Page table
 - The Services page and PV details page reconnect to PV Web Socket after 1, 2, 4 and 8 seconds and then every 10 seconds like the PVWS JavaScript client, instead of every 5 seconds, and keep trying instead of stopping after 20 attempts
+- Live PV values use the PV's precision (PREC) for the number of decimals, keeping trailing zeros like Phoebus. The search results use the precision up to 2 decimals, and integer PVs are shown as whole numbers. A precision of 0 is treated as not set, as before
 
 ### Added
 
@@ -39,6 +40,7 @@ Version 3 updates the libraries and tools PV Info is built on. Node.js >= v22.22
 - Vitest tests, run in CI ([#173](https://github.com/ChannelFinder/pvinfo/pull/173))
 - Advanced search shows a preview of how the query will be searched, as chips below the search box
 - Advanced search does not search a property without a value after the `=`, it shows how to fix the query instead
+- Advanced search values and tags with spaces go in double quotes, like `recordDesc=="beam current"`, and an `=` inside the quotes is part of the value. Values with spaces picked from the properties list are quoted instead of having the spaces replaced with `?`. `=name` as the first term is an exact PV name, like the standard search. A `"` in a value is matched with the `?` wildcard, and switching from Standard search puts the `?` in for it
 - OR searches with `|` (or `;`) are documented in the help page and search tooltips ([#174](https://github.com/ChannelFinder/pvinfo/pull/174), fixes [#148](https://github.com/ChannelFinder/pvinfo/issues/148))
 - Space separated words in the PV name search match PV names containing all of the words in any order ([#174](https://github.com/ChannelFinder/pvinfo/pull/174))
 - Options to hide the IOCs page, change its PV name pattern, and add columns ([#176](https://github.com/ChannelFinder/pvinfo/pull/176), fixes [#134](https://github.com/ChannelFinder/pvinfo/issues/134))
@@ -48,19 +50,25 @@ Version 3 updates the libraries and tools PV Info is built on. Node.js >= v22.22
 - Renamed "Free Form" to "Advanced" search in codebase and labels in case we want to add a true free form search later
 - "Standard" and "Advanced" labels on the search type buttons ([#177](https://github.com/ChannelFinder/pvinfo/pull/177))
 - PV Web Socket connections that haven't received a message for 30 seconds ask PVWS for a ping, like the PVWS JavaScript client, so proxies don't close them while idle. Behind a proxy, live values on the PV details page for PVs that rarely update went blank after a few minutes
+- If a page fails to load because a new version of PV Info was deployed after it was opened, the page reloads to get the new version. Errors that would leave the page blank show an error message with a reload button instead
 
 ### Fixed
 
 - The search button queried Channel Finder twice for each new search, once for the button and once for the URL change
+- The PV details page only used the PV's precision for the first live value, and showed negative numbers in exponential form, like `-1.25e+1` for -12.5
 - Clicking next to a header link navigated to the home page ([#173](https://github.com/ChannelFinder/pvinfo/pull/173))
 - Monitor all counted waveform PVs toward the monitoring warning and limit when waveform monitoring was turned off, even though they were not monitored
+- Pressing Enter in the search results table's search box ran the search again, which cleared the table's filter, sort, page, selection, and live monitoring
+- Columns hidden on a narrow window, like Status and Type, stayed hidden after maximizing the window
 - A tag only Advanced search opened from a URL searched the tag as a PV name when searched again
 - Properties with "tag" in the name, like `voltage`, were searched as tags in Advanced search
 - OR searches without wildcards only added partial match wildcards to the first and last pattern ([#174](https://github.com/ChannelFinder/pvinfo/pull/174))
 - Search property values are URL encoded ([#174](https://github.com/ChannelFinder/pvinfo/pull/174))
+- Switching from Standard to Advanced search changed searches with spaces in a value or an exact PV name. A PV name `beam current` became the PV name `beam` and the tag `current`, and `=SR:BPM1` became a property without a name
 - Extra properties without dropdown labels did not get partial match wildcards in the standard search, and not equal searches on PV status, record type, or extra properties with dropdown labels got wildcards
 - Advanced search queries with extra spaces searched for empty tags or treated the PV name as a tag, and property values containing `=` were cut off
 - IOCs page stayed on "Data Loading..." if the Channel Finder query failed ([#176](https://github.com/ChannelFinder/pvinfo/pull/176))
+- IOC name links in the search results, IOCs page, and PV details page also found PVs from IOCs with similar names, like IOC10 for IOC1. They are now an exact match, `iocName==IOC1`, and so is the PV details page alias link
 - The mobile menu showed the Plotting link when the archiver was disabled ([#177](https://github.com/ChannelFinder/pvinfo/pull/177))
 - The caput log section on the PV details page opened to an empty table when the PV had no caput log data, it now shows "No Caput Log Data" like the online log and alarm log sections
 - The plot button in each search results row showed when the archiver was disabled

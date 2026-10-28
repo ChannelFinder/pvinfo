@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import useWebSocket from '../../../../useWebSocket';
 import api from '../../../../api';
 import config from "../../../../config";
@@ -11,6 +11,9 @@ function Value(props) {
     // debounce the value display to avoid flashing "Disconnected" since web socket always sends message without value on connect
     const [show, setShow] = useState(false);
     const [startTimer, setStartTimer] = useState(false);
+    // PV Web Socket only sends the precision and vtype with the first message for a PV, keep them for the updates.
+    // If the cell is remounted after the first message, like when the column is hidden and shown again, they stay unknown
+    const valueFormat = useRef({ precision: null, vtype: null });
 
     // https://github.com/robtaussig/react-use-websocket/issues/40#issuecomment-616676102
     // pattern for sharing web socket among components
@@ -39,9 +42,16 @@ function Value(props) {
 
     // parse web socket message. filter on useWebSocket above means we only parse messages for this PV
     useEffect(() => {
-        const jsonMessage = api.PARSE_WEBSOCKET_MSG(lastJsonMessage, 2); // fix precision to 2 on the PV table
+        // at most 2 decimals in the results table
+        const jsonMessage = api.PARSE_WEBSOCKET_MSG(lastJsonMessage, { ...valueFormat.current, maxDecimals: 2 });
         if (jsonMessage === null) {
             return; // unable to parse, could be invalid message type, no PV name, null lastJsonMessage
+        }
+        if ("precision" in jsonMessage) {
+            valueFormat.current.precision = jsonMessage.precision;
+        }
+        if ("vtype" in jsonMessage) {
+            valueFormat.current.vtype = jsonMessage.vtype;
         }
         setStartTimer(true);
         if ("severity" in jsonMessage) {

@@ -33,6 +33,12 @@ test('shows every item when all features are on', () => {
   expect(screen.getByRole('link', { name: 'full release history' })).toBeInTheDocument();
 });
 
+test('explains the Advanced search quotes for values with spaces', () => {
+  render(<WhatsNew />);
+  expect(screen.getByText(/Search for values with spaces/)).toBeInTheDocument();
+  expect(screen.getByText('recordDesc=="beam current"')).toBeInTheDocument();
+});
+
 test('hides items for features a site has turned off', () => {
   Object.assign(configOverrides, { USE_AA: false, USE_PVWS: false, USE_IOC_PAGE: false, PROPERTY_VALUES: '' });
   render(<WhatsNew />);
@@ -48,4 +54,13 @@ test('hides a section when none of its items apply', () => {
   configOverrides.IOC_PAGE_EXTRA_COLUMNS = [];
   render(<WhatsNew />);
   expect(screen.queryByText('IOCs Page')).not.toBeInTheDocument();
+});
+
+test('the live value precision item is shown only when PV Web Socket is used', () => {
+  const { unmount } = render(<WhatsNew />);
+  expect(screen.getByText(/Live values use the PV's precision/)).toBeInTheDocument();
+  unmount();
+  configOverrides.USE_PVWS = false;
+  render(<WhatsNew />);
+  expect(screen.queryByText(/Live values use the PV's precision/)).not.toBeInTheDocument();
 });

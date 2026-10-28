@@ -21,6 +21,7 @@ function getSections() {
                 { text: <Fragment><strong>Search for several words at once.</strong> Type words separated by spaces in the PV name box to find PVs that contain all of them, in any order. For example, {code("beam current")} finds both {code("cmm:beam_current")} and {code("SR:current_beam_avg")}.</Fragment> },
                 { text: <Fragment><strong>Search for one thing or another</strong> with {code("|")}. For example, {code("VVR|TEST")} finds PVs containing either word.</Fragment> },
                 { text: <Fragment><strong>Advanced search finds partial matches</strong> like the Standard search. For example, {code("recordDesc=temp")} finds descriptions containing "temp". Use {code("recordDesc==temp")} for an exact match, or {code("recordDesc!=temp")} for descriptions not containing it.</Fragment> },
+                { text: <Fragment><strong>Search for values with spaces</strong> in Advanced search by putting them in double quotes, like {code('recordDesc=="beam current"')}. Switching from Standard to Advanced search keeps values with spaces and exact PV names the same.</Fragment> },
                 { text: <Fragment><strong>Pick property values from a list.</strong> In Advanced search, properties with a › in the Properties list can be clicked to choose from their values instead of typing them.</Fragment>, show: Object.keys(getPropertyValues()).length > 0 },
                 { text: <Fragment><strong>See how your Advanced search will be read.</strong> As you type, a "Searching for:" row of chips appears below the box, so you can check your query before you search.</Fragment> },
             ],
@@ -40,6 +41,7 @@ function getSections() {
             title: "PV Details Page",
             items: [
                 { text: <Fragment><strong>Copy the PV name</strong> with the copy button next to it.</Fragment> },
+                { text: <Fragment><strong>Live values use the PV's precision</strong> (PREC) for the number of decimals, like Phoebus. The search results show up to 2 decimals.</Fragment>, show: config.USE_PVWS },
             ],
         },
         {

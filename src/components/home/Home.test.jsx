@@ -1,4 +1,5 @@
 import { render, screen, act, fireEvent } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@mui/material';
 import { MemoryRouter } from 'react-router';
 import theme from '../../theme';
@@ -67,6 +68,17 @@ test('a link with numbered tags from before 3.0 still searches the tags', async 
   expect(api.CF_QUERY).toHaveBeenCalledWith({ pvName: 'SR*', tag: ['archived', 'golden'], standardSearch: false });
 });
 
+test('Enter in the results table search box filters the table without searching again', async () => {
+  const channel = (name) => ({ name, owner: 'owner', properties: [{ name: 'pvStatus', value: 'Active' }] });
+  api.CF_QUERY.mockResolvedValueOnce([channel('PV:A'), channel('PV:B')]);
+  await renderAdvancedSearch('/?pvName=PV*&standardSearch=false');
+  expect(api.CF_QUERY).toHaveBeenCalledTimes(1);
+  const quickFilter = screen.getByPlaceholderText('Search…');
+  await userEvent.type(quickFilter, 'PV:A{Enter}');
+  expect(api.CF_QUERY).toHaveBeenCalledTimes(1);
+  expect(quickFilter).toHaveValue('PV:A');
+});
+
 // these use the Advanced search since jsdom doesn't support reading the Standard search fields from the form
 describe('search button', () => {
   const search = async () => { await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'search' })); }); };
@@ -129,4 +141,11 @@ describe('search button', () => {
     expect(api.CF_QUERY).toHaveBeenCalledTimes(1);
     expect(api.CF_QUERY).toHaveBeenCalledWith({ standardSearch: false });
   });
+});
+
+test('switching from Standard to Advanced keeps values with spaces and an exact PV name in the search', async () => {
+  await renderAdvancedSearch('/?pvName=%3DSR%3ABPM1&recordDesc=beam+current&standardSearch=true');
+  expect(screen.getByRole('searchbox')).toHaveValue('=SR:BPM1 recordDesc="beam current"');
+  await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'search' })); });
+  expect(api.CF_QUERY).toHaveBeenLastCalledWith({ pvName: '=SR:BPM1', recordDesc: 'beam current', standardSearch: false });
 });

@@ -7,10 +7,13 @@ import csvExportOptions from "../../csvExportOptions";
 import api from "../../api";
 import config from "../../config";
 
+// iocName==IOC1 is an exact match, so the search doesn't include IOCs with similar names like IOC10
+const iocSearchURL = (iocName) => `/?iocName==${encodeURIComponent(iocName)}`;
+
 const renderLink = (params) => {
   return (
       <div>
-          <Link component={RouterLink} to={`/?iocName=${params.row.iocName}`} underline="hover">{params.row.iocName}</Link>
+          <Link component={RouterLink} to={iocSearchURL(params.row.iocName)} underline="hover">{params.row.iocName}</Link>
       </div>
   )
 }
@@ -79,7 +82,7 @@ function IOC() {
     }, [cfPVData]);
 
     const handleRowDoubleClick = (e) => {
-      navigate(`/?iocName=${e.row.iocName}`);
+      navigate(iocSearchURL(e.row.iocName));
     }
 
     if (isLoading) {
