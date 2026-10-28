@@ -2,7 +2,7 @@ import React, { Fragment, useEffect, useState } from 'react';
 import { Box, Grid, ToggleButton, ToggleButtonGroup, Typography, Tooltip } from '@mui/material';
 import QueryResults from "./queryresults";
 import api from "../../api";
-import { useSearchParams } from "react-router";
+import { createSearchParams, useSearchParams } from "react-router";
 import ManageSearchRoundedIcon from '@mui/icons-material/ManageSearchRounded';
 import PageviewRoundedIcon from '@mui/icons-material/PageviewRounded';
 import ParamSearch from './paramsearch';
@@ -208,10 +208,21 @@ function Home(props) {
             }
         }
         setIsLoading(true);
+        // the search params effect queries Channel Finder when the URL changes to a search, so only query here
+        // when it won't: the same search again, or no search terms which shows every PV.
+        // Empty values like pvName= and standardSearch are dropped the same way as the search params effect does
+        const hasSearchTerms = Object.keys(readSearchParams(createSearchParams(params))).some((key) => key !== "standardSearch");
         params['standardSearch'] = standardSearch;
-        fetchData(api.CF_QUERY, params, setCFData, "PV", true, true);
-        fetchData(api.COUNT_QUERY, params, setPVCount, "count");
-        setSearchParams(params);
+        // compared after encoding, the URL can have the same search encoded differently, like ~ instead of %7E
+        const sameSearch = createSearchParams(params).toString() === searchParams.toString();
+        if (!hasSearchTerms || sameSearch) {
+            fetchData(api.CF_QUERY, params, setCFData, "PV", true, true);
+            fetchData(api.COUNT_QUERY, params, setPVCount, "count");
+        }
+        // updating the URL to the same search with a different encoding would run the search params effect again
+        if (!sameSearch) {
+            setSearchParams(params);
+        }
     }
 
     const handleClear = (e) => {
