@@ -213,11 +213,16 @@ function Home(props) {
         // Empty values like pvName= are dropped the same way as the search params effect does
         const hasSearchTerms = Object.keys(readSearchParams(createSearchParams(params))).length > 0;
         params['standardSearch'] = standardSearch;
-        if (!hasSearchTerms || createSearchParams(params).toString() === searchParams.toString()) {
+        // compared after encoding, the URL can have the same search encoded differently, like ~ instead of %7E
+        const sameSearch = createSearchParams(params).toString() === searchParams.toString();
+        if (!hasSearchTerms || sameSearch) {
             fetchData(api.CF_QUERY, params, setCFData, "PV", true, true);
             fetchData(api.COUNT_QUERY, params, setPVCount, "count");
         }
-        setSearchParams(params);
+        // updating the URL to the same search with a different encoding would run the search params effect again
+        if (!sameSearch) {
+            setSearchParams(params);
+        }
     }
 
     const handleClear = (e) => {

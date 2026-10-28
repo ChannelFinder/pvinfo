@@ -96,6 +96,16 @@ describe('search button', () => {
     expect(api.CF_QUERY).toHaveBeenCalledTimes(2);
   });
 
+  test('repeating a search from a URL with a ~ queries Channel Finder once', async () => {
+    // URLSearchParams encodes ~ as %7E, so the URL from a tag link isn't exactly what the search button sets
+    await renderAdvancedSearch('/?pvName=*&tag=beam~test&standardSearch=false');
+    expect(screen.getByRole('searchbox')).toHaveValue('* beam~test');
+    vi.clearAllMocks();
+    await search();
+    expect(api.CF_QUERY).toHaveBeenCalledTimes(1);
+    expect(api.COUNT_QUERY).toHaveBeenCalledTimes(1);
+  });
+
   test('a search with only an empty PV name queries every PV once', async () => {
     await renderAdvancedSearch();
     typeQuery('pvName=');
