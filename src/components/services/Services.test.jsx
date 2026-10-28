@@ -1,5 +1,6 @@
-import { render, screen, act, fireEvent } from '@testing-library/react';
+import { render, screen, act, fireEvent, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
+import FakeWebSocket from '../../fakeWebSocket';
 import Services from './Services';
 
 const configOverrides = vi.hoisted(() => ({}));
@@ -8,15 +9,17 @@ vi.mock('../../config', async (importOriginal) => {
   return { default: new Proxy({ ...actual }, { get: (target, key) => (key in configOverrides ? configOverrides[key] : target[key]) }) };
 });
 
-vi.mock('../../useWebSocket', () => ({ default: () => ({ sendJsonMessage: vi.fn(), lastJsonMessage: null }) }));
-
 vi.mock('../../api', () => {
   const query = () => Promise.resolve(null);
   return { default: { COUNT_QUERY: query, CFI_QUERY: query, ALI_QUERY: query, OLI_QUERY: query, PVWSI_QUERY: query, CAPUTLOG_QUERY: query } };
 });
 
 beforeEach(() => {
+  FakeWebSocket.instances = [];
+  vi.stubGlobal('WebSocket', FakeWebSocket);
   Object.assign(configOverrides, {
+    USE_PVWS: true,
+    PVWS_URL: 'ws://pvws/pv',
     USE_AA: true,
     AA_MAX_PLOT_PVS: 20,
     USE_IOC_PAGE: true,
@@ -35,6 +38,11 @@ beforeEach(() => {
     OMIT_IN_TABLE_SMALL: ['pvStatus'],
     OMIT_IN_TABLE_X_SMALL: [],
   });
+});
+
+afterEach(() => {
+  vi.useRealTimers();
+  vi.unstubAllGlobals();
 });
 
 async function renderServices() {
@@ -90,4 +98,53 @@ test('extra properties say if they are not shown in the results', async () => {
   await renderServices();
   expect(settingValue('Extra Property')).toBe('Sector');
   expect(settingValue('Second Extra Property')).toBe('Device (not shown in results)');
+});
+
+describe('PV Web Socket status', () => {
+  const echo = { type: 'echo', body: 'Hello, PVWS!' };
+  const pvwsStatus = () => within(screen.getByText('PV Web Socket').parentElement).getByText(/^(Connected|Connecting|Disconnected)$/).textContent;
+
+  async function renderPVWS() {
+    render(<MemoryRouter><Services /></MemoryRouter>);
+    await act(async () => {});
+  }
+
+  test('shows Connecting until PVWS answers the echo', async () => {
+    await renderPVWS();
+    expect(pvwsStatus()).toBe('Connecting');
+    await act(async () => FakeWebSocket.latest().open());
+    expect(FakeWebSocket.latest().sent).toEqual([echo]);
+    expect(pvwsStatus()).toBe('Connecting');
+    await act(async () => FakeWebSocket.latest().echo());
+    expect(pvwsStatus()).toBe('Connected');
+  });
+
+  test('shows Disconnected when the web socket closes', async () => {
+    await renderPVWS();
+    await act(async () => FakeWebSocket.latest().open());
+    await act(async () => FakeWebSocket.latest().echo());
+    await act(async () => FakeWebSocket.latest().drop());
+    expect(pvwsStatus()).toBe('Disconnected');
+  });
+
+  test('checks PVWS again when the web socket reconnects', async () => {
+    vi.useFakeTimers();
+    await renderPVWS();
+    // the connection drops after the echo is sent, before PVWS answers it
+    await act(async () => FakeWebSocket.latest().open());
+    await act(async () => FakeWebSocket.latest().drop());
+    await act(async () => { await vi.advanceTimersByTimeAsync(10000); });
+    expect(FakeWebSocket.instances).toHaveLength(2);
+    await act(async () => FakeWebSocket.latest().open());
+    expect(FakeWebSocket.latest().sent).toEqual([echo]);
+    await act(async () => FakeWebSocket.latest().echo());
+    expect(pvwsStatus()).toBe('Connected');
+  });
+
+  test('does not connect when PV Web Socket is turned off', async () => {
+    configOverrides.USE_PVWS = false;
+    await renderPVWS();
+    expect(FakeWebSocket.instances).toHaveLength(0);
+    expect(screen.queryByText('PV Web Socket')).not.toBeInTheDocument();
+  });
 });
