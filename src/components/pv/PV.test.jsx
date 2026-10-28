@@ -31,3 +31,18 @@ test('copy button copies the PV name', async () => {
   expect(alerts.handleSeverity).toHaveBeenCalledWith('success');
   expect(alerts.handleOpenErrorAlert).toHaveBeenCalledWith(true);
 });
+
+test('the IOC and alias links search for exact matches, not IOCs or PVs with similar names', async () => {
+  api.CF_QUERY.mockResolvedValue([{ name: 'SR:C1:beam', owner: 'owner', properties: [{ name: 'iocName', value: 'IOC 1' }, { name: 'alias', value: 'SR:C1:current' }], tags: [] }]);
+  const alerts = { handleErrorMessage: vi.fn(), handleOpenErrorAlert: vi.fn(), handleSeverity: vi.fn() };
+  render(
+    <ThemeProvider theme={theme}>
+      <MemoryRouter initialEntries={['/pv/SR:C1:beam']}>
+        <Routes><Route path="/pv/:id" element={<PV {...alerts} />} /></Routes>
+      </MemoryRouter>
+    </ThemeProvider>
+  );
+  await act(async () => {});
+  expect(screen.getByRole('link', { name: 'IOC 1' })).toHaveAttribute('href', '/?iocName==IOC%201');
+  expect(screen.getByRole('link', { name: 'SR:C1:current' })).toHaveAttribute('href', '/?alias==SR%3AC1%3Acurrent');
+});

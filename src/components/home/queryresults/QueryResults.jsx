@@ -168,9 +168,10 @@ function QueryResults(props) {
     }
 
     const renderIOCLink = (params) => {
+        // iocName==IOC1 is an exact match, so the search doesn't include IOCs with similar names like IOC10
         return (
             <div>
-                <Link component={RouterLink} to={`/?iocName=${params.row.iocName}`} underline="hover">{params.row.iocName}</Link>
+                <Link component={RouterLink} to={`/?iocName==${encodeURIComponent(params.row.iocName)}`} underline="hover">{params.row.iocName}</Link>
             </div>
         )
     }

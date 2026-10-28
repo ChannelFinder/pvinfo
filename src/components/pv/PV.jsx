@@ -110,10 +110,11 @@ function PV(props) {
             pvObject[prop.name] = {}
             pvObject[prop.name].label = dataNamesMapping[prop.name] ? dataNamesMapping[prop.name] : prop.name;
             pvObject[prop.name].value = prop.value
+            // exact match searches, so they don't include IOCs or PVs with similar names
             if (prop.name === "alias") {
-                pvObject[prop.name].url = `/?alias=${prop.value}`
+                pvObject[prop.name].url = `/?alias==${encodeURIComponent(prop.value)}`
             } else if (prop.name === "iocName") {
-                pvObject[prop.name].url = `/?iocName=${prop.value}`
+                pvObject[prop.name].url = `/?iocName==${encodeURIComponent(prop.value)}`
             }
         });
         pvObject.tags = []
