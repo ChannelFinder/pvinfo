@@ -115,6 +115,14 @@ describe('search button', () => {
     expect(screen.queryByText('Data Loading...')).not.toBeInTheDocument();
   });
 
+  test('a search with only standardSearch typed in queries every PV once', async () => {
+    await renderAdvancedSearch();
+    typeQuery('standardSearch=false');
+    await search();
+    expect(api.CF_QUERY).toHaveBeenCalledTimes(1);
+    expect(screen.queryByText('Data Loading...')).not.toBeInTheDocument();
+  });
+
   test('a search without search terms queries every PV once', async () => {
     await renderAdvancedSearch();
     await search();

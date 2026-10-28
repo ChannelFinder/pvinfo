@@ -210,8 +210,8 @@ function Home(props) {
         setIsLoading(true);
         // the search params effect queries Channel Finder when the URL changes to a search, so only query here
         // when it won't: the same search again, or no search terms which shows every PV.
-        // Empty values like pvName= are dropped the same way as the search params effect does
-        const hasSearchTerms = Object.keys(readSearchParams(createSearchParams(params))).length > 0;
+        // Empty values like pvName= and standardSearch are dropped the same way as the search params effect does
+        const hasSearchTerms = Object.keys(readSearchParams(createSearchParams(params))).some((key) => key !== "standardSearch");
         params['standardSearch'] = standardSearch;
         // compared after encoding, the URL can have the same search encoded differently, like ~ instead of %7E
         const sameSearch = createSearchParams(params).toString() === searchParams.toString();
