@@ -11,6 +11,7 @@ function ValueTable(props) {
     const [pvUnits, setPVUnits] = useState(null);
     const [pvSeverity, setPVSeverity] = useState(null);
     const [pvPrecision, setPVPrecision] = useState(null);
+    const [pvVtype, setPVVtype] = useState(null);
     const [pvMin, setPVMin] = useState(null);
     const [pvMax, setPVMax] = useState(null);
     const [pvAlarmLow, setPVAlarmLow] = useState(null);
@@ -78,7 +79,8 @@ function ValueTable(props) {
         if (!props.pvMonitoring && !snapshot) {
             return;
         }
-        const message = api.PARSE_WEBSOCKET_MSG(lastJsonMessage);
+        // PV Web Socket only sends the precision and vtype with the first message for a PV, keep them for the updates
+        const message = api.PARSE_WEBSOCKET_MSG(lastJsonMessage, { precision: pvPrecision, vtype: pvVtype });
         if (message === null) {
             return; // unable to parse, could be invalid message type, no PV name, null lastJsonMessage
         }
@@ -90,6 +92,7 @@ function ValueTable(props) {
         if ("warn_low" in message) setPVWarnLow(message.warn_low);
         if ("warn_high" in message) setPVWarnHigh(message.warn_high);
         if ("precision" in message) setPVPrecision(message.precision);
+        if ("vtype" in message) setPVVtype(message.vtype);
         if ("labels" in message) setPVLabels(message.labels);
         if ("seconds" in message) {
             if (!props.snapshot) {
@@ -123,7 +126,7 @@ function ValueTable(props) {
         if (snapshot) {
             setSnapshot(false);
         }
-    }, [lastJsonMessage, props.pvMonitoring, props.snapshot, snapshot, pvPrecision, pvSeverity]);
+    }, [lastJsonMessage, props.pvMonitoring, props.snapshot, snapshot, pvPrecision, pvVtype, pvSeverity]);
 
     if (props.isLoading) {
         return (

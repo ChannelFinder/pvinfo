@@ -30,6 +30,7 @@ Version 3 updates the libraries and tools PV Info is built on. Node.js >= v22.22
 - Search results live monitoring uses toggle switches instead of checkboxes. Switches for PVs that can't be monitored are faded and their tooltip says why
 - The monitor all switch is in the search results toolbar with a "Monitor all PVs" label instead of next to the "Actions" column header
 - The Services page Preference Settings show the new settings, and the IOCs page settings are in their own IOCs Page table
+- Live PV values use the PV's precision (PREC) for the number of decimals, keeping trailing zeros like Phoebus. The search results use the precision up to 2 decimals, and integer PVs are shown as whole numbers. A precision of 0 is treated as not set, as before
 
 ### Added
 
@@ -49,6 +50,7 @@ Version 3 updates the libraries and tools PV Info is built on. Node.js >= v22.22
 ### Fixed
 
 - The search button queried Channel Finder twice for each new search, once for the button and once for the URL change
+- The PV details page only used the PV's precision for the first live value, and showed negative numbers in exponential form, like `-1.25e+1` for -12.5
 - Clicking next to a header link navigated to the home page ([#173](https://github.com/ChannelFinder/pvinfo/pull/173))
 - Monitor all counted waveform PVs toward the monitoring warning and limit when waveform monitoring was turned off, even though they were not monitored
 - A tag only Advanced search opened from a URL searched the tag as a PV name when searched again

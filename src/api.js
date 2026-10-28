@@ -239,7 +239,38 @@ async function standardQuery(requestURI, options = null, handleData = null) {
     })
 }
 
-function parseWebSocketMessage(jsonMessage, fixedPrecision = null) {
+// PV Web Socket vtypes whose value is a whole number
+const INTEGER_VTYPES = /^VU?(Byte|Short|Int|Long)$/;
+
+// Format a numeric PV value for display. precision is the PV's PREC and vtype its type, like VDouble or VInt.
+// PV Web Socket only sends them with the first message for a PV, so callers keep them for later updates.
+// With a precision above 0 the value has that many decimals, keeping trailing zeros like Phoebus.
+// A precision of 0 usually means PREC was never set, so like an unknown precision the value is shown in full,
+// or rounded to maxDecimals without trailing zeros when maxDecimals is set. maxDecimals also caps the precision
+function formatValue(value, precision = null, vtype = null, maxDecimals = null) {
+    if (typeof value !== "number") {
+        return value; // PV Web Socket sends "NaN" for NaN and infinite values
+    }
+    if (INTEGER_VTYPES.test(vtype)) {
+        return String(value);
+    }
+    const hasPrecision = Number.isInteger(precision) && precision > 0;
+    if (!hasPrecision && maxDecimals === null) {
+        return Math.abs(value) >= 0.01 || value === 0 ? String(value) : value.toExponential();
+    }
+    // toFixed and toExponential allow at most 100 digits
+    const decimals = Math.min(hasPrecision ? precision : maxDecimals, maxDecimals ?? 100);
+    // exponential for values that would round to all zeros or are very large
+    const absValue = Math.abs(value);
+    if (value !== 0 && (absValue < 0.5 * 10 ** -decimals || absValue >= 1e9)) {
+        return value.toExponential(decimals);
+    }
+    return hasPrecision ? value.toFixed(decimals) : String(Number(value.toFixed(decimals)));
+}
+
+// options are the precision and vtype from an earlier message for the PV, used when the message doesn't have them,
+// and maxDecimals, see formatValue
+function parseWebSocketMessage(jsonMessage, { precision = null, vtype = null, maxDecimals = null } = {}) {
     if (jsonMessage === null) {
         return null;
     }
@@ -310,23 +341,10 @@ function parseWebSocketMessage(jsonMessage, fixedPrecision = null) {
             let value_array = new Int16Array(bytes.buffer);
             pvData.pv_value = Array.prototype.slice.call(value_array);
         } else if ("value" in pvData) {
-            if (fixedPrecision) {
-                if ((Number(pvData.value) >= 0.01 && Number(pvData.value) < 1000000000) || (Number(pvData.value) <= -0.01 && Number(pvData.value) > -1000000000) || Number(pvData.value) === 0) {
-                    pvData.pv_value = Number(pvData.value.toFixed(Number(fixedPrecision)));
-                } else {
-                    pvData.pv_value = Number(pvData.value).toExponential(Number(fixedPrecision));
-                }
-            }
-            else {
-                // if precision was explicitly set (and badly assume 0 is not explicit) then use that
-                if (pvData.precision !== null && pvData.precision !== "" && !isNaN(pvData.precision) && pvData.precision !== 0) {
-                    pvData.pv_value = (Number(pvData.value) >= 0.01 || Number(pvData.value) === 0) ? Number(pvData.value.toFixed(Number(pvData.precision))) : Number(pvData.value).toExponential(Number(pvData.precision));
-                }
-                // otherwise show full value
-                else {
-                    pvData.pv_value = (Number(pvData.value) >= 0.01 || Number(pvData.value) === 0) ? Number(pvData.value) : Number(pvData.value).toExponential();
-                }
-            }
+            pvData.pv_value = formatValue(pvData.value,
+                "precision" in pvData ? pvData.precision : precision,
+                "vtype" in pvData ? pvData.vtype : vtype,
+                maxDecimals);
         } else {
             pvData.pv_value = null;
         }
@@ -361,6 +379,7 @@ const api = {
     LOG_ENUM: logEnum,
     HELPERS_ENUM: queryHelperEnum,
     PARSE_WEBSOCKET_MSG: parseWebSocketMessage,
+    FORMAT_VALUE: formatValue,
     PV_NAME_QUERY: pvNameQuery,
     PROPERTY_QUERY: propertyQuery,
 }
