@@ -8,6 +8,14 @@ import { Accordion, AccordionSummary, AccordionDetails } from "@mui/material";
 import { Table, TableBody, TableCell, TableRow } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import config from "../../config";
+import { getPropertyValues } from "../home/propertyValues";
+
+const extraPropSetting = (prop, showInResults) => {
+    if (!prop) {
+        return "None";
+    }
+    return showInResults ? prop : `${prop} (not shown in results)`;
+}
 
 function Services() {
     const [pvCount, setPVCount] = useState(null);
@@ -194,7 +202,8 @@ function Services() {
                 <AccordionDetails sx={{ pt: 1, pb: 1 }}>
                     <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
                         <Typography variant="body2"><strong>PV Web Socket:</strong> {config.USE_PVWS ? "Enabled" : "Disabled"}</Typography>
-                        <Typography variant="body2"><strong>IOCs Page:</strong> {config.USE_IOC_PAGE ? `Enabled (${config.IOC_PAGE_PV_PATTERN})` : "Disabled"}</Typography>
+                        <Typography variant="body2"><strong>IOCs Page:</strong> {config.USE_IOC_PAGE ? "Enabled" : "Disabled"}</Typography>
+                        <Typography variant="body2"><strong>What's New Page:</strong> {config.SHOW_WHATS_NEW ? "Enabled" : "Disabled"}</Typography>
                         <Typography variant="body2"><strong>Archiver:</strong> {config.USE_AA ? "Enabled" : "Disabled"}</Typography>
                         <Typography variant="body2"><strong>OLOG:</strong> {config.USE_OLOG ? "Enabled" : "Disabled"}</Typography>
                         <Typography variant="body2"><strong>Alarm Logger:</strong> {config.USE_AL ? "Enabled" : "Disabled"}</Typography>
@@ -219,13 +228,22 @@ function Services() {
                                                 <TableRow><TableCell>Record Type</TableCell><TableCell>{config.CF_RECORD_TYPE ? "Enabled" : "Disabled"}</TableCell></TableRow>
                                                 <TableRow><TableCell>Record Description</TableCell><TableCell>{config.CF_RECORD_DESC ? "Enabled" : "Disabled"}</TableCell></TableRow>
                                                 <TableRow><TableCell>PV Alias</TableCell><TableCell>{config.CF_RECORD_ALIAS ? "Enabled" : "Disabled"}</TableCell></TableRow>
-                                                <TableRow><TableCell>Extra Property</TableCell><TableCell>{config.EXTRA_PROP || "None"}</TableCell></TableRow>
-                                                <TableRow><TableCell>Second Extra Property</TableCell><TableCell>{config.SECOND_EXTRA_PROP || "None"}</TableCell></TableRow>
+                                                <TableRow><TableCell>Extra Property</TableCell><TableCell>{extraPropSetting(config.EXTRA_PROP, config.EXTRA_PROP_SHOW_IN_RESULTS)}</TableCell></TableRow>
+                                                <TableRow><TableCell>Second Extra Property</TableCell><TableCell>{extraPropSetting(config.SECOND_EXTRA_PROP, config.SECOND_EXTRA_PROP_SHOW_IN_RESULTS)}</TableCell></TableRow>
                                                 <TableRow><TableCell>PV Results Table Size</TableCell><TableCell>{config.RESULTS_TABLE_SIZE}</TableCell></TableRow>
+                                                <TableRow><TableCell>PV Results Table Size Options</TableCell><TableCell>{config.RESULTS_TABLE_SIZE_OPTIONS.join(", ")}</TableCell></TableRow>
+                                                {/* narrower widths also hide the columns listed for wider widths */}
+                                                <TableRow><TableCell>Columns Hidden at {config.LG_BREAKPOINT}px Wide or Less</TableCell><TableCell>{config.OMIT_IN_TABLE_MEDIUM.join(", ") || "None"}</TableCell></TableRow>
+                                                <TableRow><TableCell>Columns Hidden at {config.MD_BREAKPOINT}px Wide or Less</TableCell><TableCell>{config.OMIT_IN_TABLE_SMALL.join(", ") || "None"}</TableCell></TableRow>
+                                                <TableRow><TableCell>Columns Hidden at {config.SM_BREAKPOINT}px Wide or Less</TableCell><TableCell>{config.OMIT_IN_TABLE_X_SMALL.join(", ") || "None"}</TableCell></TableRow>
                                                 <TableRow><TableCell>PV Results Table Density</TableCell><TableCell>{config.RESULTS_TABLE_DENSITY}</TableCell></TableRow>
                                                 <TableRow><TableCell>Show Disconnected in Live Value Box</TableCell><TableCell>{config.SHOW_DISCONNECTED ? "Yes" : "No"}</TableCell></TableRow>
-                                                <TableRow><TableCell>Monitor All Warning Threshold</TableCell><TableCell>{config.LIVE_MONITOR_WARN}</TableCell></TableRow>
-                                                <TableRow><TableCell>Monitor All Maximum</TableCell><TableCell>{config.LIVE_MONITOR_MAX}</TableCell></TableRow>
+                                                <TableRow><TableCell>Warning # of PVs to Monitor</TableCell><TableCell>{config.LIVE_MONITOR_WARN}</TableCell></TableRow>
+                                                <TableRow><TableCell>Maximum # of PVs to Monitor</TableCell><TableCell>{config.LIVE_MONITOR_MAX}</TableCell></TableRow>
+                                                {config.USE_AA &&
+                                                    <TableRow><TableCell>Max PVs to Plot Together</TableCell><TableCell>{config.AA_MAX_PLOT_PVS}</TableCell></TableRow>
+                                                }
+                                                <TableRow><TableCell>Properties with Predefined Values (Advanced Search)</TableCell><TableCell>{Object.keys(getPropertyValues()).join(", ") || "None"}</TableCell></TableRow>
                                             </TableBody>
                                         </Table>
                                     </Grid>
@@ -247,6 +265,19 @@ function Services() {
                                                 <TableRow><TableCell>Alarm Log Max Results</TableCell><TableCell>{config.AL_MAX_RESULTS ?? "No Limit"}</TableCell></TableRow>
                                             </TableBody>
                                         </Table>
+                                        {/* below the PV Details Page table since the Home Page table is longer */}
+                                        {config.USE_IOC_PAGE &&
+                                            <Fragment>
+                                                <Typography variant="subtitle2" sx={{ fontWeight: "bold", mt: 2, mb: 1 }}>IOCs Page</Typography>
+                                                <Table size="small">
+                                                    <TableBody>
+                                                        <TableRow><TableCell>PV Name Pattern</TableCell><TableCell>{config.IOC_PAGE_PV_PATTERN}</TableCell></TableRow>
+                                                        {/* columns are property:label or just property */}
+                                                        <TableRow><TableCell>Extra Columns</TableCell><TableCell>{config.IOC_PAGE_EXTRA_COLUMNS.map((column) => column.split(":").pop()).join(", ") || "None"}</TableCell></TableRow>
+                                                    </TableBody>
+                                                </Table>
+                                            </Fragment>
+                                        }
                                     </Grid>
                                 </Grid>
                             </AccordionDetails>
