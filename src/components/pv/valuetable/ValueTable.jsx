@@ -137,7 +137,7 @@ function ValueTable(props) {
                 <KeyValuePair title="PV Timestamp" value={pvTimestamp} textColor={alarmColor} />
                 <KeyValuePair title="Alarm State" value={pvSeverity} textColor={alarmColor} />
                 <KeyValuePair title="Units" value={pvUnits} />
-                <KeyValuePair title="Alam Low Value" value={pvAlarmLow} />
+                <KeyValuePair title="Alarm Low Value" value={pvAlarmLow} />
                 <KeyValuePair title="Alarm High Value" value={pvAlarmHigh} />
                 <KeyValuePair title="Warn Low Value" value={pvWarnLow} />
                 <KeyValuePair title="Warn High Value" value={pvWarnHigh} />
