@@ -260,12 +260,13 @@ function formatValue(value, precision = null, vtype = null, maxDecimals = null) 
     }
     // toFixed and toExponential allow at most 100 digits
     const decimals = Math.min(hasPrecision ? precision : maxDecimals, maxDecimals ?? 100);
-    // exponential for values that would round to all zeros or are very large
-    const absValue = Math.abs(value);
-    if (value !== 0 && (absValue < 0.5 * 10 ** -decimals || absValue >= 1e9)) {
+    // exponential for values that round to all zeros or are very large.
+    // check the rounded value since a cutoff like 0.5e-6 isn't exact in floating point, and 5e-7 rounds down
+    const fixed = value.toFixed(decimals);
+    if (value !== 0 && (Number(fixed) === 0 || Math.abs(value) >= 1e9)) {
         return value.toExponential(decimals);
     }
-    return hasPrecision ? value.toFixed(decimals) : String(Number(value.toFixed(decimals)));
+    return hasPrecision ? fixed : String(Number(fixed));
 }
 
 // options are the precision and vtype from an earlier message for the PV, used when the message doesn't have them,

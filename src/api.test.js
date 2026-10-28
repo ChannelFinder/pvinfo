@@ -126,6 +126,11 @@ describe('PV value formatting', () => {
     expect(format(-1234567890, 2, 'VDouble')).toBe('-1.23e+9');
   });
 
+  test('values right at the rounding cutoff that round to all zeros use exponential form too', () => {
+    expect(format(5e-7, 6, 'VDouble')).toBe('5.000000e-7');
+    expect(format(-5e-7, 6, 'VDouble')).toBe('-5.000000e-7');
+  });
+
   test('precision 0 or unknown shows the value in full, since PREC 0 usually means PREC was never set', () => {
     expect(format(3.14159, 0, 'VDouble')).toBe('3.14159');
     expect(format(3.14159)).toBe('3.14159');
