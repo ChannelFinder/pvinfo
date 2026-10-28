@@ -1,7 +1,7 @@
 import { Box, Chip, Typography } from '@mui/material';
 import LocalOfferOutlinedIcon from '@mui/icons-material/LocalOfferOutlined';
 import { useMemo } from 'react';
-import { parseAdvancedQuery, getPropertyLabels } from './advancedQuery';
+import { parseAdvancedQuery, getPropertyLabels, hasUnclosedQuote } from './advancedQuery';
 import { getExactMatchProperties } from '../propertyValues';
 import api from '../../../api';
 
@@ -10,7 +10,7 @@ function QueryPreview({ query }) {
     const terms = useMemo(() => {
         const labels = getPropertyLabels();
         const exactMatchProperties = getExactMatchProperties();
-        return Object.entries(parseAdvancedQuery(query)).flatMap(([key, value]) => {
+        const queryTerms = Object.entries(parseAdvancedQuery(query)).flatMap(([key, value]) => {
             if (key === "pvName") {
                 const pattern = api.PV_NAME_QUERY(value).join(" ");
                 return { key, label: `PV name: ${pattern === "*" ? "any" : pattern}`, color: "primary" };
@@ -24,13 +24,20 @@ function QueryPreview({ query }) {
             if (key === "tag!") {
                 return { key, label: `tag ≠ ${value || "…"}`, tag: true, color: "warning" };
             }
-            // a property without a value can't be searched, see getAdvancedQueryError
+            // a property without a name or value can't be searched, see getAdvancedQueryError
+            if (key === "") {
+                return { key, label: `… = ${value}`, color: "warning" };
+            }
             if (["", "=", "!"].includes(value)) {
                 return { key, label: `${labels[key] || key} ${value === "!" ? "≠" : "="} …`, color: "warning" };
             }
             const { operator, pattern } = api.PROPERTY_QUERY(key, value, exactMatchProperties);
             return { key, label: `${labels[key] || key} ${operator === "!=" ? "≠" : "="} ${pattern}` };
         });
+        if (hasUnclosedQuote(query)) {
+            queryTerms.push({ key: "unclosedQuote", label: 'missing closing "', color: "warning" });
+        }
+        return queryTerms;
     }, [query]);
 
     if (terms.length === 0) {

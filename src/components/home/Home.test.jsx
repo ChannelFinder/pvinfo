@@ -142,3 +142,10 @@ describe('search button', () => {
     expect(api.CF_QUERY).toHaveBeenCalledWith({ standardSearch: false });
   });
 });
+
+test('switching from Standard to Advanced keeps values with spaces and an exact PV name in the search', async () => {
+  await renderAdvancedSearch('/?pvName=%3DSR%3ABPM1&recordDesc=beam+current&standardSearch=true');
+  expect(screen.getByRole('searchbox')).toHaveValue('=SR:BPM1 recordDesc="beam current"');
+  await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'search' })); });
+  expect(api.CF_QUERY).toHaveBeenLastCalledWith({ pvName: '=SR:BPM1', recordDesc: 'beam current', standardSearch: false });
+});

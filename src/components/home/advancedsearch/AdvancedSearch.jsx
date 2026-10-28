@@ -5,7 +5,7 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import SearchActions from '../searchactions/SearchActions';
 import { Fragment, useMemo, useRef, useState } from 'react';
 import QueryPreview from './QueryPreview';
-import { getPropertyLabels } from './advancedQuery';
+import { getPropertyLabels, quoteValue, quoteTerm } from './advancedQuery';
 import { getPropertyValues } from '../propertyValues';
 
 // upper case before lower case, so friendly labels are listed before raw lower case Channel Finder names
@@ -68,9 +68,13 @@ function AdvancedSearch(props) {
         props.setAdvancedQuery(props.advancedQuery + prefix + value + suffix);
     }
 
-    // the query is space separated, so spaces in a value are replaced with the Channel Finder single character wildcard
+    // the query is space separated, so tags and values with spaces are quoted
+    const handleSelectTag = (name) => {
+        handleSelectAtt(quoteTerm(name), false);
+    }
+
     const handleSelectValue = (value) => {
-        handleSelectAtt(`${valuesProperty}=${value.replace(/\s+/g, "?")} `, false);
+        handleSelectAtt(`${valuesProperty}=${quoteValue(value)} `, false);
         handleCloseAtts();
     }
 
@@ -100,7 +104,7 @@ function AdvancedSearch(props) {
                     open={syntaxTooltipOpen && !addHovered}
                     onOpen={() => setSyntaxTooltipOpen(true)}
                     onClose={() => setSyntaxTooltipOpen(false)}
-                    title={<div>Space delimited string<br />PV name (with * and ?)<br />Followed by property=value pairs<br />Followed by tag names<br />| between patterns for OR<br />property==value for exactly equal<br />property!=value for not equal{hasAttributes && <Fragment><br />Click + to add {addDescription}</Fragment>}</div>}>
+                    title={<div>Space delimited string<br />PV name (with * and ?)<br />Followed by property=value pairs<br />Followed by tag names<br />| between patterns for OR<br />property==value for exactly equal<br />property!=value for not equal<br />"double quotes" around values with spaces{hasAttributes && <Fragment><br />Click + to add {addDescription}</Fragment>}</div>}>
                     <TextField
                         sx={{ display: "flex", flexGrow: 1, minWidth: { xs: '60%', md: '75%' }, textOverflow: 'ellipsis' }}
                         id="advancedSearch"
@@ -171,7 +175,7 @@ function AdvancedSearch(props) {
                             <Box sx={{ borderRight: 1, borderColor: 'grey.300' }} />
                         }
                         {tagItems.length > 0 &&
-                            <AttributeList title="Tags" items={tagItems} onSelect={(name) => handleSelectAtt(name, false)} />
+                            <AttributeList title="Tags" items={tagItems} onSelect={handleSelectTag} />
                         }
                     </Box>
                 </Popover>
@@ -180,7 +184,7 @@ function AdvancedSearch(props) {
             <QueryPreview query={props.advancedQuery} />
             {props.showHelp &&
                 <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                    Search by PV name pattern, optionally followed by <strong>property=value</strong> pairs and <strong>tag</strong> names. {hasAttributes && <Fragment>Use <strong>+</strong> to browse the available {browseDescription}.</Fragment>}
+                    Search by PV name pattern, optionally followed by <strong>property=value</strong> pairs and <strong>tag</strong> names. Put values with spaces in double quotes, like <strong>recordDesc="beam current"</strong>. {hasAttributes && <Fragment>Use <strong>+</strong> to browse the available {browseDescription}.</Fragment>}
                 </Typography>
             }
         </Fragment>

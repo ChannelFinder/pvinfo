@@ -33,6 +33,12 @@ test('shows every item when all features are on', () => {
   expect(screen.getByRole('link', { name: 'full release history' })).toBeInTheDocument();
 });
 
+test('explains the Advanced search quotes for values with spaces', () => {
+  render(<WhatsNew />);
+  expect(screen.getByText(/Search for values with spaces/)).toBeInTheDocument();
+  expect(screen.getByText('recordDesc=="beam current"')).toBeInTheDocument();
+});
+
 test('hides items for features a site has turned off', () => {
   Object.assign(configOverrides, { USE_AA: false, USE_PVWS: false, USE_IOC_PAGE: false, PROPERTY_VALUES: '' });
   render(<WhatsNew />);
