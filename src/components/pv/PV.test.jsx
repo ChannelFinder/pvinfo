@@ -48,19 +48,6 @@ test('copy button copies the PV name', async () => {
   expect(alerts.handleOpenErrorAlert).toHaveBeenCalledWith(true);
 });
 
-test('the IOC and alias links search for exact matches, not IOCs or PVs with similar names', async () => {
-  api.CF_QUERY.mockResolvedValue([{ name: 'SR:C1:beam', owner: 'owner', properties: [{ name: 'iocName', value: 'IOC 1' }, { name: 'alias', value: 'SR:C1:current' }], tags: [] }]);
-  const alerts = { handleErrorMessage: vi.fn(), handleOpenErrorAlert: vi.fn(), handleSeverity: vi.fn() };
-  render(
-    <ThemeProvider theme={theme}>
-      <MemoryRouter initialEntries={['/pv/SR:C1:beam']}>
-        <Routes><Route path="/pv/:id" element={<PV {...alerts} />} /></Routes>
-      </MemoryRouter>
-    </ThemeProvider>
-  );
-  await act(async () => {});
-  expect(screen.getByRole('link', { name: 'IOC 1' })).toHaveAttribute('href', '/?iocName==IOC%201');
-  expect(screen.getByRole('link', { name: 'SR:C1:current' })).toHaveAttribute('href', '/?alias==SR%3AC1%3Acurrent');
 test('details page properties can have spaces around the commas and colons', async () => {
   configOverrides.DETAILS_PAGE_PROPERTIES = 'hostName:Host, iocName : IOC Name ,';
   await renderPV([{ name: 'hostName', value: 'host1' }, { name: 'iocName', value: 'IOC1' }]);
@@ -73,4 +60,10 @@ test('the live value table labels the alarm low value', async () => {
   configOverrides.USE_PVWS = true;
   await renderPV([{ name: 'pvStatus', value: 'Active' }]);
   expect(screen.getByText('Alarm Low Value')).toBeInTheDocument();
+});
+
+test('the IOC and alias links search for exact matches, not IOCs or PVs with similar names', async () => {
+  await renderPV([{ name: 'iocName', value: 'IOC 1' }, { name: 'alias', value: 'SR:C1:current' }]);
+  expect(screen.getByRole('link', { name: 'IOC 1' })).toHaveAttribute('href', '/?iocName==IOC%201');
+  expect(screen.getByRole('link', { name: 'SR:C1:current' })).toHaveAttribute('href', '/?alias==SR%3AC1%3Acurrent');
 });
