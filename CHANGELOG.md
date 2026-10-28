@@ -60,6 +60,7 @@ Version 3 updates the libraries and tools PV Info is built on. Node.js >= v22.22
 - Extra properties without dropdown labels did not get partial match wildcards in the standard search, and not equal searches on PV status, record type, or extra properties with dropdown labels got wildcards
 - Advanced search queries with extra spaces searched for empty tags or treated the PV name as a tag, and property values containing `=` were cut off
 - IOCs page stayed on "Data Loading..." if the Channel Finder query failed ([#176](https://github.com/ChannelFinder/pvinfo/pull/176))
+- IOC name links in the search results, IOCs page, and PV details page also found PVs from IOCs with similar names, like IOC10 for IOC1. They are now an exact match, `iocName==IOC1`, and so is the PV details page alias link
 - The mobile menu showed the Plotting link when the archiver was disabled ([#177](https://github.com/ChannelFinder/pvinfo/pull/177))
 - The caput log section on the PV details page opened to an empty table when the PV had no caput log data, it now shows "No Caput Log Data" like the online log and alarm log sections
 - The plot button in each search results row showed when the archiver was disabled
