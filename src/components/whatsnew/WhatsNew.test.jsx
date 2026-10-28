@@ -49,3 +49,12 @@ test('hides a section when none of its items apply', () => {
   render(<WhatsNew />);
   expect(screen.queryByText('IOCs Page')).not.toBeInTheDocument();
 });
+
+test('the live value precision item is shown only when PV Web Socket is used', () => {
+  const { unmount } = render(<WhatsNew />);
+  expect(screen.getByText(/Live values use the PV's precision/)).toBeInTheDocument();
+  unmount();
+  configOverrides.USE_PVWS = false;
+  render(<WhatsNew />);
+  expect(screen.queryByText(/Live values use the PV's precision/)).not.toBeInTheDocument();
+});

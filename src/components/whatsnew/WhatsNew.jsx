@@ -40,6 +40,7 @@ function getSections() {
             title: "PV Details Page",
             items: [
                 { text: <Fragment><strong>Copy the PV name</strong> with the copy button next to it.</Fragment> },
+                { text: <Fragment><strong>Live values use the PV's precision</strong> (PREC) for the number of decimals, like Phoebus. The search results show up to 2 decimals.</Fragment>, show: config.USE_PVWS },
             ],
         },
         {
