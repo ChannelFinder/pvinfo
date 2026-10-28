@@ -3,6 +3,7 @@ import useWebSocket from '../../../../useWebSocket';
 import api from '../../../../api';
 import config from "../../../../config";
 import colors from '../../../../colors';
+import LiveValueSkeleton from '../../../livevalueskeleton';
 
 function Value(props) {
     const [pvValue, setPVValue] = useState(null);
@@ -17,9 +18,15 @@ function Value(props) {
 
     // https://github.com/robtaussig/react-use-websocket/issues/40#issuecomment-616676102
     // pattern for sharing web socket among components
-    const { lastJsonMessage } = useWebSocket(config.PVWS_URL, {
+    const { lastJsonMessage, readyState } = useWebSocket(config.PVWS_URL, {
         share: true,
         filter: message => JSON.parse(message.data).pv === props.pvName,
+        // the value stops updating, wait for a new one after ValueCheckbox subscribes again on reconnect
+        onClose: () => {
+            setPVValue(null);
+            setShow(false);
+            setStartTimer(false);
+        },
     });
 
 
@@ -28,8 +35,8 @@ function Value(props) {
         if (!startTimer) {
             return;
         }
-        // the debouncing is only useful if we are showing "Disconnected" for non-reachable PVs
-        if (!config.SHOW_DISCONNECTED || show) {
+        // the placeholder is shown until then, followed by "Disconnected" if SHOW_DISCONNECTED and there is no value
+        if (show) {
             return;
         }
         const timeout = setTimeout(() => {
@@ -95,17 +102,18 @@ function Value(props) {
                 );
             }
         } else {
+            // still connecting or waiting for the value, and debounce showing "Disconnected" to avoid flashing it for PVs
+            // that are actually connected
+            if (!show) {
+                return (
+                    <LiveValueSkeleton connecting={readyState !== WebSocket.OPEN} />
+                );
+            }
             if (!config.SHOW_DISCONNECTED) {
                 return (
                     <div></div>
                 );
             } else {
-                // debounce showing "Disconnected" to avoid flashing for PVs that are actually connected
-                if (!show) {
-                    return (
-                        <div></div>
-                    );
-                }
                 textColor = colors.SEV_COLORS["UNDEFINED"];
                 return (
                     <div style={{ color: textColor }}>(DISCONNECTED)</div>

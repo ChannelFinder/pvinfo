@@ -1,9 +1,10 @@
-import React, { Fragment, useState, useEffect } from "react";
+import React, { Fragment, useState, useEffect, useRef } from "react";
 import { Typography } from "@mui/material";
 import useWebSocket from '../../../useWebSocket';
 import api from "../../../api";
 import colors from "../../../colors";
 import KeyValuePair from "../KeyValuePair";
+import LiveValueSkeleton from "../../livevalueskeleton";
 import config from "../../../config";
 
 function ValueTable(props) {
@@ -23,18 +24,28 @@ function ValueTable(props) {
     const [alarmColor, setAlarmColor] = useState("");
     const [snapshot, setSnapshot] = useState(true);
     const [subscribed, setSubscribed] = useState(false);
+    // the last message before the connection closed. It is out of date, so it isn't shown again when other changes
+    // re-run the message effect below
+    const closedMessage = useRef(null);
 
-    const { sendJsonMessage, lastJsonMessage } = useWebSocket(config.PVWS_URL, {
+    const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocket(config.PVWS_URL, {
         onClose: () => {
+            // PVWS forgets the subscription when the connection closes, subscribe again when it reconnects
+            setSubscribed(false);
+            closedMessage.current = lastJsonMessage;
             if (props.snapshot && !props.pvMonitoring) return;
             setPVValue(null);
             setPVSeverity(null);
             setPVTimestamp(null);
         },
-        shouldReconnect: (closeEvent) => true,
     });
 
     let { handleErrorMessage, handleOpenErrorAlert, handleSeverity } = props;
+
+    const pvLoaded = props.pvData !== null && Object.keys(props.pvData).length !== 0 && !props.isLoading;
+    const pvStatus = props.pvData?.pvStatus?.value || "Unknown";
+    const waveformOff = !config.PVWS_ALLOW_WAVEFORMS && props.pvData?.recordType?.value === "waveform";
+    const liveValueAllowed = pvLoaded && !waveformOff && (config.PVWS_IGNORE_CF_PVSTATUS || pvStatus === "Active");
 
     useEffect(() => {
         setSnapshot(props.snapshot)
@@ -42,24 +53,16 @@ function ValueTable(props) {
 
     useEffect(() => {
         if (props.pvMonitoring || snapshot) {
-            if (props.pvData === null || Object.keys(props.pvData).length === 0 || props.isLoading) {
+            if (!pvLoaded) {
                 return;
             }
-            const status = props.pvData.pvStatus?.value || "Unknown";
-
-            if (!config.PVWS_ALLOW_WAVEFORMS && props.pvData.recordType?.value === "waveform") {
+            if (waveformOff) {
                 handleErrorMessage("Can't show live PV values - Waveform record type not supported");
                 handleSeverity("warning");
                 handleOpenErrorAlert(true);
             }
-            else if (config.PVWS_IGNORE_CF_PVSTATUS || status === "Active") {
-                if (!subscribed) {
-                    sendJsonMessage({ "type": "subscribe", "pvs": [props.pvName] });
-                    setSubscribed(true);
-                }
-            }
-            else {
-                handleErrorMessage(`Can't show live PV values - PV is in ${status} state`);
+            else if (!liveValueAllowed) {
+                handleErrorMessage(`Can't show live PV values - PV is in ${pvStatus} state`);
                 handleSeverity("warning");
                 handleOpenErrorAlert(true);
             }
@@ -73,10 +76,21 @@ function ValueTable(props) {
             setPVSeverity(null);
             setPVTimestamp(null);
         }
-    }, [props.pvMonitoring, snapshot, props.isLoading, props.pvData, props.pvName, handleErrorMessage, handleOpenErrorAlert, subscribed, sendJsonMessage, handleSeverity]);
+    }, [props.pvMonitoring, snapshot, pvLoaded, waveformOff, liveValueAllowed, pvStatus, props.pvName, handleErrorMessage, handleOpenErrorAlert, subscribed, sendJsonMessage, handleSeverity]);
+
+    // subscribe once connected, and again after each reconnect
+    useEffect(() => {
+        if ((props.pvMonitoring || snapshot) && liveValueAllowed && !subscribed && readyState === WebSocket.OPEN) {
+            sendJsonMessage({ "type": "subscribe", "pvs": [props.pvName] });
+            setSubscribed(true);
+        }
+    }, [props.pvMonitoring, snapshot, liveValueAllowed, subscribed, readyState, sendJsonMessage, props.pvName]);
 
     useEffect(() => {
         if (!props.pvMonitoring && !snapshot) {
+            return;
+        }
+        if (lastJsonMessage === closedMessage.current) {
             return;
         }
         // PV Web Socket only sends the precision and vtype with the first message for a PV, keep them for the updates
@@ -128,6 +142,9 @@ function ValueTable(props) {
         }
     }, [lastJsonMessage, props.pvMonitoring, props.snapshot, snapshot, pvPrecision, pvVtype, pvSeverity]);
 
+    // monitored but no value yet: connecting, waiting for PVWS, or reconnecting after the connection closed
+    const waitingForValue = props.pvMonitoring && liveValueAllowed && pvValue === null && pvSeverity !== "DISCONNECTED";
+
     if (props.isLoading) {
         return (
             <Typography variant="h6">OLOG Data Loading...</Typography>
@@ -136,7 +153,7 @@ function ValueTable(props) {
     else {
         return (
             <Fragment>
-                <KeyValuePair title="Value" value={pvValue} textColor={alarmColor} />
+                <KeyValuePair title="Value" value={waitingForValue ? <LiveValueSkeleton connecting={readyState !== WebSocket.OPEN} /> : pvValue} textColor={alarmColor} />
                 <KeyValuePair title="PV Timestamp" value={pvTimestamp} textColor={alarmColor} />
                 <KeyValuePair title="Alarm State" value={pvSeverity} textColor={alarmColor} />
                 <KeyValuePair title="Units" value={pvUnits} />

@@ -5,10 +5,11 @@ import theme from '../../../theme';
 import QueryResults from './QueryResults';
 import { archiverPlotURL } from './resultstoolbar/ResultsToolbar';
 
-// track which PVs are subscribed through the shared PVWS web socket
+// track which PVs are subscribed through the shared PVWS web socket, which is connected
 const subscribed = new Set();
 vi.mock('../../../useWebSocket', () => ({
   default: () => ({
+    readyState: WebSocket.OPEN,
     lastJsonMessage: null,
     sendJsonMessage: (message) => {
       message.pvs.forEach((pv) => message.type === 'subscribe' ? subscribed.add(pv) : subscribed.delete(pv));
