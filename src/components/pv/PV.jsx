@@ -1,6 +1,6 @@
 import React, { Fragment, useState, useEffect } from "react";
 import { useParams } from "react-router";
-import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Checkbox, Grid, IconButton, Tooltip, Typography, FormControlLabel } from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Grid, IconButton, Switch, Tooltip, Typography, FormControlLabel } from "@mui/material";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import TimelineIcon from '@mui/icons-material/Timeline';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
@@ -11,6 +11,7 @@ import OLOGTable from "./ologtable";
 import AlarmLogTable from "./alarmlogtable/AlarmLogTable";
 import AlarmConfigTable from "./alarmconfigtable/AlarmConfigTable";
 import CaputLogTable from "./caputlogtable/CaputLogTable";
+import { monitorDisabledReason } from "../home/queryresults/valuecheckbox/ValueCheckbox";
 import config from "../../config";
 import copyToClipboard from "../../clipboard";
 
@@ -142,6 +143,9 @@ function PV(props) {
         }
     }, [pvData, isLoading])
 
+    // why live monitoring is not available for this PV, empty if it is available. Same check as the search results switches
+    const monitorReason = monitorDisabledReason(pvData?.pvStatus?.value, pvData?.recordType?.value);
+
     const handlePVMonitoringChange = (e) => {
         if (e.target.checked) {
             setPVMonitoring(true);
@@ -197,10 +201,15 @@ function PV(props) {
                 </Box>
                 {
                     config.USE_PVWS ?
-                        <FormControlLabel
-                            control={<Checkbox color="primary" checked={pvMonitoring} onChange={handlePVMonitoringChange}></Checkbox>}
-                            disabled={!((config.PVWS_IGNORE_CF_PVSTATUS || pvData?.pvStatus?.value === "Active") && (config.PVWS_ALLOW_WAVEFORMS || pvData?.recordType?.value !== "waveform"))}
-                            label="Enable Live PV Monitoring" />
+                        // span so the tooltip saying why it can't be monitored still shows when the switch is disabled
+                        <Tooltip arrow title={monitorReason}>
+                            <span>
+                                <FormControlLabel
+                                    control={<Switch color="primary" checked={pvMonitoring} onChange={handlePVMonitoringChange} />}
+                                    disabled={monitorReason !== ""}
+                                    label="Live PV Monitoring" />
+                            </span>
+                        </Tooltip>
                         :
                         null
                 }

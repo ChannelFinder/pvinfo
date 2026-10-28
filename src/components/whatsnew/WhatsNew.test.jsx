@@ -61,6 +61,15 @@ test('the property values item is shown without configured property values, sinc
   expect(screen.getByText(/Pick property values from a list/)).toBeInTheDocument();
 });
 
+test('the PV details page live monitoring switch item is shown only when PV Web Socket is used', () => {
+  const { unmount } = render(<WhatsNew />);
+  expect(screen.getByText(/Live PV Monitoring is an on\/off switch/)).toBeInTheDocument();
+  unmount();
+  configOverrides.USE_PVWS = false;
+  render(<WhatsNew />);
+  expect(screen.queryByText(/Live PV Monitoring is an on\/off switch/)).not.toBeInTheDocument();
+});
+
 test('the live value precision item is shown only when PV Web Socket is used', () => {
   const { unmount } = render(<WhatsNew />);
   expect(screen.getByText(/Live values use the PV's precision/)).toBeInTheDocument();

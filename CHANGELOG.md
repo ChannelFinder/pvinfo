@@ -29,6 +29,7 @@ Version 3 updates the libraries and tools PV Info is built on. Node.js >= v22.22
 - IOCs page column "IOC Reboot Time" is renamed to "Last Recsync Update" ([#176](https://github.com/ChannelFinder/pvinfo/pull/176))
 - IOCs page shows IOC IP, CA Port, and PVA Port columns by default instead of the IP address from `iocid` ([#176](https://github.com/ChannelFinder/pvinfo/pull/176))
 - Search results live monitoring uses toggle switches instead of checkboxes. Switches for PVs that can't be monitored are faded and their tooltip says why
+- The PV details page "Enable Live PV Monitoring" checkbox is a "Live PV Monitoring" switch like the search results. When the PV can't be monitored, its tooltip says why
 - The monitor all switch is in the search results toolbar with a "Monitor all PVs" label instead of next to the "Actions" column header
 - The Services page Preference Settings show the new settings, and the IOCs page settings are in their own IOCs Page table
 - The Services page and PV details page reconnect to PV Web Socket after 1, 2, 4 and 8 seconds and then every 10 seconds like the PVWS JavaScript client, instead of every 5 seconds, and keep trying instead of stopping after 20 attempts
