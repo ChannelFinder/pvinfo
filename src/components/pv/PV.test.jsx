@@ -48,6 +48,21 @@ test('copy button copies the PV name', async () => {
   expect(alerts.handleOpenErrorAlert).toHaveBeenCalledWith(true);
 });
 
+test('live monitoring is a switch, like the search results', async () => {
+  Object.assign(configOverrides, { USE_PVWS: true, PVWS_IGNORE_CF_PVSTATUS: false });
+  await renderPV([{ name: 'pvStatus', value: 'Active' }]);
+  expect(screen.getByRole('switch', { name: 'Live PV Monitoring' })).toBeEnabled();
+  expect(screen.queryByRole('checkbox')).not.toBeInTheDocument();
+});
+
+test('the live monitoring switch is disabled for a PV that is not Active, and its tooltip says why', async () => {
+  Object.assign(configOverrides, { USE_PVWS: true, PVWS_IGNORE_CF_PVSTATUS: false });
+  await renderPV([{ name: 'pvStatus', value: 'Inactive' }]);
+  expect(screen.getByRole('switch', { name: 'Live PV Monitoring' })).toBeDisabled();
+  fireEvent.mouseOver(screen.getByText('Live PV Monitoring'));
+  expect(await screen.findByRole('tooltip')).toHaveTextContent('PV status is Inactive');
+});
+
 test('details page properties can have spaces around the commas and colons', async () => {
   configOverrides.DETAILS_PAGE_PROPERTIES = 'hostName:Host, iocName : IOC Name ,';
   await renderPV([{ name: 'hostName', value: 'host1' }, { name: 'iocName', value: 'IOC1' }]);

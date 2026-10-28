@@ -41,6 +41,7 @@ function getSections() {
             title: "PV Details Page",
             items: [
                 { text: <Fragment><strong>Copy the PV name</strong> with the copy button next to it.</Fragment> },
+                { text: <Fragment><strong>Live PV Monitoring is an on/off switch</strong> like in the search results. If the PV can't be monitored, hovering it tells you why.</Fragment>, show: config.USE_PVWS },
                 { text: <Fragment><strong>Live values use the PV's precision</strong> (PREC) for the number of decimals, like Phoebus. The search results show up to 2 decimals.</Fragment>, show: config.USE_PVWS },
             ],
         },
