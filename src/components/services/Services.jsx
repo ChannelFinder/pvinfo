@@ -238,12 +238,12 @@ function Services() {
                                                 <TableRow><TableCell>Columns Hidden at {config.SM_BREAKPOINT}px Wide or Less</TableCell><TableCell>{config.OMIT_IN_TABLE_X_SMALL.join(", ") || "None"}</TableCell></TableRow>
                                                 <TableRow><TableCell>PV Results Table Density</TableCell><TableCell>{config.RESULTS_TABLE_DENSITY}</TableCell></TableRow>
                                                 <TableRow><TableCell>Show Disconnected in Live Value Box</TableCell><TableCell>{config.SHOW_DISCONNECTED ? "Yes" : "No"}</TableCell></TableRow>
-                                                <TableRow><TableCell>Monitor All Warning Threshold</TableCell><TableCell>{config.LIVE_MONITOR_WARN}</TableCell></TableRow>
-                                                <TableRow><TableCell>Monitor All Maximum</TableCell><TableCell>{config.LIVE_MONITOR_MAX}</TableCell></TableRow>
+                                                <TableRow><TableCell>Warning # of PVs to Monitor</TableCell><TableCell>{config.LIVE_MONITOR_WARN}</TableCell></TableRow>
+                                                <TableRow><TableCell>Maximum # of PVs to Monitor</TableCell><TableCell>{config.LIVE_MONITOR_MAX}</TableCell></TableRow>
                                                 {config.USE_AA &&
                                                     <TableRow><TableCell>Max PVs to Plot Together</TableCell><TableCell>{config.AA_MAX_PLOT_PVS}</TableCell></TableRow>
                                                 }
-                                                <TableRow><TableCell>Advanced Search Property Values</TableCell><TableCell>{Object.keys(getPropertyValues()).join(", ") || "None"}</TableCell></TableRow>
+                                                <TableRow><TableCell>Properties with Predefined Values (Advanced Search)</TableCell><TableCell>{Object.keys(getPropertyValues()).join(", ") || "None"}</TableCell></TableRow>
                                             </TableBody>
                                         </Table>
                                     </Grid>
