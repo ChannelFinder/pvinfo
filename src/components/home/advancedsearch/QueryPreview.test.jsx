@@ -42,3 +42,14 @@ test('shows nothing for an empty query', () => {
   const { container } = render(<QueryPreview query="  " />);
   expect(container).toBeEmptyDOMElement();
 });
+
+test('shows values with spaces without the quotes, and an exact PV name', () => {
+  const { container } = render(<QueryPreview query='=SR:BPM1 recordDesc=="beam current" "my tag"' />);
+  expect(chips(container)).toEqual(['PV name: SR:BPM1', 'Description = beam current', 'my tag']);
+});
+
+test('marks an unclosed quote and an = without a property name as warnings', () => {
+  const { container } = render(<QueryPreview query='SR* =test recordDesc="beam' />);
+  expect(chips(container)).toEqual(['PV name: SR*', '… = test', 'Description = *beam*', 'missing closing "']);
+  expect(container.querySelectorAll('.MuiChip-colorWarning')).toHaveLength(2);
+});
