@@ -1,4 +1,4 @@
-import { getPropertyValues, getExactMatchProperties, pvRecordTypes } from './propertyValues';
+import { getPropertyValues, getExactMatchProperties, pvRecordTypes, pvStatuses } from './propertyValues';
 
 const configOverrides = vi.hoisted(() => ({}));
 vi.mock('../../config', async (importOriginal) => {
@@ -17,13 +17,13 @@ beforeEach(() => {
   });
 });
 
-test('no known values by default', () => {
-  expect(getPropertyValues()).toEqual({});
+test('only pvStatus by default, without * since leaving pvStatus out of the query already matches any status', () => {
+  expect(getPropertyValues()).toEqual({ pvStatus: ['Active', 'Inactive'] });
 });
 
 test('parses property values in the configured order, ignoring spaces and empty entries', () => {
   configOverrides.PROPERTY_VALUES = ' Acc: GTB, BR ,SR, ; Field:Monitor,On;; Empty: ;NoColon';
-  expect(getPropertyValues()).toEqual({ Acc: ['GTB', 'BR', 'SR'], Field: ['Monitor', 'On'] });
+  expect(getPropertyValues()).toEqual({ pvStatus: pvStatuses, Acc: ['GTB', 'BR', 'SR'], Field: ['Monitor', 'On'] });
 });
 
 test('includes record types and extra property dropdown labels', () => {
@@ -34,12 +34,12 @@ test('includes record types and extra property dropdown labels', () => {
     SECOND_EXTRA_PROP: 'irm',
     SECOND_EXTRA_PROP_DROPDOWN_LABELS: ['001'],
   });
-  expect(getPropertyValues()).toEqual({ recordType: pvRecordTypes, archive: ['Fast', 'Slow'], irm: ['001'] });
+  expect(getPropertyValues()).toEqual({ pvStatus: pvStatuses, recordType: pvRecordTypes, archive: ['Fast', 'Slow'], irm: ['001'] });
 });
 
 test('extra properties without dropdown labels have no known values', () => {
   configOverrides.EXTRA_PROP = 'archive';
-  expect(getPropertyValues()).toEqual({});
+  expect(getPropertyValues()).toEqual({ pvStatus: pvStatuses });
 });
 
 test('property values replace other values for the same property', () => {
@@ -48,7 +48,7 @@ test('property values replace other values for the same property', () => {
     EXTRA_PROP_DROPDOWN_LABELS: ['Fast', 'Slow'],
     PROPERTY_VALUES: 'archive:VeryFast',
   });
-  expect(getPropertyValues()).toEqual({ archive: ['VeryFast'] });
+  expect(getPropertyValues()).toEqual({ pvStatus: pvStatuses, archive: ['VeryFast'] });
 });
 
 test('properties with known values are an exact match', () => {

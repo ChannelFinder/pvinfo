@@ -51,7 +51,7 @@ test('preference settings show the settings added in 3.0.0', async () => {
   expect(screen.getByText("What's New Page:").parentElement).toHaveTextContent("What's New Page: Enabled");
   expect(screen.getByText('IOCs Page:').parentElement).toHaveTextContent('IOCs Page: Enabled');
   expect(settingValue('Max PVs to Plot Together')).toBe('20');
-  expect(settingValue('Properties with Predefined Values (Advanced Search)')).toBe('Acc, mode');
+  expect(settingValue('Properties with Predefined Values (Advanced Search)')).toBe('pvStatus, Acc, mode');
   expect(settingValue('PV Name Pattern')).toBe('*:ENGINEER');
   expect(settingValue('Extra Columns')).toBe('IOC IP, Location');
 });
@@ -61,7 +61,7 @@ test('settings for features that are turned off are hidden or say none', async (
   await renderServices();
   expect(screen.getByText("What's New Page:").parentElement).toHaveTextContent("What's New Page: Disabled");
   expect(screen.queryByRole('cell', { name: 'Max PVs to Plot Together' })).not.toBeInTheDocument();
-  expect(settingValue('Properties with Predefined Values (Advanced Search)')).toBe('None');
+  expect(settingValue('Properties with Predefined Values (Advanced Search)')).toBe('pvStatus');
   expect(screen.queryByRole('cell', { name: 'PV Name Pattern' })).not.toBeInTheDocument();
 });
 
@@ -74,7 +74,7 @@ test('no extra columns says none', async () => {
 test('property values include record types and extra properties with dropdown labels', async () => {
   Object.assign(configOverrides, { CF_RECORD_TYPE: true, EXTRA_PROP: 'Sector', EXTRA_PROP_DROPDOWN_LABELS: ['1', '2'] });
   await renderServices();
-  expect(settingValue('Properties with Predefined Values (Advanced Search)')).toBe('recordType, Sector, Acc, mode');
+  expect(settingValue('Properties with Predefined Values (Advanced Search)')).toBe('pvStatus, recordType, Sector, Acc, mode');
 });
 
 test('results table settings show the size options and the columns hidden at each width', async () => {
