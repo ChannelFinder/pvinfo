@@ -53,6 +53,8 @@ Version 3 updates the libraries and tools PV Info is built on. Node.js >= v22.22
 - The search button queried Channel Finder twice for each new search, once for the button and once for the URL change
 - Clicking next to a header link navigated to the home page ([#173](https://github.com/ChannelFinder/pvinfo/pull/173))
 - Monitor all counted waveform PVs toward the monitoring warning and limit when waveform monitoring was turned off, even though they were not monitored
+- Pressing Enter in the search results table's search box ran the search again, which cleared the table's filter, sort, page, selection, and live monitoring
+- Columns hidden on a narrow window, like Status and Type, stayed hidden after maximizing the window
 - A tag only Advanced search opened from a URL searched the tag as a PV name when searched again
 - Properties with "tag" in the name, like `voltage`, were searched as tags in Advanced search
 - OR searches without wildcards only added partial match wildcards to the first and last pattern ([#174](https://github.com/ChannelFinder/pvinfo/pull/174))
