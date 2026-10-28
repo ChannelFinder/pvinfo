@@ -45,6 +45,7 @@ Version 3 updates the libraries and tools PV Info is built on. Node.js >= v22.22
 - Search results toolbar buttons to copy PV names to the clipboard (the selected PVs, or all results if none are selected) and to plot the selected PVs together in the archiver viewer, hidden at phone width
 - Renamed "Free Form" to "Advanced" search in codebase and labels in case we want to add a true free form search later
 - "Standard" and "Advanced" labels on the search type buttons ([#177](https://github.com/ChannelFinder/pvinfo/pull/177))
+- If a page fails to load because a new version of PV Info was deployed after it was opened, the page reloads to get the new version. Errors that would leave the page blank show an error message with a reload button instead
 
 ### Fixed
 
