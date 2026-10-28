@@ -29,6 +29,7 @@ Version 3 updates the libraries and tools PV Info is built on. Node.js >= v22.22
 - IOCs page shows IOC IP, CA Port, and PVA Port columns by default instead of the IP address from `iocid` ([#176](https://github.com/ChannelFinder/pvinfo/pull/176))
 - Search results live monitoring uses toggle switches instead of checkboxes. Switches for PVs that can't be monitored are faded and their tooltip says why
 - The monitor all switch is in the search results toolbar with a "Monitor all PVs" label instead of next to the "Actions" column header
+- The Services page Preference Settings show the new settings, and the IOCs page settings are in their own IOCs Page table
 
 ### Added
 
