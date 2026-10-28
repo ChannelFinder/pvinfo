@@ -92,13 +92,17 @@ describe('Quotes for values with spaces', () => {
     expect(parseAdvancedQuery('"a=b" "c=d" note="x = y"')).toEqual({ pvName: 'a=b', note: 'x = y', tag: ['c=d'] });
   });
 
+  test('an = inside the quotes of tag= is part of the tag name, not the exact operator', () => {
+    expect(parseAdvancedQuery('* tag="=odd" "=odd" tag==odd')).toEqual({ pvName: '*', tag: ['=odd', '=odd', 'odd'] });
+  });
+
   test('=name as the first term is an exact PV name, like the Standard search', () => {
     expect(parseAdvancedQuery('=SR:BPM1 iocName=test')).toEqual({ pvName: '=SR:BPM1', iocName: 'test' });
   });
 
   test('an unclosed quote is an error', () => {
     const query = 'SR* recordDesc="beam current';
-    expect(getAdvancedQueryError(parseAdvancedQuery(query), query)).toBe('Add the closing " after the quoted value');
+    expect(getAdvancedQueryError(parseAdvancedQuery(query), query)).toBe('Add the closing " after the quoted value, or use ? to match a " character');
     expect(getAdvancedQueryError(parseAdvancedQuery('SR* recordDesc="beam current"'), 'SR* recordDesc="beam current"')).toBe('');
   });
 
@@ -111,6 +115,14 @@ describe('Quotes for values with spaces', () => {
       .toBe('=SR:BPM1 recordDesc=="beam current" hostName=!"sim host" note=a=b "my tag" "c=d"');
     expect(toAdvancedQuery({ pvName: 'beam current' })).toBe('"beam current"');
     expect(toAdvancedQuery({ tag: ['archived'] })).toBe('* archived');
+  });
+
+  test('a literal " in a Standard search value becomes the ? wildcard, so switching to Advanced search is not an unclosed quote', () => {
+    const query = toAdvancedQuery({ recordDesc: '6"', hostName: '=beam "current"', tag: ['say "hi"'] });
+    expect(query).toBe('* recordDesc=6? hostName=="beam ?current?" "say ?hi?"');
+    const params = parseAdvancedQuery(query);
+    expect(params).toEqual({ pvName: '*', recordDesc: '6?', hostName: '=beam ?current?', tag: ['say ?hi?'] });
+    expect(getAdvancedQueryError(params, query)).toBe('');
   });
 
   test('the search fields come first in their order, then the other properties and the tags', () => {

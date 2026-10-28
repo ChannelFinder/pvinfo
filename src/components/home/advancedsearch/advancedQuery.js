@@ -19,7 +19,7 @@ function operatorIndex(term) {
     return -1;
 }
 
-const unquote = (text) => text.replace(/"/g, "");
+const unquote = (text) => text.replaceAll('"', "");
 
 function hasUnclosedQuote(query) {
     return (query.match(/"/g) || []).length % 2 === 1;
@@ -40,11 +40,13 @@ function parseAdvancedQuery(query) {
             params["pvName"] = "=" + unquote(term.substring(1));
         } else if (equalsIndex !== -1) {
             const key = unquote(term.substring(0, equalsIndex));
-            const value = unquote(term.substring(equalsIndex + 1));
+            const rawValue = term.substring(equalsIndex + 1);
+            const value = unquote(rawValue);
             // tag=name is the same as the tag name on its own, so params.tag is always a list.
-            // Tags are always an exact match so tag==name is the same too, and not equal tags can't be searched
+            // Tags are always an exact match so tag==name is the same too, and not equal tags can't be searched.
+            // Only an = outside the quotes is the exact operator, so tag="=odd" is the tag =odd like "=odd" on its own
             if (key === "tag") {
-                tags.push(value.charAt(0) === "=" ? value.substring(1) : value);
+                tags.push(rawValue.charAt(0) === "=" ? unquote(rawValue.substring(1)) : value);
             } else if (key === "tag!") {
                 params["tag!"] = value;
             } else if (key.endsWith("!")) {
@@ -89,7 +91,7 @@ function readSearchParams(searchParams) {
 // The most likely mistake is picking a property from the dropdown and not typing a value after the =
 function getAdvancedQueryError(params, query = "") {
     if (hasUnclosedQuote(query)) {
-        return 'Add the closing " after the quoted value';
+        return 'Add the closing " after the quoted value, or use ? to match a " character';
     }
     if ("" in params) {
         return "Enter a property name before the =";
@@ -126,17 +128,22 @@ function getPropertyLabels() {
     return labels;
 }
 
+// The Advanced query has no escape for a double quote, so a literal " becomes the ? single character wildcard,
+// which still matches it. Otherwise a Standard search value like 6" would be an unclosed quote
+const wildcardQuotes = (text) => text.replaceAll('"', "?");
+
 // Quote a value with spaces so it stays one term. A leading = or ! is the exact or not equal operator,
 // so it stays outside the quotes
 function quoteValue(value) {
     const operator = /^[=!]/.test(value) ? value.charAt(0) : "";
-    const text = value.substring(operator.length);
-    return /\s/.test(text) ? `${operator}"${text}"` : value;
+    const text = wildcardQuotes(value.substring(operator.length));
+    return /\s/.test(text) ? `${operator}"${text}"` : operator + text;
 }
 
 // Quote a PV name or tag with spaces or an = so it isn't split or read as a property
 function quoteTerm(text) {
-    return /[\s=]/.test(text) ? `"${text}"` : text;
+    const term = wildcardQuotes(text);
+    return /[\s=]/.test(term) ? `"${term}"` : term;
 }
 
 // The Advanced search query for search params from the URL, which use the Standard search syntax.
