@@ -17,6 +17,9 @@ const extraPropSetting = (prop, showInResults) => {
     return showInResults ? prop : `${prop} (not shown in results)`;
 }
 
+// PVWS sends an echo message back, which shows it is reachable through the web socket
+const PVWS_ECHO = { "type": "echo", "body": "Hello, PVWS!" };
+
 function Services() {
     const [pvCount, setPVCount] = useState(null);
     const [cfiData, setCFIData] = useState({});
@@ -28,13 +31,19 @@ function Services() {
     const [pvwsInfo, setPVWSInfo] = useState({});
     const [pvwsSummary, setPVWSSummary] = useState(false);
     const [pvsMonitored, setPVsMonitored] = useState(0);
-    const [pvwsConnected, setPVWSConnected] = useState(false);
+    // PVWS answered the echo on the current web socket connection
+    const [pvwsEchoed, setPVWSEchoed] = useState(false);
     const [caputLogConnected, setCaputLogConnected] = useState(false);
     const [caputLogData, setCaputLogData] = useState(false);
 
-    const { sendJsonMessage, lastJsonMessage } = useWebSocket(config.PVWS_URL, {
-        shouldReconnect: (closeEvent) => true
+    // the echo is sent each time the web socket connects, since it can close and reconnect while the page is open
+    const { sendJsonMessage, lastJsonMessage, readyState: pvwsReadyState } = useWebSocket(config.USE_PVWS ? config.PVWS_URL : null, {
+        shouldReconnect: (closeEvent) => true,
+        onOpen: () => sendJsonMessage(PVWS_ECHO),
+        onClose: () => setPVWSEchoed(false),
     })
+    const pvwsConnected = pvwsReadyState === WebSocket.OPEN && pvwsEchoed;
+    const pvwsConnecting = pvwsReadyState === WebSocket.CONNECTING || (pvwsReadyState === WebSocket.OPEN && !pvwsEchoed);
 
     const fetchData = (apiCall, setData, setConnected, servName, parameters = null) => {
         apiCall(parameters)
@@ -90,18 +99,11 @@ function Services() {
         queryCaputLog();
         queryPVWSInfo();
         queryPVWSSummary()
-        sendJsonMessage({ "type": "echo", "body": "Hello, PVWS!" })
-    }, [queryCount, queryCF, queryAL, queryOLOG, queryCaputLog, queryPVWSInfo, queryPVWSSummary, sendJsonMessage])
+    }, [queryCount, queryCF, queryAL, queryOLOG, queryCaputLog, queryPVWSInfo, queryPVWSSummary])
 
     useEffect(() => {
-        if (lastJsonMessage !== null) {
-            if (lastJsonMessage.type === "echo" && lastJsonMessage.body === "Hello, PVWS!") {
-                setPVWSConnected(true);
-            } else {
-                setPVWSConnected(false);
-            }
-        } else {
-            setPVWSConnected(false);
+        if (lastJsonMessage?.type === PVWS_ECHO.type && lastJsonMessage?.body === PVWS_ECHO.body) {
+            setPVWSEchoed(true);
         }
     }, [lastJsonMessage])
 
@@ -164,7 +166,7 @@ function Services() {
                         }
                         {
                             config.USE_PVWS ? (
-                                <Service servName="PV Web Socket" connected={pvwsConnected} sockets={pvwsSummary?.sockets}
+                                <Service servName="PV Web Socket" connected={pvwsConnected} connecting={pvwsConnecting} sockets={pvwsSummary?.sockets}
                                     data={{
                                         "Start Time": pvwsInfo?.start_time,
                                         "JRE": pvwsInfo?.jre,

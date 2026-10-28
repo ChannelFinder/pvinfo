@@ -32,6 +32,7 @@ Version 3 updates the libraries and tools PV Info is built on. Node.js >= v22.22
 - The monitor all switch is in the search results toolbar with a "Monitor all PVs" label instead of next to the "Actions" column header
 - The Services page Preference Settings show the new settings, and the IOCs page settings are in their own IOCs Page table
 - Live PV values use the PV's precision (PREC) for the number of decimals, keeping trailing zeros like Phoebus. The search results use the precision up to 2 decimals, and integer PVs are shown as whole numbers. A precision of 0 is treated as not set, as before
+- The Services page and PV details page reconnect to PV Web Socket after 1, 2, 4 and 8 seconds and then every 10 seconds like the PVWS JavaScript client, instead of every 5 seconds, and keep trying instead of stopping after 20 attempts
 
 ### Added
 
@@ -49,6 +50,7 @@ Version 3 updates the libraries and tools PV Info is built on. Node.js >= v22.22
 - Renamed "Free Form" to "Advanced" search in codebase and labels in case we want to add a true free form search later
 - "Standard" and "Advanced" labels on the search type buttons ([#177](https://github.com/ChannelFinder/pvinfo/pull/177))
 - If a page fails to load because a new version of PV Info was deployed after it was opened, the page reloads to get the new version. Errors that would leave the page blank show an error message with a reload button instead
+- PV Web Socket connections that haven't received a message for 30 seconds ask PVWS for a ping, like the PVWS JavaScript client, so proxies don't close them while idle. Behind a proxy, live values on the PV details page for PVs that rarely update went blank after a few minutes
 
 ### Fixed
 
@@ -72,6 +74,8 @@ Version 3 updates the libraries and tools PV Info is built on. Node.js >= v22.22
 - The plot button in each search results row showed when the archiver was disabled
 - `REACT_APP_DETAILS_PAGE_PROPERTIES` entries with spaces, like `a:A, b:B`, showed an empty value on the PV details page
 - "Alarm Low Value" was misspelled on the PV details page
+- The Services page showed PV Web Socket as Disconnected after its web socket reconnected, and as Connected after it closed. It now checks PVWS each time it connects and shows Connecting while it connects
+- The Services page connected to PV Web Socket when `REACT_APP_USE_PVWS` was false
 
 ### Removed
 
