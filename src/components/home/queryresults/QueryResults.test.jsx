@@ -92,6 +92,18 @@ test('plot button is hidden when the archiver is turned off', async () => {
   expect(screen.queryByRole('button', { name: /plot them together/ })).not.toBeInTheDocument();
 });
 
+test('the plot button in each row is shown only when the archiver is turned on', async () => {
+  const { rerender, props } = await renderResults([channel('PV:A')]);
+  expect(screen.getByRole('link', { name: 'plot' })).toHaveAttribute('href', 'http://aa/archViewer.html?pv=PV:A');
+  expect(screen.getByRole('button', { name: 'details' })).toBeInTheDocument();
+
+  configOverrides.USE_AA = false;
+  rerender(results([channel('PV:B')], props));
+  await act(async () => {});
+  expect(screen.getByRole('button', { name: 'details' })).toBeInTheDocument();
+  expect(screen.queryByRole('link', { name: 'plot' })).not.toBeInTheDocument();
+});
+
 test('a new search clears the selection', async () => {
   const { container, rerender, props } = await renderResults([channel('PV:A'), channel('PV:B')]);
   selectRow(container, 0);

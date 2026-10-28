@@ -146,17 +146,21 @@ function QueryResults(props) {
                         <ReadMoreIcon />
                     </IconButton>
                 </Tooltip>
-                <Tooltip arrow title={<div>Plot<br />{params.row.name}</div>}>
-                    <IconButton
-                        aria-label="plot"
-                        color="primary"
-                        target="_blank"
-                        variant="contained"
-                        href={encodeURI(`${config.AA_VIEWER}?pv=${params.row.name}`)}
-                        size="large">
-                        <TimelineIcon />
-                    </IconButton>
-                </Tooltip>
+                {
+                    config.USE_AA ?
+                        <Tooltip arrow title={<div>Plot<br />{params.row.name}</div>}>
+                            <IconButton
+                                aria-label="plot"
+                                color="primary"
+                                target="_blank"
+                                variant="contained"
+                                href={encodeURI(`${config.AA_VIEWER}?pv=${params.row.name}`)}
+                                size="large">
+                                <TimelineIcon />
+                            </IconButton>
+                        </Tooltip>
+                        : null
+                }
                 {
                     config.USE_PVWS ? <ValueCheckbox pvName={params.row.name} id={params.row.id}
                         pvStatus={params.row.pvStatus} recordType={params.row.recordType} checked={checked}
@@ -234,7 +238,9 @@ function QueryResults(props) {
     if (config.USE_PVWS) {
         columns.push({ field: "value", headerName: 'Value', width: 140, resizable: false, renderCell: renderValue })
     }
-    columns.push({ field: "button", headerName: 'Actions', width: config.USE_PVWS ? 160 : 120, resizable: false, sortable: false, disableColumnMenu: true, renderCell: renderButtons })
+    // narrower without the plot button, but at least 80px so the Actions header fits
+    const actionsWidth = config.USE_PVWS ? (config.USE_AA ? 160 : 112) : (config.USE_AA ? 120 : 80);
+    columns.push({ field: "button", headerName: 'Actions', width: actionsWidth, resizable: false, sortable: false, disableColumnMenu: true, renderCell: renderButtons })
     columns = columns.map((column) =>
         column.field in columnWidths ? { ...column, flex: 0, width: columnWidths[column.field] } : column
     )

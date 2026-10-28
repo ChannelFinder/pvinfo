@@ -53,11 +53,15 @@ function PV(props) {
         let order = []
         let dataNames = config.DETAILS_PAGE_PROPERTIES ? config.DETAILS_PAGE_PROPERTIES : "";
         dataNames.split(',').forEach((pair) => {
+            pair = pair.trim();
+            if (pair === "") {
+                return;
+            }
             if (pair === "*") {
                 setDisplayAllVars(true);
                 return;
             }
-            const [key, value] = pair.split(':');
+            const [key, value] = pair.split(':').map((s) => s.trim());
             dict[key] = value
             order.push(key);
         })

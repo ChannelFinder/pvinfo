@@ -15,6 +15,7 @@ Version 3 updates the libraries and tools PV Info is built on. Node.js >= v22.22
 - Added `REACT_APP_SHOW_WHATS_NEW` (default `true`) to show a What's New page for the current release, linked from the Help and Services pages. Items for features that are turned off are hidden
 - Added `REACT_APP_PROPERTY_VALUES` (default empty), known values for Channel Finder properties in the format `property:value1,value2;property2:value1,value2`. Properties with known values, record types, and extra properties with dropdown labels can be opened in the Advanced search properties list to pick a value
 - Changed the default `REACT_APP_DETAILS_PAGE_PROPERTIES` to use `iocIP:IOC IP Address` instead of `iocid:IOC IP Address` ([#176](https://github.com/ChannelFinder/pvinfo/pull/176))
+- Fixed `REACT_APP_PVWS_HTTP_URL_DEV` in `.env`, it was set to the web socket URL `${REACT_APP_PVWS_URL}` so the Services page couldn't load PVWS info in dev mode. Change it to `${REACT_APP_PVWS_HTTP_URL}` in copies of `.env`
 
 ### Changed
 
@@ -61,6 +62,9 @@ Version 3 updates the libraries and tools PV Info is built on. Node.js >= v22.22
 - IOC name links in the search results, IOCs page, and PV details page also found PVs from IOCs with similar names, like IOC10 for IOC1. They are now an exact match, `iocName==IOC1`, and so is the PV details page alias link
 - The mobile menu showed the Plotting link when the archiver was disabled ([#177](https://github.com/ChannelFinder/pvinfo/pull/177))
 - The caput log section on the PV details page opened to an empty table when the PV had no caput log data, it now shows "No Caput Log Data" like the online log and alarm log sections
+- The plot button in each search results row showed when the archiver was disabled
+- `REACT_APP_DETAILS_PAGE_PROPERTIES` entries with spaces, like `a:A, b:B`, showed an empty value on the PV details page
+- "Alarm Low Value" was misspelled on the PV details page
 
 ### Removed
 
