@@ -69,6 +69,8 @@ function Help() {
               <li><strong>recordDesc=temp*</strong> matches descriptions beginning with temp, values with a leading or trailing * are searched as typed</li>
               <li><strong>recordDesc==temp</strong> matches descriptions that are exactly temp</li>
               <li><strong>recordDesc!=temp</strong> or <strong>recordDesc=!temp</strong> matches descriptions not containing temp</li>
+              <li><strong>recordDesc=="beam current"</strong> matches descriptions that are exactly beam current. Values and tag names with spaces go in double quotes so they aren't split into separate terms. An = inside the quotes is part of the value. To match a " character in a value, use the ? single character wildcard, like recordDesc=6?</li>
+              <li><strong>=SR:C1:beam</strong> as the first term matches that PV name exactly, like the standard search</li>
               <li>PV status, record type, and properties with a › in the properties list have known values, so they are always an exact match. For example, if Sector has known values, Sector=1 does not match Sector 10</li>
             </ul>
             <Typography variant='body1' sx={{ mb: 2 }}>

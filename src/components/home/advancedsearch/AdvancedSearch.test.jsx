@@ -71,12 +71,19 @@ test('a property with known values opens its values and picking one adds the who
   expect(setAdvancedQuery).toHaveBeenCalledWith('SR* Acc=BTS ');
 });
 
-test('spaces in a picked value are replaced with the ? wildcard so the value stays one term', () => {
+test('a picked value with spaces is quoted so the value stays one term', () => {
   const { setAdvancedQuery } = renderSearch({ searchProperties: ['mode'], advancedQuery: 'SR*' });
   openDropdown('Properties');
   fireEvent.click(screen.getByRole('button', { name: 'mode' }));
   fireEvent.click(screen.getByRole('button', { name: 'Fast Archive' }));
-  expect(setAdvancedQuery).toHaveBeenCalledWith('SR* mode=Fast?Archive ');
+  expect(setAdvancedQuery).toHaveBeenCalledWith('SR* mode="Fast Archive" ');
+});
+
+test('a picked tag with spaces is quoted', () => {
+  const { setAdvancedQuery } = renderSearch({ searchTags: ['my tag'], advancedQuery: 'SR*' });
+  openDropdown('Tags');
+  fireEvent.click(screen.getByRole('button', { name: 'my tag' }));
+  expect(setAdvancedQuery).toHaveBeenCalledWith('SR* "my tag"');
 });
 
 test('back returns from a property\'s values to the properties list', () => {
