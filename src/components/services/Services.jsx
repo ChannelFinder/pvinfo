@@ -38,7 +38,6 @@ function Services() {
 
     // the echo is sent each time the web socket connects, since it can close and reconnect while the page is open
     const { sendJsonMessage, lastJsonMessage, readyState: pvwsReadyState } = useWebSocket(config.USE_PVWS ? config.PVWS_URL : null, {
-        shouldReconnect: (closeEvent) => true,
         onOpen: () => sendJsonMessage(PVWS_ECHO),
         onClose: () => setPVWSEchoed(false),
     })

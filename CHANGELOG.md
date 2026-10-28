@@ -51,6 +51,7 @@ Version 3 updates the libraries and tools PV Info is built on. Node.js >= v22.22
 - "Standard" and "Advanced" labels on the search type buttons ([#177](https://github.com/ChannelFinder/pvinfo/pull/177))
 - PV Web Socket connections that haven't received a message for 30 seconds ask PVWS for a ping, like the PVWS JavaScript client, so proxies don't close them while idle. Behind a proxy, live values on the PV details page for PVs that rarely update went blank after a few minutes
 - If a page fails to load because a new version of PV Info was deployed after it was opened, the page reloads to get the new version. Errors that would leave the page blank show an error message with a reload button instead
+- Live values show an animated placeholder while they wait for PV Web Socket, in the search results and on the PV details page, so a slow connection doesn't look like a missing value. Hovering it shows whether it is still connecting or waiting for the value
 
 ### Fixed
 
@@ -76,6 +77,8 @@ Version 3 updates the libraries and tools PV Info is built on. Node.js >= v22.22
 - "Alarm Low Value" was misspelled on the PV details page
 - The Services page showed PV Web Socket as Disconnected after its web socket reconnected, and as Connected after it closed. It now checks PVWS each time it connects and shows Connecting while it connects
 - The Services page connected to PV Web Socket when `REACT_APP_USE_PVWS` was false
+- The search results didn't reconnect to PV Web Socket, so live values stopped until a new search after the connection dropped, or never showed if the first connection failed. They now reconnect like the PV details page and subscribe to the monitored PVs again
+- The PV details page didn't subscribe to the PV again after its PV Web Socket connection reconnected, so it kept showing the last value without updates
 
 ### Removed
 

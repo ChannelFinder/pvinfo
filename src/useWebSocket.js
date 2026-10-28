@@ -8,9 +8,11 @@ const useReactWebSocket = reactUseWebSocket.default ?? reactUseWebSocket;
 
 // Options for the PV Web Socket connections, based on the PVWS JavaScript client (pvws.js)
 const PVWS_OPTIONS = {
-    // For web sockets with shouldReconnect: retry after 1, 2, 4 and 8 seconds, then every 10 seconds like pvws.js,
+    // Every PVWS web socket reconnects: retry after 1, 2, 4 and 8 seconds, then every 10 seconds like pvws.js,
     // for as long as the page is open instead of stopping after 20 attempts.
-    // react-use-websocket starts the attempts over when it connects
+    // react-use-websocket starts the attempts over when it connects.
+    // PVWS forgets the subscriptions when the connection closes, so components subscribe again when it reopens
+    shouldReconnect: () => true,
     reconnectInterval: (attempt) => Math.min(1000 * 2 ** attempt, 10000),
     reconnectAttempts: Infinity,
     // Proxies often close a web socket after about a minute without traffic. Like pvws.js, when no message has been

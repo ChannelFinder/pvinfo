@@ -23,7 +23,7 @@ function ValueCheckbox(props) {
     // why live monitoring is not available for this PV, empty if it is available
     const [disabledReason, setDisabledReason] = useState("");
     const enabled = disabledReason === "";
-    const { sendJsonMessage } = useWebSocket(config.PVWS_URL, {
+    const { sendJsonMessage, readyState } = useWebSocket(config.PVWS_URL, {
         share: true,
         filter: (message) => false,
     });
@@ -36,16 +36,17 @@ function ValueCheckbox(props) {
         setDisabledReason(monitorDisabledReason(props.pvStatus, props.recordType));
     }, [props.pvStatus, props.recordType, props.pvName])
 
-    // watch for changes in checked, if so send a subscribe message
+    // watch for changes in checked, if so send a subscribe message.
+    // Only while connected: PVWS forgets the subscriptions when the connection closes, so they are sent again when it reconnects
     useEffect(() => {
-        if (enabled) {
+        if (enabled && readyState === WebSocket.OPEN) {
             if (props.currentChecked.has(props.id)) {
                 sendJsonMessage({ "type": "subscribe", "pvs": [props.pvName] });
             } else {
                 sendJsonMessage({ "type": "clear", "pvs": [props.pvName] });
             }
         }
-    }, [sendJsonMessage, props.currentChecked, props.checked, props.id, props.pvName, enabled])
+    }, [sendJsonMessage, props.currentChecked, props.checked, props.id, props.pvName, enabled, readyState])
 
     return (
         <Tooltip arrow title={enabled ? <div>Monitor<br />{props.pvName}</div> : disabledReason}>
