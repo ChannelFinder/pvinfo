@@ -27,9 +27,9 @@ test('a page file that fails to load reloads the page', () => {
   expect(isReloading()).toBe(true);
 });
 
-test('does not reload again a few seconds after the last reload, so a broken build cannot reload in a loop', () => {
+test('does not reload again a few minutes after the last reload, so a broken build cannot reload in a loop even when each load is slow', () => {
   handlePreloadError(preloadError(), vi.fn());
-  vi.setSystemTime(new Date('2026-10-27T12:00:05'));
+  vi.setSystemTime(new Date('2026-10-27T12:02:00'));
   const reload = vi.fn();
   const event = preloadError();
   handlePreloadError(event, reload);

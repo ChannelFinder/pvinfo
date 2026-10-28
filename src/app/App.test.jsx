@@ -1,4 +1,4 @@
-import { render, screen, act, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { ThemeProvider } from '@mui/material';
 import App from './App';
 import theme from '../theme';
@@ -37,7 +37,7 @@ test('a page that fails to load shows an error instead of a blank page, and the 
   expect(screen.getByRole('button', { name: 'Reload Page' })).toBeInTheDocument();
   expect(screen.getByRole('banner')).toBeInTheDocument();
 
-  await act(async () => { fireEvent.click(screen.getByRole('link', { name: 'PV Info' })); });
+  fireEvent.click(screen.getByRole('link', { name: 'PV Info' }));
   expect(screen.queryByText('Something went wrong')).not.toBeInTheDocument();
   expect(screen.getByRole('button', { name: 'Advanced search' })).toBeInTheDocument();
 });
