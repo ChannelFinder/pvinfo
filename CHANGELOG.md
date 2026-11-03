@@ -2,7 +2,7 @@
 
 All notable changes to PV Info are documented in this file. Dependency security updates from Dependabot are grouped together for each release.
 
-## [3.0.0] - Unreleased
+## [3.0.0] - 2026-11-03
 
 Version 3 updates the libraries and tools PV Info is built on. Node.js >= v22.22 or >= v24.15 is now required (v24 LTS recommended). Delete the node_modules directory and run `npm install` when upgrading.
 
@@ -11,11 +11,11 @@ Version 3 updates the libraries and tools PV Info is built on. Node.js >= v22.22
 - Added `REACT_APP_USE_IOC_PAGE` (default `true`) to show or hide the IOCs page ([#176](https://github.com/ChannelFinder/pvinfo/pull/176))
 - Added `REACT_APP_IOC_PAGE_PV_PATTERN` (default `*:ENGINEER`), the PV name pattern used to find the IOCs listed on the IOCs page. It is used as an exact pattern, no partial match wildcards are added ([#176](https://github.com/ChannelFinder/pvinfo/pull/176))
 - Added `REACT_APP_IOC_PAGE_EXTRA_COLUMNS` (default `iocIP:IOC IP,caPort:CA Port,pvaPort:PVA Port`), extra Channel Finder properties shown as columns on the IOCs page. Set it to empty for no extra columns ([#176](https://github.com/ChannelFinder/pvinfo/pull/176))
-- Added `REACT_APP_AA_MAX_PLOT_PVS` (default `20`), the most selected PVs that can be plotted together from the search results
-- Added `REACT_APP_SHOW_WHATS_NEW` (default `true`) to show a What's New page for the current release, linked from the Help and Services pages. Items for features that are turned off are hidden
-- Added `REACT_APP_PROPERTY_VALUES` (default empty), known values for Channel Finder properties in the format `property:value1,value2;property2:value1,value2`. PV status, properties with known values, record types, and extra properties with dropdown labels can be opened in the Advanced search properties list to pick a value
+- Added `REACT_APP_AA_MAX_PLOT_PVS` (default `20`), the most selected PVs that can be plotted together from the search results ([#182](https://github.com/ChannelFinder/pvinfo/pull/182))
+- Added `REACT_APP_SHOW_WHATS_NEW` (default `true`) to show a What's New page for the current release, linked from the Help and Services pages. Items for features that are turned off are hidden ([#188](https://github.com/ChannelFinder/pvinfo/pull/188))
+- Added `REACT_APP_PROPERTY_VALUES` (default empty), known values for Channel Finder properties in the format `property:value1,value2;property2:value1,value2`. PV status, properties with known values, record types, and extra properties with dropdown labels can be opened in the Advanced search properties list to pick a value ([#187](https://github.com/ChannelFinder/pvinfo/pull/187), [#203](https://github.com/ChannelFinder/pvinfo/pull/203))
 - Changed the default `REACT_APP_DETAILS_PAGE_PROPERTIES` to use `iocIP:IOC IP Address` instead of `iocid:IOC IP Address` ([#176](https://github.com/ChannelFinder/pvinfo/pull/176))
-- Fixed `REACT_APP_PVWS_HTTP_URL_DEV` in `.env`, it was set to the web socket URL `${REACT_APP_PVWS_URL}` so the Services page couldn't load PVWS info in dev mode. Change it to `${REACT_APP_PVWS_HTTP_URL}` in copies of `.env`
+- Fixed `REACT_APP_PVWS_HTTP_URL_DEV` in `.env`, it was set to the web socket URL `${REACT_APP_PVWS_URL}` so the Services page couldn't load PVWS info in dev mode. Change it to `${REACT_APP_PVWS_HTTP_URL}` in copies of `.env` ([#196](https://github.com/ChannelFinder/pvinfo/pull/196))
 
 ### Changed
 
@@ -23,67 +23,71 @@ Version 3 updates the libraries and tools PV Info is built on. Node.js >= v22.22
 - Data grid toolbar is left aligned, compact, and uses the primary theme color, tables have a label in the toolbar, and the density selector is removed ([#173](https://github.com/ChannelFinder/pvinfo/pull/173))
 - CSV exports include the table name and a timestamp in the file name ([#173](https://github.com/ChannelFinder/pvinfo/pull/173))
 - Pages other than the home page are loaded on demand to reduce the initial bundle size ([#173](https://github.com/ChannelFinder/pvinfo/pull/173))
-- The Advanced search properties and tags dropdown is wider and taller, sorted, and shows property names from `REACT_APP_DETAILS_PAGE_PROPERTIES` and the extra property labels. Lists that are empty are hidden, and the add button is hidden if there are no properties or tags
-- Search URLs list tags as `tag=a&tag=b` instead of `tag1=a&tag2=b`. Links with the old numbered tags still work
-- Advanced search property values get partial match wildcards like the standard search, so `recordDesc=temp` matches descriptions containing temp. `property==value` is an exact match and `property!=value` or `property=!value` is not equal. PV status, record type, and properties with known values from `REACT_APP_PROPERTY_VALUES` or the extra property dropdown labels are always an exact match. The "Searching for:" preview shows the wildcards that are added
+- The Advanced search properties and tags dropdown is wider and taller, sorted, and shows property names from `REACT_APP_DETAILS_PAGE_PROPERTIES` and the extra property labels. Lists that are empty are hidden, and the add button is hidden if there are no properties or tags ([#186](https://github.com/ChannelFinder/pvinfo/pull/186))
+- Search URLs list tags as `tag=a&tag=b` instead of `tag1=a&tag2=b`. Links with the old numbered tags still work ([#186](https://github.com/ChannelFinder/pvinfo/pull/186))
+- Advanced search property values get partial match wildcards like the standard search, so `recordDesc=temp` matches descriptions containing temp. `property==value` is an exact match and `property!=value` or `property=!value` is not equal. PV status, record type, and properties with known values from `REACT_APP_PROPERTY_VALUES` or the extra property dropdown labels are always an exact match. The "Searching for:" preview shows the wildcards that are added ([#189](https://github.com/ChannelFinder/pvinfo/pull/189))
 - IOCs page column "IOC Reboot Time" is renamed to "Last Recsync Update" ([#176](https://github.com/ChannelFinder/pvinfo/pull/176))
 - IOCs page shows IOC IP, CA Port, and PVA Port columns by default instead of the IP address from `iocid` ([#176](https://github.com/ChannelFinder/pvinfo/pull/176))
-- Search results live monitoring uses toggle switches instead of checkboxes. Switches for PVs that can't be monitored are faded and their tooltip says why
-- The PV details page "Enable Live PV Monitoring" checkbox is a "Live PV Monitoring" switch like the search results. When the PV can't be monitored, its tooltip says why
-- The monitor all switch is in the search results toolbar with a "Monitor all PVs" label instead of next to the "Actions" column header
-- The Services page Preference Settings show the new settings, and the IOCs page settings are in their own IOCs Page table
-- The Services page and PV details page reconnect to PV Web Socket after 1, 2, 4 and 8 seconds and then every 10 seconds like the PVWS JavaScript client, instead of every 5 seconds, and keep trying instead of stopping after 20 attempts
-- Live PV values use the PV's precision (PREC) for the number of decimals, keeping trailing zeros like Phoebus. The search results use the precision up to 2 decimals, and integer PVs are shown as whole numbers. A precision of 0 is treated as not set, as before
+- Search results live monitoring uses toggle switches instead of checkboxes. Switches for PVs that can't be monitored are faded and their tooltip says why ([#182](https://github.com/ChannelFinder/pvinfo/pull/182))
+- The PV details page "Enable Live PV Monitoring" checkbox is a "Live PV Monitoring" switch like the search results. When the PV can't be monitored, its tooltip says why ([#205](https://github.com/ChannelFinder/pvinfo/pull/205))
+- The monitor all switch is in the search results toolbar with a "Monitor all PVs" label instead of next to the "Actions" column header ([#190](https://github.com/ChannelFinder/pvinfo/pull/190))
+- The Services page Preference Settings show the new settings, and the IOCs page settings are in their own IOCs Page table ([#195](https://github.com/ChannelFinder/pvinfo/pull/195))
+- The Services page and PV details page reconnect to PV Web Socket after 1, 2, 4 and 8 seconds and then every 10 seconds like the PVWS JavaScript client, instead of every 5 seconds, and keep trying instead of stopping after 20 attempts ([#202](https://github.com/ChannelFinder/pvinfo/pull/202))
+- Live PV values use the PV's precision (PREC) for the number of decimals, keeping trailing zeros like Phoebus. The search results use the precision up to 2 decimals, and integer PVs are shown as whole numbers. A precision of 0 is treated as not set, as before ([#200](https://github.com/ChannelFinder/pvinfo/pull/200))
 
 ### Added
 
 - Resizable data grid columns that keep their width when the table updates ([#172](https://github.com/ChannelFinder/pvinfo/pull/172))
 - Vitest tests, run in CI ([#173](https://github.com/ChannelFinder/pvinfo/pull/173))
-- Advanced search shows a preview of how the query will be searched, as chips below the search box
-- Advanced search does not search a property without a value after the `=`, it shows how to fix the query instead
-- Advanced search values and tags with spaces go in double quotes, like `recordDesc=="beam current"`, and an `=` inside the quotes is part of the value. Values with spaces picked from the properties list are quoted instead of having the spaces replaced with `?`. `=name` as the first term is an exact PV name, like the standard search. A `"` in a value is matched with the `?` wildcard, and switching from Standard search puts the `?` in for it
+- Advanced search shows a preview of how the query will be searched, as chips below the search box ([#186](https://github.com/ChannelFinder/pvinfo/pull/186))
+- Advanced search does not search a property without a value after the `=`, it shows how to fix the query instead ([#186](https://github.com/ChannelFinder/pvinfo/pull/186))
+- Advanced search values and tags with spaces go in double quotes, like `recordDesc=="beam current"`, and an `=` inside the quotes is part of the value. Values with spaces picked from the properties list are quoted instead of having the spaces replaced with `?`. `=name` as the first term is an exact PV name, like the standard search. A `"` in a value is matched with the `?` wildcard, and switching from Standard search puts the `?` in for it ([#201](https://github.com/ChannelFinder/pvinfo/pull/201))
 - OR searches with `|` (or `;`) are documented in the help page and search tooltips ([#174](https://github.com/ChannelFinder/pvinfo/pull/174), fixes [#148](https://github.com/ChannelFinder/pvinfo/issues/148))
 - Space separated words in the PV name search match PV names containing all of the words in any order ([#174](https://github.com/ChannelFinder/pvinfo/pull/174))
 - Options to hide the IOCs page, change its PV name pattern, and add columns ([#176](https://github.com/ChannelFinder/pvinfo/pull/176), fixes [#134](https://github.com/ChannelFinder/pvinfo/issues/134))
-- Copy PV name button on the PV details page
-- Checkboxes to select PVs in the search results, hidden at phone width
-- Search results toolbar buttons to copy PV names to the clipboard (the selected PVs, or all results if none are selected) and to plot the selected PVs together in the archiver viewer, hidden at phone width
-- Renamed "Free Form" to "Advanced" search in codebase and labels in case we want to add a true free form search later
+- Copy PV name button on the PV details page ([#182](https://github.com/ChannelFinder/pvinfo/pull/182))
+- Checkboxes to select PVs in the search results, hidden at phone width ([#182](https://github.com/ChannelFinder/pvinfo/pull/182))
+- Search results toolbar buttons to copy PV names to the clipboard (the selected PVs, or all results if none are selected) and to plot the selected PVs together in the archiver viewer, hidden at phone width ([#182](https://github.com/ChannelFinder/pvinfo/pull/182))
+- Renamed "Free Form" to "Advanced" search in codebase and labels in case we want to add a true free form search later ([#181](https://github.com/ChannelFinder/pvinfo/pull/181))
 - "Standard" and "Advanced" labels on the search type buttons ([#177](https://github.com/ChannelFinder/pvinfo/pull/177))
-- PV Web Socket connections that haven't received a message for 30 seconds ask PVWS for a ping, like the PVWS JavaScript client, so proxies don't close them while idle. Behind a proxy, live values on the PV details page for PVs that rarely update went blank after a few minutes
-- If a page fails to load because a new version of PV Info was deployed after it was opened, the page reloads to get the new version. Errors that would leave the page blank show an error message with a reload button instead
-- Live values show an animated placeholder when they take more than half a second to arrive from PV Web Socket, in the search results and on the PV details page, so a slow connection doesn't look like a missing value. Hovering it shows whether it is still connecting or waiting for the value
+- PV Web Socket connections that haven't received a message for 30 seconds ask PVWS for a ping, like the PVWS JavaScript client, so proxies don't close them while idle. Behind a proxy, live values on the PV details page for PVs that rarely update went blank after a few minutes ([#202](https://github.com/ChannelFinder/pvinfo/pull/202))
+- If a page fails to load because a new version of PV Info was deployed after it was opened, the page reloads to get the new version. Errors that would leave the page blank show an error message with a reload button instead ([#197](https://github.com/ChannelFinder/pvinfo/pull/197))
+- Live values show an animated placeholder when they take more than half a second to arrive from PV Web Socket, in the search results and on the PV details page, so a slow connection doesn't look like a missing value. Hovering it shows whether it is still connecting or waiting for the value ([#204](https://github.com/ChannelFinder/pvinfo/pull/204))
 
 ### Fixed
 
-- The search button queried Channel Finder twice for each new search, once for the button and once for the URL change
-- The PV details page only used the PV's precision for the first live value, and showed negative numbers in exponential form, like `-1.25e+1` for -12.5
+- The search button queried Channel Finder twice for each new search, once for the button and once for the URL change ([#193](https://github.com/ChannelFinder/pvinfo/pull/193))
+- The PV details page only used the PV's precision for the first live value, and showed negative numbers in exponential form, like `-1.25e+1` for -12.5 ([#200](https://github.com/ChannelFinder/pvinfo/pull/200))
 - Clicking next to a header link navigated to the home page ([#173](https://github.com/ChannelFinder/pvinfo/pull/173))
-- Monitor all counted waveform PVs toward the monitoring warning and limit when waveform monitoring was turned off, even though they were not monitored
-- Pressing Enter in the search results table's search box ran the search again, which cleared the table's filter, sort, page, selection, and live monitoring
-- Columns hidden on a narrow window, like Status and Type, stayed hidden after maximizing the window
-- A tag only Advanced search opened from a URL searched the tag as a PV name when searched again
-- Properties with "tag" in the name, like `voltage`, were searched as tags in Advanced search
+- Monitor all counted waveform PVs toward the monitoring warning and limit when waveform monitoring was turned off, even though they were not monitored ([#191](https://github.com/ChannelFinder/pvinfo/pull/191))
+- Pressing Enter in the search results table's search box ran the search again, which cleared the table's filter, sort, page, selection, and live monitoring ([#199](https://github.com/ChannelFinder/pvinfo/pull/199))
+- Columns hidden on a narrow window, like Status and Type, stayed hidden after maximizing the window ([#199](https://github.com/ChannelFinder/pvinfo/pull/199))
+- A tag only Advanced search opened from a URL searched the tag as a PV name when searched again ([#186](https://github.com/ChannelFinder/pvinfo/pull/186))
+- Properties with "tag" in the name, like `voltage`, were searched as tags in Advanced search ([#186](https://github.com/ChannelFinder/pvinfo/pull/186))
 - OR searches without wildcards only added partial match wildcards to the first and last pattern ([#174](https://github.com/ChannelFinder/pvinfo/pull/174))
 - Search property values are URL encoded ([#174](https://github.com/ChannelFinder/pvinfo/pull/174))
-- Switching from Standard to Advanced search changed searches with spaces in a value or an exact PV name. A PV name `beam current` became the PV name `beam` and the tag `current`, and `=SR:BPM1` became a property without a name
-- Extra properties without dropdown labels did not get partial match wildcards in the standard search, and not equal searches on PV status, record type, or extra properties with dropdown labels got wildcards
-- Advanced search queries with extra spaces searched for empty tags or treated the PV name as a tag, and property values containing `=` were cut off
+- Switching from Standard to Advanced search changed searches with spaces in a value or an exact PV name. A PV name `beam current` became the PV name `beam` and the tag `current`, and `=SR:BPM1` became a property without a name ([#201](https://github.com/ChannelFinder/pvinfo/pull/201))
+- Extra properties without dropdown labels did not get partial match wildcards in the standard search, and not equal searches on PV status, record type, or extra properties with dropdown labels got wildcards ([#189](https://github.com/ChannelFinder/pvinfo/pull/189))
+- Advanced search queries with extra spaces searched for empty tags or treated the PV name as a tag, and property values containing `=` were cut off ([#186](https://github.com/ChannelFinder/pvinfo/pull/186))
 - IOCs page stayed on "Data Loading..." if the Channel Finder query failed ([#176](https://github.com/ChannelFinder/pvinfo/pull/176))
-- IOC name links in the search results, IOCs page, and PV details page also found PVs from IOCs with similar names, like IOC10 for IOC1. They are now an exact match, `iocName==IOC1`, and so is the PV details page alias link
+- IOC name links in the search results, IOCs page, and PV details page also found PVs from IOCs with similar names, like IOC10 for IOC1. They are now an exact match, `iocName==IOC1`, and so is the PV details page alias link ([#198](https://github.com/ChannelFinder/pvinfo/pull/198))
 - The mobile menu showed the Plotting link when the archiver was disabled ([#177](https://github.com/ChannelFinder/pvinfo/pull/177))
-- The caput log section on the PV details page opened to an empty table when the PV had no caput log data, it now shows "No Caput Log Data" like the online log and alarm log sections
-- The plot button in each search results row showed when the archiver was disabled
-- `REACT_APP_DETAILS_PAGE_PROPERTIES` entries with spaces, like `a:A, b:B`, showed an empty value on the PV details page
-- "Alarm Low Value" was misspelled on the PV details page
-- The Services page showed PV Web Socket as Disconnected after its web socket reconnected, and as Connected after it closed. It now checks PVWS each time it connects and shows Connecting while it connects
-- The Services page connected to PV Web Socket when `REACT_APP_USE_PVWS` was false
-- The search results didn't reconnect to PV Web Socket, so live values stopped until a new search after the connection dropped, or never showed if the first connection failed. They now reconnect like the PV details page and subscribe to the monitored PVs again
-- The PV details page didn't subscribe to the PV again after its PV Web Socket connection reconnected, so it kept showing the last value without updates
+- The caput log section on the PV details page opened to an empty table when the PV had no caput log data, it now shows "No Caput Log Data" like the online log and alarm log sections ([#185](https://github.com/ChannelFinder/pvinfo/pull/185))
+- The plot button in each search results row showed when the archiver was disabled ([#196](https://github.com/ChannelFinder/pvinfo/pull/196))
+- `REACT_APP_DETAILS_PAGE_PROPERTIES` entries with spaces, like `a:A, b:B`, showed an empty value on the PV details page ([#196](https://github.com/ChannelFinder/pvinfo/pull/196))
+- "Alarm Low Value" was misspelled on the PV details page ([#196](https://github.com/ChannelFinder/pvinfo/pull/196))
+- The Services page showed PV Web Socket as Disconnected after its web socket reconnected, and as Connected after it closed. It now checks PVWS each time it connects and shows Connecting while it connects ([#202](https://github.com/ChannelFinder/pvinfo/pull/202))
+- The Services page connected to PV Web Socket when `REACT_APP_USE_PVWS` was false ([#202](https://github.com/ChannelFinder/pvinfo/pull/202))
+- The search results didn't reconnect to PV Web Socket, so live values stopped until a new search after the connection dropped, or never showed if the first connection failed. They now reconnect like the PV details page and subscribe to the monitored PVs again ([#204](https://github.com/ChannelFinder/pvinfo/pull/204))
+- The PV details page didn't subscribe to the PV again after its PV Web Socket connection reconnected, so it kept showing the last value without updates ([#204](https://github.com/ChannelFinder/pvinfo/pull/204))
 
 ### Removed
 
 - Unused dependencies `he`, `moment`, `web-vitals`, and `vite-plugin-svgr`, and leftover Create React App configuration ([#173](https://github.com/ChannelFinder/pvinfo/pull/173))
+
+### Security
+
+- Dependency updates for undici, yaml, picomatch, vite, lodash, qs, postcss, react-router, @opentelemetry/core, and js-yaml ([#146](https://github.com/ChannelFinder/pvinfo/pull/146), [#149](https://github.com/ChannelFinder/pvinfo/pull/149), [#150](https://github.com/ChannelFinder/pvinfo/pull/150), [#151](https://github.com/ChannelFinder/pvinfo/pull/151), [#152](https://github.com/ChannelFinder/pvinfo/pull/152), [#153](https://github.com/ChannelFinder/pvinfo/pull/153), [#154](https://github.com/ChannelFinder/pvinfo/pull/154), [#155](https://github.com/ChannelFinder/pvinfo/pull/155), [#157](https://github.com/ChannelFinder/pvinfo/pull/157), [#158](https://github.com/ChannelFinder/pvinfo/pull/158), [#159](https://github.com/ChannelFinder/pvinfo/pull/159), [#161](https://github.com/ChannelFinder/pvinfo/pull/161), [#162](https://github.com/ChannelFinder/pvinfo/pull/162), [#163](https://github.com/ChannelFinder/pvinfo/pull/163))
 
 ## [2.8.2] - 2026-03-02
 
@@ -370,7 +374,7 @@ The build tool changed from Create React App to Vite. All `REACT_APP_` environme
 First release, with the Advanced Light Source fully using this codebase. All site specific settings are configurable in the .env file, including which Channel Finder properties are shown on the home page and PV details page. Includes integrations with PV Web Socket, Archiver Appliance, Phoebus OLOG, and Phoebus Alarm Logger.
 
 
-[3.0.0]: https://github.com/ChannelFinder/pvinfo/compare/2.8.2...HEAD
+[3.0.0]: https://github.com/ChannelFinder/pvinfo/compare/2.8.2...3.0.0
 [2.8.2]: https://github.com/ChannelFinder/pvinfo/compare/2.8.1...2.8.2
 [2.8.1]: https://github.com/ChannelFinder/pvinfo/compare/2.8.0...2.8.1
 [2.8.0]: https://github.com/ChannelFinder/pvinfo/compare/2.7.0...2.8.0

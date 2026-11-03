@@ -123,8 +123,10 @@ See more screenshots here: [example.md](docs/example.md)
 
 ## Version 3.x.x Notes
 
-Version 3.0.0 is a dependency upgrade release. PV Info now uses React 19, MUI 7, MUI X Data Grid 9, React Router 7, and Vite 8. There are no changes to the REACT_APP_* environment variables, so existing .env and .env.local files should continue to work.
+Version 3.0.0 updates the libraries PV Info is built on to React 19, MUI 7, MUI X Data Grid 9, React Router 7, and Vite 8, and adds new search, search results, and IOCs page features. Existing .env and .env.local files should continue to work. The new REACT_APP_* settings have defaults, but two defaults changed. See the [CHANGELOG](CHANGELOG.md) for the full list.
 
+- `REACT_APP_DETAILS_PAGE_PROPERTIES` now defaults to `iocIP:IOC IP Address` instead of `iocid:IOC IP Address`
+- The IOCs page shows IOC IP, CA Port, and PVA Port columns by default, set `REACT_APP_IOC_PAGE_EXTRA_COLUMNS` to change or remove them
 - Node.js >= v22.22 or >= v24.15 is now required (v24 LTS recommended)
 - Delete the node_modules directory and do an `npm install` to regenerate all the dependencies when upgrading an existing application to version 3.0.0
 - `npm test` now runs a basic test suite with [Vitest](https://vitest.dev/)
